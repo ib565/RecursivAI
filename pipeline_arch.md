@@ -17,7 +17,7 @@
   - Data collection
 - **Output**: Detailed research notes for article generation
 
-### 2. Article Generation System
+### 3. Article Generation System
 - **Pattern**: Orchestrator-Worker
 - **Components**:
   - Orchestrator: Plans article structure and manages generation
@@ -27,7 +27,7 @@
     - Image/visualization generation
 - **Output**: Complete article draft with all components
 
-### 3. Quality Control System
+### 4. Quality Control System
 - **Pattern**: Evaluator-Optimizer
 - **Components**:
   - Technical accuracy checker
@@ -38,6 +38,6 @@
 ## Data Flow
 
 1. Topic Discovery → Topic Queue
-2. Topic Queue → Article Generation
+2. Topic Queue → Topic Research → Article Generation
 3. Draft → Quality Control
 4. Quality Control → Publication or Regeneration
