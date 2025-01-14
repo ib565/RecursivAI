@@ -16,4 +16,5 @@ class Post(SQLModel, table=True):
     status: str = Field(default="draft")
     created_at: datetime = Field(default_factory=datetime.now)
     published_at: datetime | None = Field(default=None)
+    updated_at: datetime = Field(default_factory=datetime.now)
     ai_metadata: dict | None = Field(default=None)
