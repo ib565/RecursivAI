@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from ..models.post import Post
 from ..database import get_session
 from typing import List
+from datetime import datetime
 
 router = APIRouter(
     prefix="/posts",
@@ -29,5 +30,18 @@ def get_posts(limit = None, session: Session = Depends(get_session)):
 def get_post(post_id: int, session: Session = Depends(get_session)):
     post = session.get(Post, post_id)
     if not post:
-        raise HTTPException(status_code=404, detail="Post not found")
+        raise HTTPException(404, "Post not found")
+    return post
+
+@router.patch("/{post_id}", response_model=Post)
+def update_post(post_id: int, post_update: Post, session: Session = Depends(get_session)):
+    post = session.get(Post, post_id)
+    if not post:
+        raise HTTPException(404, "Post not found")
+    post_data = post_update.model_dump(exclude_unset=True)
+    post_data["updated_at"] = datetime.now()
+    post.sqlmodel_update(post_data)
+    session.add(post)
+    session.commit()
+    session.refresh(post)
     return post
