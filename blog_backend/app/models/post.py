@@ -10,11 +10,13 @@ class Post(SQLModel, table=True):
     summary: str = Field(max_length=500)
     content: dict[str, Any] = Field(
         sa_column=Column(JSON), 
-        nullable=False,
         default={}
     )
     status: str = Field(default="draft")
     created_at: datetime = Field(default_factory=datetime.now)
     published_at: datetime | None = Field(default=None)
     updated_at: datetime = Field(default_factory=datetime.now)
-    ai_metadata: dict | None = Field(default=None)
+    ai_metadata: dict | None = Field(
+        sa_column=Column(JSON),
+        default=None
+        )
