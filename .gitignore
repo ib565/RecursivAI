@@ -1,2 +1,3 @@
 blog_backend/venv/
-blog_backend/blog.db
+*.db
+*.py[cod]
