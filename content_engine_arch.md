@@ -1,6 +1,7 @@
 ## Engine Components
 
 ### 1. Topic Discovery System
+
 - **Pattern**: Single Tool Agent + Prompt Chain
 - **Components**:
   - Web scraping/API integration (GitHub, arXiv, tech blogs)
@@ -9,6 +10,7 @@
 - **Output**: 2-3 topics per day
 
 ### 2. Deeper Research
+
 - **Pattern**: Tool Agent
 - **Components**:
   - Literature review
@@ -18,6 +20,7 @@
 - **Output**: Detailed research notes for article generation
 
 ### 3. Article Generation System
+
 - **Pattern**: Orchestrator-Worker
 - **Components**:
   - Orchestrator: Plans article structure and manages generation
@@ -28,6 +31,7 @@
 - **Output**: Complete article draft with all components
 
 ### 4. Quality Control System
+
 - **Pattern**: Evaluator-Optimizer
 - **Components**:
   - Technical accuracy checker
