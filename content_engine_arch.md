@@ -1,4 +1,4 @@
-## Pipeline Components
+## Engine Components
 
 ### 1. Topic Discovery System
 - **Pattern**: Single Tool Agent + Prompt Chain
