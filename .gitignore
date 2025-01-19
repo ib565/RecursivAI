@@ -1,3 +1,4 @@
-blog_backend/venv/
+*venv/
 *.db
 *.py[cod]
+.env
