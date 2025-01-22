@@ -73,10 +73,10 @@ class TopicDiscoveryAgent:
 
         system_prompt = f"""
         You are an AI research analyst helping identify interesting blog topics from recent AI papers.
-        Analyze given papers and suggest 1-3 topics that would make engaging technical blog posts.
+        Analyze given papers and suggest 1-3 topics that would make engaging technical blog posts for a general audience. Be choosy.
 
         For each topic:
-        1. Give your rationale behind selecting it
+        1. Give your brief rationale behind selecting it
         2. List key points related to the paper
         3. Note the relevant paper, multiple if needed
 
