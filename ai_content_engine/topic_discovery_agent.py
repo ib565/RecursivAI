@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from groq import Groq
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal
 from datetime import datetime
 import os
 import aiohttp
@@ -15,21 +15,89 @@ load_dotenv()
 class ArxivPaper(BaseModel):
     title: str
     summary: str
-    # link: str
+    link: str
     # published: str
     # authors: List[str]
-    arxiv_id: str
+    # arxiv_id: str
+
+
+class HNStory(BaseModel):
+    id: int
+    title: str
+    url: str
+    score: int
+    top_comments: List[str]
 
 
 class Topic(BaseModel):
     title: str
-    rationale: str
-    key_points: List[str]
-    source_papers: List[str]
+    source_url: str
+    source_type: Literal["arxiv", "hackernews"]
 
 
 class Topics(BaseModel):
     topics: List[Topic]
+
+
+class HNCollector:
+    def __init__(
+        self, n_stories: int = 20, n_comments: int = 5, n_initial_stories: int = 100
+    ):
+        self.base_url = "https://hacker-news.firebaseio.com/v0"
+        self.n_stories = n_stories
+        self.n_comments = n_comments
+        self.n_initial_stories = n_initial_stories
+
+    async def get_item(self, item_id, session):
+        # fetch item (story or comment)
+        async with session.get(f"{self.base_url}/item/{item_id}.json") as response:
+            return await response.json()
+
+    async def get_story_and_comments(self, story_id, session):
+        # get story and top comments
+        story = await self.get_item(story_id, session)
+
+        if not story or story.get("type") != "story":
+            return None
+
+        comments = []
+        if story.get("kids"):
+            comment_tasks = []
+            for kid_id in story["kids"][: self.n_comments]:
+                comment_tasks.append(self.get_item(kid_id, session))
+            comment_items = await asyncio.gather(*comment_tasks)
+            comments = [
+                item.get("text", "")
+                for item in comment_items
+                if item and item.get("text")
+            ]
+
+        return HNStory(
+            id=story_id,
+            title=story.get("title"),
+            url=story.get("url", ""),
+            score=story.get("score", 0),
+            top_comments=comments,
+        )
+
+    async def collect(self):
+        # get top HN stories
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f'{self.base_url}/topstories.json?orderBy="$priority"&limitToFirst={self.n_initial_stories}'
+            ) as response:
+                story_ids = await response.json()
+
+            story_tasks = []
+            for story_id in story_ids:
+                story_tasks.append(self.get_story_and_comments(story_id, session))
+
+            stories = await asyncio.gather(*story_tasks)
+            stories = [s for s in stories if s]
+
+            return sorted(stories, key=lambda x: x.score, reverse=True)[
+                : self.n_stories
+            ]
 
 
 class ArxivCollector:
@@ -53,10 +121,10 @@ class ArxivCollector:
             ArxivPaper(
                 title=entry.title,
                 summary=entry.summary,
-                # link=entry.link,
+                link=entry.link,
                 # published=entry.published,
                 # authors=[author.name for author in entry.authors],
-                arxiv_id=entry.id.split("/abs/")[-1],
+                # arxiv_id=entry.id.split("/abs/")[-1],
             )
             for entry in feed.entries
         ]
@@ -65,11 +133,34 @@ class ArxivCollector:
 class TopicDiscoveryAgent:
     def __init__(self, llm):
         self.llm_client = llm
-        self.collector = ArxivCollector()
 
-    async def find_topics(self):
-        papers = await self.collector.collect()
-        print(papers[0])
+    async def find_hn_topics(self):
+        hn_collector = HNCollector()
+        stories = await hn_collector.collect()
+
+        system_prompt = f"""
+        You are an AI blog assistant helping identify interesting blog topics from recent Hackernews stories. Based on the title and top comments, select the 3-5 most impactful stories for a general audience. Be critical and choosy.
+        Format your response as a JSON with the schema: {json.dumps(Topics.model_json_schema(), indent=2)}
+        """
+        user_prompt = f"""
+        Recent stories:  {[(story.title, story.top_comments) for story in stories]}
+        """
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        model = "mixtral-8x7b-32768"
+
+        chat_completion = self.llm_client.chat.completions.create(
+            messages=messages, model=model, response_format={"type": "json_object"}
+        )
+
+        return Topics.model_validate_json(chat_completion.choices[0].message.content)
+
+    async def find_arxiv_topics(self):
+        arxiv_collector = ArxivCollector()
+        papers = await arxiv_collector.collect()
 
         system_prompt = f"""
         You are an AI research analyst helping identify interesting blog topics from recent AI papers.
@@ -104,6 +195,8 @@ class TopicDiscoveryAgent:
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 topic_finder = TopicDiscoveryAgent(client)
-topics = asyncio.run(topic_finder.find_topics())
-print(topics)
-print(type(topics))
+topics = asyncio.run(topic_finder.find_hn_topics())
+
+for t in topics:
+    print(t)
+# print(type(topics))
