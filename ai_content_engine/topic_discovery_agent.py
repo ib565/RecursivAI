@@ -3,11 +3,14 @@ from groq import Groq
 from pydantic import BaseModel
 from typing import List, Literal
 from datetime import datetime
+from bs4 import BeautifulSoup
+import re
 import os
 import aiohttp
 import feedparser
 import asyncio
 import json
+
 
 load_dotenv()
 
@@ -31,6 +34,7 @@ class HNStory(BaseModel):
 
 class Topic(BaseModel):
     title: str
+    summary: str
     source_url: str
     source_type: Literal["arxiv", "hackernews"]
 
@@ -53,6 +57,22 @@ class HNCollector:
         async with session.get(f"{self.base_url}/item/{item_id}.json") as response:
             return await response.json()
 
+    def clean_comment(self, comment):
+        if not comment:
+            return ""
+
+        soup = BeautifulSoup(comment, "html.parser")
+        text = soup.get_text()
+
+        text = re.sub(r"&#x27;", "'", text)  # Common HTML entity in HN
+        text = re.sub(r"\s+", " ", text)  # Multiple spaces to single
+        text = text.strip()
+
+        if len(text) > 100:
+            text = text[:100] + "..."
+
+        return text
+
     async def get_story_and_comments(self, story_id, session):
         # get story and top comments
         story = await self.get_item(story_id, session)
@@ -67,7 +87,7 @@ class HNCollector:
                 comment_tasks.append(self.get_item(kid_id, session))
             comment_items = await asyncio.gather(*comment_tasks)
             comments = [
-                item.get("text", "")
+                self.clean_comment(item.get("text", ""))
                 for item in comment_items
                 if item and item.get("text")
             ]
@@ -137,13 +157,12 @@ class TopicDiscoveryAgent:
     async def find_hn_topics(self):
         hn_collector = HNCollector()
         stories = await hn_collector.collect()
-
         system_prompt = f"""
-        You are an AI blog assistant helping identify interesting blog topics from recent Hackernews stories. Based on the title and top comments, select the 3-5 most impactful stories for a general audience. Be critical and choosy.
+        You are an AI blog assistant helping identify interesting blog topics from recent Hackernews stories. Based on the title and top comments, select the 3-5 most impactful stories for a general audience. Be critical and concise.
         Format your response as a JSON with the schema: {json.dumps(Topics.model_json_schema(), indent=2)}
         """
         user_prompt = f"""
-        Recent stories:  {[(story.title, story.top_comments) for story in stories]}
+        Recent stories:  {[(story.title, story.top_comments, story.url) for story in stories]}
         """
         messages = [
             {"role": "system", "content": system_prompt},
