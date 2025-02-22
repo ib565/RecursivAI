@@ -1,7 +1,8 @@
 import requests
 import datetime
-import time
+import json
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,7 +34,7 @@ def get_top_papers(days=7):
                 if paper["published"] >= threshold_date:
                     if not paper.get("authors"):
                         continue
-
+                    time.sleep(0.1)
                     repos_url = f"{papers_with_code_base}{paper['id']}/repositories/"
                     repos_response = requests.get(repos_url)
                     repos = repos_response.json()["results"]
@@ -42,21 +43,21 @@ def get_top_papers(days=7):
                         stars += repo["stars"]
 
                     if stars > 10:
-                        papers.append(
-                            {
-                                "title": paper["title"],
-                                "url": paper["url_pdf"],
-                                "published": paper["published"],
-                                "abstract": paper["abstract"],
-                                "github_stars": stars,
-                            }
-                        )
-                    # time.sleep(0.1)
+                        paper_dict = {
+                            "title": paper["title"],
+                            "url": paper["url_pdf"],
+                            "published": paper["published"],
+                            "abstract": paper["abstract"],
+                            "github_stars": stars,
+                        }
+                        papers.append(paper_dict)
+                        print(paper_dict)
                 else:
                     break
         if last_date < threshold_date:
             break
         page += 1
+        time.sleep(1)
 
     top_papers = sorted(papers, key=lambda x: x["github_stars"], reverse=True)
 
@@ -89,4 +90,12 @@ def get_github_stars(repo_url):
     return 0
 
 
-print(get_top_papers()[:5])
+def save_papers(papers, filename="top_papers.json"):
+    data = {"last_updated": datetime.datetime.now().isoformat(), "papers": papers}
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+top_papers = get_top_papers()
+save_papers(top_papers[:10])
