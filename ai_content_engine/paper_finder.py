@@ -97,5 +97,19 @@ def save_papers(papers, filename="top_papers.json"):
         json.dump(data, f, indent=2)
 
 
+def deduplicate_papers(papers):
+    seen = set()
+    unique_papers = []
+
+    for paper in papers:
+        key = (paper["title"], paper["url"])
+        if key not in seen:
+            seen.add(key)
+            unique_papers.append(paper)
+
+    return unique_papers
+
+
 top_papers = get_top_papers()
-save_papers(top_papers[:10])
+top_papers_unique = deduplicate_papers(top_papers)
+save_papers(top_papers_unique[:10])
