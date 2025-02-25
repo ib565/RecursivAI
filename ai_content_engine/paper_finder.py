@@ -1,11 +1,7 @@
 import requests
 import datetime
 import json
-import os
 import time
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 def get_top_papers(days=7):
@@ -62,32 +58,6 @@ def get_top_papers(days=7):
     top_papers = sorted(papers, key=lambda x: x["github_stars"], reverse=True)
 
     return top_papers
-
-
-def get_github_stars(repo_url):
-    if not repo_url or "github.com" not in repo_url:
-        return 0
-
-    parts = repo_url.split("github.com/")[-1].split("/")
-    if len(parts) < 2:
-        return 0
-    owner, repo = parts[0], parts[1]
-
-    token = os.environ.get("GITHUB_TOKEN")
-    github_headers = {
-        "Authorization": f"token {token}",
-    }
-
-    try:
-        response = requests.get(
-            f"https://api.github.com/repos/{owner}/{repo}", headers=github_headers
-        )
-        if response.status_code == 200:
-            return response.json().get("stargazers_count", 0)
-    except Exception as e:
-        print(f"Error fetching stars for {repo_url}: {e}")
-
-    return 0
 
 
 def save_papers(papers, filename="top_papers.json"):
