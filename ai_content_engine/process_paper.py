@@ -24,6 +24,11 @@ def download_arxiv_pdf(arxiv_url, save_path_base="ai_content_engine/papers/"):
 def extract_text_from_pdf(pdf_path: str) -> str:
     with open(pdf_path, "rb") as f:
         pdf_text = extract_text(f)
+    if "References" in pdf_text:
+        pdf_text = pdf_text.split("References")[0]
+    elif "REFERENCES" in pdf_text:
+        pdf_text = pdf_text.split("REFERENCES")[0]
+
     pdf_name = pathlib.Path(pdf_path).name
     pdf_name = pdf_name.replace(".pdf", "")
     with open(f"ai_content_engine/papers/{pdf_name}.txt", "w", encoding="utf-8") as f:
@@ -31,6 +36,10 @@ def extract_text_from_pdf(pdf_path: str) -> str:
     return pdf_text
 
 
-save_path = download_arxiv_pdf("https://arxiv.org/pdf/2502.14282v1.pdf")
-text = extract_text_from_pdf(save_path)
-print(text)
+def process_arxiv_paper(arxiv_url: str):
+    save_path = download_arxiv_pdf(arxiv_url)
+    text = extract_text_from_pdf(save_path)
+    return text
+
+
+text = process_arxiv_paper("https://arxiv.org/pdf/2502.13923v1.pdf")
