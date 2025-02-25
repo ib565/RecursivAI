@@ -2,6 +2,7 @@ import requests
 import pymupdf4llm
 import pathlib
 import re
+from pdfminer.high_level import extract_text
 
 
 def extract_arxiv_id(url: str) -> str:
@@ -21,14 +22,15 @@ def download_arxiv_pdf(arxiv_url, save_path_base="ai_content_engine/papers/"):
         raise Exception(f"Failed to download: {arxiv_url}")
 
 
-def extract_markdown_from_pdf(pdf_path):
-    md_text = pymupdf4llm.to_markdown(pdf_path)
+def extract_text_from_pdf(pdf_path: str) -> str:
+    with open(pdf_path, "rb") as f:
+        pdf_text = extract_text(f)
     pdf_name = pathlib.Path(pdf_path).name
-    md_path = "ai_content_engine/papers/" + pdf_name.replace(".pdf", ".md")
-    pathlib.Path(md_path).write_bytes(md_text.encode())
-    return md_text
+    with open(f"ai_content_engine/{pdf_name}.txt", "w", encoding="utf-8") as f:
+        f.write(pdf_text)
+    return pdf_text
 
 
-save_path = download_arxiv_pdf("https://arxiv.org/pdf/2502.13923v1.pdf")
-md_text = extract_markdown_from_pdf(save_path)
+save_path = download_arxiv_pdf("https://arxiv.org/pdf/2502.14282v1.pdf")
+md_text = extract_text_from_pdf(save_path)
 print(md_text)
