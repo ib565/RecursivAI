@@ -3,23 +3,12 @@ from google.genai import types
 import os
 from dotenv import load_dotenv
 from ai_content_engine.prompts import planner_prompt
-from pydantic import BaseModel
 from ai_content_engine.process_paper import process_arxiv_paper
+from ai_content_engine.models import Outline
 
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-
-class Section(BaseModel):
-    title: str
-    context: str
-    instructions: str
-    queries: list[str] | None
-
-
-class Outline(BaseModel):
-    sections: list[Section]
 
 
 def generate_outline(paper_text):
@@ -36,7 +25,7 @@ def generate_outline(paper_text):
     print(response.text)
     outline: Outline = response.parsed
     print(outline)
-    with open("ai_content_engine/outline2.json", "w") as f:
+    with open("ai_content_engine/outline.json", "w") as f:
         f.write(outline.model_dump_json())
 
     return outline
