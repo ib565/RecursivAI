@@ -2,3 +2,4 @@
 *.db
 *.py[cod]
 .env
+/ai_content_engine/papers
