@@ -40,6 +40,3 @@ def process_arxiv_paper(arxiv_url: str):
     save_path = download_arxiv_pdf(arxiv_url)
     text = extract_text_from_pdf(save_path)
     return text
-
-
-text = process_arxiv_paper("https://arxiv.org/pdf/2502.13923v1.pdf")
