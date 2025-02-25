@@ -2,20 +2,6 @@
   "last_updated": "2025-02-23T02:42:32.745583",
   "papers": [
     {
-      "title": "Atom of Thoughts for Markov LLM Test-Time Scaling",
-      "url": "https://arxiv.org/pdf/2502.12018v1.pdf",
-      "published": "2025-02-17",
-      "abstract": "Large Language Models (LLMs) achieve superior performance through training-time scaling, and test-time scaling further enhances their capabilities by conducting effective reasoning during inference. However, as the scale of reasoning increases, existing test-time scaling methods suffer from accumulated historical information, which not only wastes computational resources but also interferes with effective reasoning. To address this issue, we observe that complex reasoning progress is often achieved by solving a sequence of independent subquestions, each being self-contained and verifiable. These subquestions are essentially atomic questions, relying primarily on their current state rather than accumulated history, similar to the memoryless transitions in a Markov process. Based on this observation, we propose Atom of Thoughts (AoT), where each state transition in the reasoning process consists of decomposing the current question into a dependency-based directed acyclic graph and contracting its subquestions, forming a new atomic question state. This iterative decomposition-contraction process continues until reaching directly solvable atomic questions, naturally realizing Markov transitions between question states. Furthermore, these atomic questions can be seamlessly integrated into existing test-time scaling methods, enabling AoT to serve as a plug-in enhancement for improving reasoning capabilities. Experiments across six benchmarks demonstrate the effectiveness of AoT both as a standalone framework and a plug-in enhancement. Notably, on HotpotQA, when applied to gpt-4o-mini, AoT achieves an 80.6% F1 score, surpassing o3-mini by 3.4% and DeepSeek-R1 by 10.6%. The code will be available at https://github.com/qixucen/atom.",
-      "github_stars": 47035
-    },
-    {
-      "title": "Universal Embedding Function for Traffic Classification via QUIC Domain Recognition Pretraining: A Transfer Learning Success",
-      "url": "https://arxiv.org/pdf/2502.12930v1.pdf",
-      "published": "2025-02-18",
-      "abstract": "Encrypted traffic classification (TC) methods must adapt to new protocols and extensions as well as to advancements in other machine learning fields. In this paper, we follow a transfer learning setup best known from computer vision. We first pretrain an embedding model on a complex task with a large number of classes and then transfer it to five well-known TC datasets. The pretraining task is recognition of SNI domains in encrypted QUIC traffic, which in itself is a problem for network monitoring due to the growing adoption of TLS Encrypted Client Hello. Our training pipeline -- featuring a disjoint class setup, ArcFace loss function, and a modern deep learning architecture -- aims to produce universal embeddings applicable across tasks. The proposed solution, based on nearest neighbors search in the embedding space, surpasses SOTA performance on four of the five TC datasets. A comparison with a baseline method utilizing raw packet sequences revealed unexpected findings with potential implications for the broader TC field. We published the model architecture, trained weights, and transfer learning experiments.",
-      "github_stars": 33143
-    },
-    {
       "title": "Qwen2.5-VL Technical Report",
       "url": "https://arxiv.org/pdf/2502.13923v1.pdf",
       "published": "2025-02-19",
