@@ -22,10 +22,7 @@ def generate_outline(paper_text):
             max_output_tokens=8192,
         ),
     )
-    print(response.text)
+    print("Outline tokens: ", response.usage_metadata)
     outline: Outline = response.parsed
-    print(outline)
-    with open("ai_content_engine/outline.json", "w") as f:
-        f.write(outline.model_dump_json())
     print("Outline generated.")
     return outline
