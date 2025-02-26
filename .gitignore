@@ -3,3 +3,5 @@
 *.py[cod]
 .env
 /ai_content_engine/papers
+/ai_content_engine/posts
+/ai_content_engine/outlines
