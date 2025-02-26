@@ -4,6 +4,7 @@ from ..models.post import Post
 from ..database import get_session
 from typing import List
 from datetime import datetime
+from ..ai_integration import process_papers_and_create_posts
 
 router = APIRouter(
     prefix="/posts",
@@ -18,6 +19,13 @@ def create_post(post: Post, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(post)
     return post
+
+
+@router.post("/process_papers_create_posts")
+def process_papers_create_posts(session: Session = Depends(get_session)):
+    """Process papers from top_papers.json and create posts."""
+    process_papers_and_create_posts()
+    return
 
 
 @router.get("", response_model=List[Post])

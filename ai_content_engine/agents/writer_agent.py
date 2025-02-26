@@ -70,13 +70,14 @@ async def generate_section(section: Section):
     return response.text
 
 
-async def generate_blog_post(outline: Outline):
+async def generate_blog_post_from_outline(outline: Outline):
     print("Generating blog post...")
+    title = outline.title
     section_tasks = [generate_section(section) for section in outline.sections]
     section_outputs = await asyncio.gather(*section_tasks)
 
-    blog = f"# {outline.title}\n\n"
+    blog = f"# {title}\n\n"
 
     blog += "\n\n".join(section_outputs)
     print("Blog post generated.")
-    return blog
+    return blog, title
