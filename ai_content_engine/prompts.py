@@ -23,4 +23,5 @@ Guidelines:
     - Use `*` or `-` for unordered lists
     - Use `1.` for ordered lists
     - Ensure proper indentation and spacing
+Give a complete section, with the title, that can be directly inserted into the blog post.
 """
