@@ -43,16 +43,22 @@ async def async_research_queries(queries):
 
 
 async def generate_section(section: Section):
-    search_docs = await async_research_queries(section.queries)
-    research_content = "\n\n".join([doc["answer"] for doc in search_docs])
+    print(f"Generating section: {section.title}...")
+    if section.queries:
+        search_docs = await async_research_queries(section.queries)
+        research_content = "\n\n".join([doc["answer"] for doc in search_docs])
+    else:
+        research_content = None
     system_prompt = writer_prompt
     content_prompt = f"""
     Title: {section.title}\n\n
     Content: {section.context}\n\n
     Instructions: {section.instructions}\n\n
-    Research for context: {research_content}
     """
-    response = client.models.generate_content(
+    content_prompt += (
+        f"Researched context: {research_content}" if research_content else ""
+    )
+    response = await client.aio.models.generate_content(
         model="gemini-2.0-flash",
         contents=[content_prompt],
         config=types.GenerateContentConfig(
@@ -62,3 +68,15 @@ async def generate_section(section: Section):
     )
 
     return response.text
+
+
+async def generate_blog_post(outline: Outline):
+    print("Generating blog post...")
+    section_tasks = [generate_section(section) for section in outline.sections]
+    section_outputs = await asyncio.gather(*section_tasks)
+
+    blog = f"# {outline.title}\n\n"
+
+    blog += "\n\n".join(section_outputs)
+    print("Blog post generated.")
+    return blog

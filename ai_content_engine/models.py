@@ -9,4 +9,5 @@ class Section(BaseModel):
 
 
 class Outline(BaseModel):
+    title: str
     sections: list[Section]

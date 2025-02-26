@@ -37,6 +37,8 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
 
 def process_arxiv_paper(arxiv_url: str):
+    print("Processing paper...")
     save_path = download_arxiv_pdf(arxiv_url)
     text = extract_text_from_pdf(save_path)
+    print("Paper processed.")
     return text

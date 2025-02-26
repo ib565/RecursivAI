@@ -3,7 +3,6 @@ from google.genai import types
 import os
 from dotenv import load_dotenv
 from ai_content_engine.prompts import planner_prompt
-from ai_content_engine.process_paper import process_arxiv_paper
 from ai_content_engine.models import Outline
 
 
@@ -12,6 +11,7 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def generate_outline(paper_text):
+    print("Generating outline...")
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=[paper_text],
@@ -27,9 +27,5 @@ def generate_outline(paper_text):
     print(outline)
     with open("ai_content_engine/outline.json", "w") as f:
         f.write(outline.model_dump_json())
-
+    print("Outline generated.")
     return outline
-
-
-text = process_arxiv_paper("https://arxiv.org/pdf/2502.13923v1.pdf")
-outline = generate_outline(text)

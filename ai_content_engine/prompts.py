@@ -6,7 +6,7 @@ You are an expert technical writer, helping create a detailed outline for a blog
 4. Explain the core implementation/methodology in an understandable way
 Include 4-6 total sections, with each section having: 
 1. Title
-2. Context: All necessary information from the paper for that section
+2. Context: All necessary information from the paper for that section. The writer will not have access to the paper, so you must be comprehensive.
 3. Instructions: Guidance on tone, technical depth, structure, analogies, etc.
 4. Queries: 0-2 search queries that will help gather comprehensive information for the section. Make the queries specific enough to find high-quality, relevant sources while covering the breadth needed for the report structure.
 Be exhaustive with your outline, ensuring no key points are missed."""
