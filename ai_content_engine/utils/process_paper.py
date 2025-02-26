@@ -5,7 +5,7 @@ from pdfminer.high_level import extract_text
 
 
 def extract_arxiv_id(url: str) -> str:
-    match = re.search(r"arxiv\.org/pdf/(\d+\.\d+v\d+)\.pdf", url)
+    match = re.search(r"arxiv\.org/pdf/(\d+\.\d+(?:v\d+)?)\.pdf", url)
     return match.group(1) if match else None
 
 
@@ -31,7 +31,9 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
     pdf_name = pathlib.Path(pdf_path).name
     pdf_name = pdf_name.replace(".pdf", "")
-    with open(f"ai_content_engine/papers/{pdf_name}.txt", "w", encoding="utf-8") as f:
+    with open(
+        f"ai_content_engine/content/papers/{pdf_name}.txt", "w", encoding="utf-8"
+    ) as f:
         f.write(pdf_text)
     return pdf_text
 
