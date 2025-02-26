@@ -1,5 +1,5 @@
 planner_prompt = """
-You are an expert technical writer, helping create a detailed outline for a blog post intended to explain the given research paper to software engineers and AI enthusiasts. The blog should:
+You are an expert technical writer, helping create a detailed outline for a blog post intended to explain the given research paper to general tech and AI enthusiasts. The blog should:
 1. Make complex concepts accessible to non-experts by breaking them down and using examples
 2. Highlight practical implications and applications
 3. Highlight the impact on the field of AI
