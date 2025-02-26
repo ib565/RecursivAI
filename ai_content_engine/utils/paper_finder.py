@@ -60,7 +60,7 @@ def get_top_papers(days=7):
     return top_papers
 
 
-def save_papers(papers, filename="top_papers.json"):
+def save_papers(papers, filename="ai_content_engine/content/top_papers.json"):
     data = {"last_updated": datetime.datetime.now().isoformat(), "papers": papers}
 
     with open(filename, "w") as f:
@@ -80,6 +80,7 @@ def deduplicate_papers(papers):
     return unique_papers
 
 
-top_papers = get_top_papers()
-top_papers_unique = deduplicate_papers(top_papers)
-save_papers(top_papers_unique[:10])
+def download_top_papers():
+    top_papers = get_top_papers()
+    top_papers_unique = deduplicate_papers(top_papers)
+    save_papers(top_papers_unique[:10])

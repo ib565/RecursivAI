@@ -9,7 +9,7 @@ def extract_arxiv_id(url: str) -> str:
     return match.group(1) if match else None
 
 
-def download_arxiv_pdf(arxiv_url, save_path_base="ai_content_engine/papers/"):
+def download_arxiv_pdf(arxiv_url, save_path_base="ai_content_engine/content/papers/"):
     response = requests.get(arxiv_url)
     paper_id = extract_arxiv_id(arxiv_url)
     save_path = save_path_base + f"{paper_id}.pdf"
