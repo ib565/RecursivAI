@@ -11,9 +11,6 @@ from pathlib import Path
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PAPERS_JSON_PATH = os.path.join(
@@ -38,7 +35,9 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
     try:
         blog_post, blog_title = generate_blog_post(paper_id)
     except Exception as e:
-        logger.error(f"Error generating blog content for {paper_id}: {e}")
+        logger.error(
+            f"Error generating blog content for {paper_id}: {e}", exc_info=True
+        )
         return None
 
     # Step 2: Format and prepare data

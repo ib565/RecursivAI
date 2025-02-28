@@ -2,6 +2,9 @@ import requests
 import pathlib
 import re
 from pdfminer.high_level import extract_text
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def extract_arxiv_id(url: str) -> str:
@@ -39,8 +42,8 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
 
 def process_arxiv_paper(arxiv_url: str):
-    print("Processing paper...")
+    logger.info(f"Processing paper: {arxiv_url}")
     save_path = download_arxiv_pdf(arxiv_url)
     text = extract_text_from_pdf(save_path)
-    print("Paper processed.")
+    logger.info(f"Text extracted from PDF")
     return text

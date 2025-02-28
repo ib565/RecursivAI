@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from tavily import AsyncTavilyClient
 from ai_content_engine.models import Section, Outline
 from ai_content_engine.prompts import writer_prompt
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -43,7 +46,7 @@ async def async_research_queries(queries):
 
 
 async def generate_section(section: Section):
-    print(f"Generating section: {section.title}...")
+    logger.info(f"Generating section: {section.title}...")
     if section.queries:
         search_docs = await async_research_queries(section.queries)
         research_content = "\n\n".join([doc["answer"] for doc in search_docs])
@@ -71,7 +74,7 @@ async def generate_section(section: Section):
 
 
 async def generate_blog_post_from_outline(outline: Outline):
-    print("Generating blog post...")
+    logger.info("Generating blog post from outline...")
     title = outline.title
     section_tasks = [generate_section(section) for section in outline.sections]
     section_outputs = await asyncio.gather(*section_tasks)
@@ -79,5 +82,5 @@ async def generate_blog_post_from_outline(outline: Outline):
     blog = f"# {title}\n\n"
 
     blog += "\n\n".join(section_outputs)
-    print("Blog post generated.")
+    logger.info("Blog post generated.")
     return blog, title

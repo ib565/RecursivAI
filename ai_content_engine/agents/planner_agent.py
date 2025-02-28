@@ -4,14 +4,16 @@ import os
 from dotenv import load_dotenv
 from ai_content_engine.prompts import planner_prompt
 from ai_content_engine.models import Outline
+import logging
 
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def generate_outline(paper_text):
-    print("Generating outline...")
+    logger.debug("Starting outline generation...")
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=[paper_text],
@@ -22,7 +24,7 @@ def generate_outline(paper_text):
             max_output_tokens=8192,
         ),
     )
-    print("Outline tokens: ", response.usage_metadata)
+    logger.info(f"Outline generated. Tokens: {response.usage_metadata}")
     outline: Outline = response.parsed
-    print("Outline generated.")
+    logger.debug(f"Outline generated: {outline}")
     return outline

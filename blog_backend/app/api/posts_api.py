@@ -18,29 +18,39 @@ router = APIRouter(
 
 
 def process_papers_background() -> None:
-    """Background task to process papers and create posts."""
+    """Process papers in background."""
     try:
         result = process_papers_and_create_posts()
         logger.info(f"Background paper processing completed with result: {result}")
     except Exception as e:
-        logger.error(f"Error in background paper processing: {str(e)}")
+        logger.error(f"Error in background paper processing: {str(e)}", exc_info=True)
+
+
+def get_unique_slug(session: Session, original_slug: str) -> str:
+    """Generate a unique slug by adding incremental numbers when needed."""
+    slug = original_slug
+    counter = 1
+
+    while session.exec(select(Post).where(Post.slug == slug)).first():
+        slug = f"{original_slug}-{counter}"
+        logger.info(f"Slug already exists, changing to {slug}")
+        counter += 1
+
+    return slug
 
 
 @router.post("", response_model=Post)
 def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
     try:
-        existing_post = session.exec(select(Post).where(Post.slug == post.slug)).first()
-        if existing_post:
-            post.slug = post.slug + "-1"
-            print(f"Slug already exists, changing to {post.slug}")
-            # raise HTTPException(status_code=400, detail="Slug already exists")
+        post.slug = get_unique_slug(session, post.slug)
         session.add(post)
         session.commit()
         session.refresh(post)
         return post
     except Exception as e:
+        session.rollback()
         logger.error(f"Error creating post: {str(e)}")
-        raise HTTPException(500, f"Error creating post: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error creating post")
 
 
 @router.post("/process_papers_create_posts")
@@ -53,17 +63,17 @@ def api_process_papers_create_posts(
         return {"detail": "Paper processing started in background"}
     except Exception as e:
         logger.error(f"Failed to start background processing: {str(e)}")
-        raise HTTPException(500, f"Failed to start paper processing: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to start paper processing")
 
 
 @router.get("", response_model=List[Post])
 def get_posts(
-    limit: int | None = None, session: Session = Depends(get_session)
+    offset: int = 0, limit: int = 10, session: Session = Depends(get_session)
 ) -> List[Post]:
     try:
-        query = select(Post).order_by(Post.created_at.desc())
-        if limit:
-            query = query.limit(limit)
+        query = (
+            select(Post).order_by(Post.created_at.desc()).offset(offset).limit(limit)
+        )
         posts = session.exec(query).all()
         return posts
     except Exception as e:
@@ -82,7 +92,7 @@ def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
         raise
     except Exception as e:
         logger.error(f"Error retrieving post {post_id}: {str(e)}")
-        raise HTTPException(500, f"Error retrieving post: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error retrieving post")
 
 
 @router.patch("/{post_id}", response_model=Post)
@@ -101,8 +111,9 @@ def update_post(
         session.refresh(post)
         return post
     except Exception as e:
+        session.rollback()
         logger.error(f"Error updating post {post_id}: {str(e)}")
-        raise HTTPException(500, f"Error updating post: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error updating post")
 
 
 @router.delete("/{post_id}")
@@ -120,5 +131,6 @@ def delete_post(
     except HTTPException:
         raise
     except Exception as e:
+        session.rollback()
         logger.error(f"Error deleting post {post_id}: {str(e)}")
-        raise HTTPException(500, f"Error deleting post: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error deleting post")
