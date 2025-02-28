@@ -33,7 +33,7 @@ def generate_slug(title):
     return slug.strip("-")
 
 
-def create_blog_post(paper_id):
+def create_blog_post(paper_id) -> Optional[Dict[str, Any]]:
     """Create a blog post from an arXiv paper."""
     try:
         blog_post, blog_title = generate_blog_post(paper_id)
