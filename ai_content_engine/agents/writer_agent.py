@@ -7,6 +7,7 @@ from tavily import AsyncTavilyClient
 from ai_content_engine.models import Section, Outline
 from ai_content_engine.prompts import writer_prompt
 import logging
+from google.api_core.exceptions import TooManyRequests, ResourceExhausted
 
 logger = logging.getLogger(__name__)
 
@@ -47,11 +48,13 @@ async def async_research_queries(queries):
 
 async def generate_section(section: Section):
     logger.info(f"Generating section: {section.title}...")
+
     if section.queries:
         search_docs = await async_research_queries(section.queries)
         research_content = "\n\n".join([doc["answer"] for doc in search_docs])
     else:
         research_content = None
+
     system_prompt = writer_prompt
     content_prompt = f"""
     Title: {section.title}\n\n
@@ -61,16 +64,26 @@ async def generate_section(section: Section):
     content_prompt += (
         f"Researched context: {research_content}" if research_content else ""
     )
-    response = await client.aio.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=[content_prompt],
-        config=types.GenerateContentConfig(
-            system_instruction=system_prompt,
-            max_output_tokens=8192,
-        ),
-    )
 
-    return response.text
+    for attempt in range(2):  # Max 2 attempts
+        try:
+            response = await client.aio.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[content_prompt],
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    max_output_tokens=8192,
+                ),
+            )
+            return response.text
+
+        except (TooManyRequests, ResourceExhausted) as e:
+            logger.warning("Rate limit exceeded. Retrying in 60 seconds...")
+            if attempt == 0:  # Only sleep before the retry, not after the final attempt
+                await asyncio.sleep(60)
+            else:
+                logger.error("Rate limit exceeded after retrying. Exiting.")
+                raise e  # Raise error if second attempt also fails
 
 
 async def generate_blog_post_from_outline(outline: Outline):
