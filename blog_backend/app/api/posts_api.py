@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
 from ..database import get_session
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 import logging
 from ..ai_integration import process_papers_and_create_posts
@@ -17,7 +17,8 @@ router = APIRouter(
 )
 
 
-def process_papers_background():
+def process_papers_background() -> None:
+    """Background task to process papers and create posts."""
     try:
         result = process_papers_and_create_posts()
         logger.info(f"Background paper processing completed with result: {result}")
@@ -26,7 +27,7 @@ def process_papers_background():
 
 
 @router.post("", response_model=Post)
-def create_post(post: Post, session: Session = Depends(get_session)):
+def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
     try:
         existing_post = session.exec(select(Post).where(Post.slug == post.slug)).first()
         if existing_post:
@@ -43,7 +44,9 @@ def create_post(post: Post, session: Session = Depends(get_session)):
 
 
 @router.post("/process_papers_create_posts")
-def api_process_papers_create_posts(background_tasks: BackgroundTasks):
+def api_process_papers_create_posts(
+    background_tasks: BackgroundTasks,
+) -> Dict[str, str]:
     """Process papers from top_papers.json and create posts in the background."""
     try:
         background_tasks.add_task(process_papers_background)
@@ -54,7 +57,9 @@ def api_process_papers_create_posts(background_tasks: BackgroundTasks):
 
 
 @router.get("", response_model=List[Post])
-def get_posts(limit: int = None, session: Session = Depends(get_session)):
+def get_posts(
+    limit: int | None = None, session: Session = Depends(get_session)
+) -> List[Post]:
     try:
         query = select(Post).order_by(Post.created_at.desc())
         if limit:
@@ -67,7 +72,7 @@ def get_posts(limit: int = None, session: Session = Depends(get_session)):
 
 
 @router.get("/{post_id}", response_model=Post)
-def get_post(post_id: int, session: Session = Depends(get_session)):
+def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -83,7 +88,7 @@ def get_post(post_id: int, session: Session = Depends(get_session)):
 @router.patch("/{post_id}", response_model=Post)
 def update_post(
     post_id: int, post_update: PostUpdate, session: Session = Depends(get_session)
-):
+) -> Post:
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -101,7 +106,9 @@ def update_post(
 
 
 @router.delete("/{post_id}")
-def delete_post(post_id: int, session: Session = Depends(get_session)):
+def delete_post(
+    post_id: int, session: Session = Depends(get_session)
+) -> Dict[str, str]:
     try:
         post = session.get(Post, post_id)
         if not post:
