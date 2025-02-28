@@ -13,13 +13,6 @@ def generate_blog_post(paper_id: str):
 
     blog_post, blog_title = asyncio.run(generate_blog_post_from_outline(outline))
 
-    # with open(
-    #     f"ai_content_engine/content/posts/blog_post_{paper_id}.txt",
-    #     "w",
-    #     encoding="utf-8",
-    # ) as f:
-    #     f.write(blog_post)
-
     with open(
         f"ai_content_engine/content/posts/blog_post_{paper_id}.md",
         "w",
