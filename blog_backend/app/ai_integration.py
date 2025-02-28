@@ -75,6 +75,20 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def is_paper_processed(paper_id: str) -> bool:
+    """Check if a paper has already been processed by making a GET request to the API."""
+    try:
+        url = f"{API_BASE_URL}/posts/{paper_id}/exists"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json().get("exists", False)
+        return False
+    except Exception as e:
+        logger.error(f"Error checking if paper exists: {e}")
+        return False
+
+
 def process_papers_and_create_posts(force_regenerate: bool = False) -> bool:
     try:
         with open(PAPERS_JSON_PATH, "r") as f:
@@ -97,6 +111,10 @@ def process_papers_and_create_posts(force_regenerate: bool = False) -> bool:
             paper_id = extract_arxiv_id(paper_url)
             if not paper_id:
                 logger.warning(f"Could not extract arXiv ID from URL: {paper_url}")
+                continue
+
+            if not force_regenerate and is_paper_processed(paper_id):
+                logger.info(f"Skipping already processed paper: {paper_id}")
                 continue
 
             result = create_blog_post(paper_id)

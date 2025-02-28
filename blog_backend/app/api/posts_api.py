@@ -81,6 +81,21 @@ def get_posts(
         raise HTTPException(500, f"Error retrieving posts: {str(e)}")
 
 
+@router.get("/{paper_id}/exists", response_model=Dict[str, bool])
+def check_paper_exists(
+    paper_id: str, session: Session = Depends(get_session)
+) -> Dict[str, bool]:
+    """Check if a post with this paper_id already exists."""
+    try:
+        logger.info(f"Checking if paper exists: {paper_id}")
+        query = select(Post).where(Post.ai_metadata["paper_id"].as_string() == paper_id)
+        existing = session.exec(query).first()
+        return {"exists": existing is not None}
+    except Exception as e:
+        logger.error(f"Error checking paper existence: {str(e)}")
+        raise HTTPException(500, "Error checking paper existence")
+
+
 @router.get("/{post_id}", response_model=Post)
 def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
     try:
