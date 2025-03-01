@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
-import './index.css'; // Make sure to remove App.css import if it exists
+import './index.css';
 
 function App() {
   return (
