@@ -17,7 +17,7 @@ const Header = () => {
         
         <nav className="hidden md:flex space-x-6">
           <Link to="/" className="text-white hover:text-cyber-neon">Home</Link>
-          <Link to="/about" className="text-white hover:text-cyber-neon">About</Link>
+          <Link to="/about" className="text-white hover:text-cyber-pink">About</Link>
         </nav>
       </div>
     </header>

@@ -59,9 +59,9 @@ const PostPage = () => {
             </p>
             <button 
               onClick={goBack}
-              className="cyber-btn-pink"
+              className="cyber-btn-pink mb-8"
             >
-              Go Back
+              ← Back
             </button>
           </div>
         </div>
@@ -109,7 +109,7 @@ const PostPage = () => {
         {/* Back button */}
         <button 
           onClick={goBack}
-          className="cyber-btn mb-8"
+          className="cyber-btn-pink mb-8"
         >
           ← Back
         </button>
