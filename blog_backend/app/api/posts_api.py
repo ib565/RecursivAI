@@ -69,12 +69,19 @@ def api_process_papers_create_posts(
 
 @router.get("", response_model=List[Post])
 def get_posts(
-    offset: int = 0, limit: int = 10, session: Session = Depends(get_session)
+    offset: int = 0,
+    limit: int = 10,
+    status: str = None,
+    session: Session = Depends(get_session),
 ) -> List[Post]:
     try:
-        query = (
-            select(Post).order_by(Post.created_at.desc()).offset(offset).limit(limit)
-        )
+        query = select(Post).order_by(Post.created_at.desc())
+
+        if status in {"published", "draft"}:
+            query = query.where(Post.status == status)
+
+        query = query.offset(offset).limit(limit)
+
         posts = session.exec(query).all()
         return posts
     except Exception as e:
@@ -130,6 +137,27 @@ def update_post(
         session.rollback()
         logger.error(f"Error updating post {post_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Error updating post")
+
+
+@router.patch("/{post_id}/publish", response_model=Post)
+def publish_post(post_id: int, session: Session = Depends(get_session)) -> Post:
+    """Change post status from draft to published."""
+    try:
+        post = session.get(Post, post_id)
+        if not post:
+            raise HTTPException(404, "Post not found")
+        if post.status != "draft":
+            raise HTTPException(400, f"Cannot publish post with status: {post.status}")
+        post.status = "published"
+        post.published_at = datetime.now()
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return post
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error publishing post {post_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error publishing post")
 
 
 @router.delete("/{post_id}")
