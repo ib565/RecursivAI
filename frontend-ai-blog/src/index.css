@@ -1,13 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #0f0f12;
+  color: #f0f0f0;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Custom component classes */
+.cyber-card {
+  @apply bg-cyber-dark p-6 rounded-lg border-l-4 border-cyber-neon transition-all duration-300;
+}
+
+.cyber-btn {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-neon text-cyber-neon hover:bg-cyber-neon hover:text-cyber-black transition-all duration-300;
+}
+
+.cyber-btn-pink {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-pink text-cyber-pink hover:bg-cyber-pink hover:text-cyber-black transition-all duration-300;
 }
