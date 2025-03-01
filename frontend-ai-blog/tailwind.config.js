@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -13,6 +14,11 @@ module.exports = {
         'cyber-pink': '#ff00ff',
         'cyber-purple': '#9d4edd',
       },
+    },
+    fontFamily: {
+      // Add custom font families here
+      'cyber': ['"Share Tech Mono"', 'monospace'],
+      'body': ['"Chakra Petch"', 'sans-serif'],
     },
   },
   plugins: [

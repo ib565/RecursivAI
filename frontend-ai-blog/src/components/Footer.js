@@ -10,8 +10,8 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-6 md:mb-0">
             <div className="text-xl font-bold mb-4">
-              <span className="text-white">Neural</span>
-              <span className="text-cyber-neon">Pulse</span>
+              <span className="text-white">Recursiv</span>
+              <span className="text-cyber-neon">AI</span>
             </div>
             <p className="text-gray-400 max-w-md">
               An AI-powered blog exploring cutting-edge research papers in machine learning.
@@ -28,7 +28,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-cyber-gray mt-8 pt-6 text-center text-gray-500">
-          © {currentYear} NeuralPulse. All content is AI-generated.
+          © {currentYear} RecursivAI. All content is AI-generated.
         </div>
       </div>
     </footer>
