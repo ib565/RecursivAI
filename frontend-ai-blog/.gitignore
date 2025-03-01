@@ -1,0 +1,45 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Build artifacts
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs and debugging files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+debug.log
+.DS_Store
+
+# Editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+
+# Optional: Ignore test coverage reports
+coverage/
+.nyc_output/
+
+# Optional: Ignore eslint and prettier caches
+.eslintcache
+.prettier.cache
+
+# Optional: Ignore Storybook files
+.storybook/out/
