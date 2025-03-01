@@ -95,5 +95,5 @@ async def generate_blog_post_from_outline(outline: Outline):
     blog = f"# {title}\n\n"
 
     blog += "\n\n".join(section_outputs)
-    logger.info("Blog post generated.")
+    logger.info(f"Blog post generated: {title}")
     return blog, title
