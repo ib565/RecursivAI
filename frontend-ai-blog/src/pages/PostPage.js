@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
+import { formatDate } from '../utils/formatters';
+import { getPostBySlug } from '../utils/apiService';
 
 const PostPage = () => {
   const { slug } = useParams();
@@ -10,35 +12,12 @@ const PostPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Format date helper function
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
   useEffect(() => {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        // First, fetch all posts (in a real app, you'd have an endpoint to get by slug)
-        const response = await fetch('http://localhost:8000/posts');
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-        
-        const posts = await response.json();
-        const foundPost = posts.find(p => p.slug === slug);
-        
-        if (!foundPost) {
-          throw new Error('Post not found');
-        }
-        
-        setPost(foundPost);
+        const postData = await getPostBySlug(slug);
+        setPost(postData);
         setError(null);
         
         // Scroll to top when post loads

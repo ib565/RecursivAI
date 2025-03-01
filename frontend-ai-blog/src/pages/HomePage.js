@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PostGrid from '../components/PostGrid';
+import { getAllPosts } from '../utils/apiService';
 
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
@@ -7,17 +8,16 @@ const HomePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch posts from your API
+    // Fetch posts from the API service
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:8000/posts');
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        // Only fetch published posts, with a reasonable limit
+        const data = await getAllPosts({ 
+          // status: 'published',
+          limit: 20,
+          offset: 0
+        });
         setPosts(data);
         setError(null);
       } catch (err) {
@@ -80,7 +80,7 @@ const HomePage = () => {
       {/* Posts Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="mb-12">
-          <h2 className="text-2xl font-cyber font-bold mb-2">Latest Analyses</h2>
+          <h2 className="text-2xl font-cyber font-bold mb-2">Latest Posts</h2>
           <div className="w-20 h-1 bg-cyber-neon relative">
             <div className="absolute top-0 left-0 w-full h-full opacity-70"
                  style={{ boxShadow: '0 0 10px 2px #00ffff' }}>

@@ -67,6 +67,31 @@ def api_process_papers_create_posts(
         raise HTTPException(status_code=500, detail="Failed to start paper processing")
 
 
+@router.get("/by-slug/{slug}", response_model=Post)
+def get_post_by_slug(
+    slug: str,
+    session: Session = Depends(get_session),
+) -> Post:
+    """
+    Get a single post by its slug.
+    """
+    try:
+        query = select(Post).where(Post.slug == slug)
+        post = session.exec(query).first()
+
+        if not post:
+            raise HTTPException(
+                status_code=404, detail=f"Post with slug '{slug}' not found"
+            )
+
+        return post
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        logger.error(f"Error retrieving post by slug '{slug}': {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving post: {str(e)}")
+
+
 @router.get("", response_model=List[Post])
 def get_posts(
     offset: int = 0,
