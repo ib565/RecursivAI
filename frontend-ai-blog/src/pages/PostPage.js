@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from "remark-gfm";
 
 const PostPage = () => {
   const { slug } = useParams();
@@ -120,7 +121,7 @@ const PostPage = () => {
         {/* Post content */}
         <div className="prose prose-invert max-w-none mb-12">
           {post.content && post.content.body ? (
-            <ReactMarkdown>{post.content.body}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content.body}</ReactMarkdown>
           ) : (
             <p className="text-gray-400">No content available for this post.</p>
           )}
