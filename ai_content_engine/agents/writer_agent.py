@@ -42,7 +42,9 @@ async def async_research_queries(queries):
 
     # Execute all searches concurrently
     search_docs = await asyncio.gather(*search_tasks)
-
+    logger.info(
+        "Searches completed: ", " ".join([doc["answer"] for doc in search_docs])
+    )
     return search_docs
 
 
