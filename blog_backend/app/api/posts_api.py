@@ -17,10 +17,10 @@ router = APIRouter(
 )
 
 
-def process_papers_background() -> None:
+def process_papers_background(force_regenerate=False) -> None:
     """Process papers in background."""
     try:
-        result = process_papers_and_create_posts()
+        result = process_papers_and_create_posts(force_regenerate=force_regenerate)
         logger.info(f"Background paper processing completed with result: {result}")
     except Exception as e:
         logger.error(f"Error in background paper processing: {str(e)}", exc_info=True)
@@ -56,10 +56,11 @@ def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
 @router.post("/process_papers_create_posts")
 def api_process_papers_create_posts(
     background_tasks: BackgroundTasks,
+    force_regenerate: bool = False,
 ) -> Dict[str, str]:
     """Process papers from top_papers.json and create posts in the background."""
     try:
-        background_tasks.add_task(process_papers_background)
+        background_tasks.add_task(process_papers_background, force_regenerate)
         return {"detail": "Paper processing started in background"}
     except Exception as e:
         logger.error(f"Failed to start background processing: {str(e)}")
