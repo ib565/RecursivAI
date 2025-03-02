@@ -42,9 +42,9 @@ async def async_research_queries(queries):
 
     # Execute all searches concurrently
     search_docs = await asyncio.gather(*search_tasks)
-    logger.info(
-        "Searches completed: ", " ".join([doc["answer"] for doc in search_docs])
-    )
+    # logger.info(
+    #     "Searches completed: ", " ".join([doc["answer"] for doc in search_docs])
+    # )
     return search_docs
 
 
@@ -56,8 +56,7 @@ async def generate_section(section: Section):
         research_content = "\n\n".join([doc["answer"] for doc in search_docs])
     else:
         research_content = None
-
-    if section.type == "diagram":
+    if section.type.value == "diagram":
         system_prompt = writer_diagram_prompt
     else:
         system_prompt = writer_text_prompt

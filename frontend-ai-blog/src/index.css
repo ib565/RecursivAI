@@ -32,6 +32,19 @@ body::after {
   opacity: 0.3;
 }
 
+
+.markdown-content > svg[id^="mermaid-"] {
+  max-width: 1200px !important; /* Or whatever maximum you want */
+  width: 100vw !important; /* Take full viewport width */
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  transform: translateX(calc(50vw - 50%)) !important;
+}
+
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Share Tech Mono', monospace;
 }

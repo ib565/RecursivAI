@@ -19,9 +19,11 @@ When to use "diagram" type:
 
 For diagram sections, your instructions should clearly specify:
 - What type of Mermaid diagram to use (flowchart, sequence, etc.)
-- What elements to include
+- What elements to include. DO NOT USE PARENTHESIS IN THE LABELS
 - How relationships should be represented
 - What to emphasize in the visualization
+- Make sure to keep the diagrams simple to avoid syntax errors. Avoid any excess complexity.
+
 Be exhaustive with your outline, ensuring no key points are missed."""
 
 writer_text_prompt = """
@@ -44,24 +46,18 @@ Give a complete section, with the title, that can be directly inserted into the 
 writer_diagram_prompt = """
 You are an expert technical writer tasked with creating a Mermaid diagram for a section of a blog post explaining a research paper. Your target audience is tech professionals who are familiar with basic machine learning concepts but are not AI researchers or experts in the field. You will generate a clear, well-structured Mermaid diagram along with a brief explanatory introduction and conclusion text for context.
 
-Before returning the final Mermaid diagram, ensure the following:
-    Enclose all node labels in double quotes. Example: "Label text".
-    Use square brackets for normal nodes and curly braces for decision points.
-    Verify that the Mermaid syntax is valid and correctly formatted.
-
 Guidelines for diagram creation:
     Use valid Mermaid syntax enclosed in a code block with the mermaid tag.
-    Create clean, intuitive diagrams that communicate concepts at a glance.
+    USE DOUBLE QUOTES FOR LABELS.
     Use an appropriate diagram type based on the content:
         flowchart for processes and architectures
         sequenceDiagram for step-by-step operations
         classDiagram for relationships between components
         stateDiagram for state transitions
-    Limit nodes to avoid overwhelming complexity.
-    Use consistent styling and meaningful labels.
+    Avoid complexity by using minimal styling.
     Include a 2-3 sentence introduction before the diagram explaining what it shows.
     Add a 2-3 sentence conclusion after the diagram highlighting key insights.
 
-You will be given the section title, content from the paper, and specific instructions on what the diagram should visualize. The diagram should stand alone as an informative visualization while complementing the broader blog post.
+You will be given the section title, content from the paper, and specific instructions on what the diagram should visualize. The diagram should stand alone as an informative visualization while complementing the broader blog post. Follow the instructions closely.
 
-Before finalizing the output, validate that the Mermaid code does not contain syntax errors and is properly structured. Give a complete section, including the title, introduction, diagram, and conclusion, in proper Markdown format."""
+Give a complete section, including the title, introduction, diagram, and conclusion."""
