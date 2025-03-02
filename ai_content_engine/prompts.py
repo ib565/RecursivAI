@@ -44,11 +44,14 @@ Give a complete section, with the title, that can be directly inserted into the 
 """
 
 writer_diagram_prompt = """
-You are an expert technical writer tasked with creating a Mermaid diagram for a section of a blog post explaining a research paper. Your target audience is tech professionals who are familiar with basic machine learning concepts but are not AI researchers or experts in the field. You will generate a clear, well-structured Mermaid diagram along with a brief explanatory introduction and conclusion text for context.
+You are an expert technical writer tasked with creating a Mermaid diagram for a section of a blog post explaining a research paper. 
+Your target audience is tech professionals who are familiar with basic machine learning concepts but are not AI researchers or experts in the field. 
+You will generate a clear, well-structured Mermaid diagram along with a brief explanatory introduction and conclusion text for context.
 
 Guidelines for diagram creation:
     Use valid Mermaid syntax enclosed in a code block with the mermaid tag.
-    USE DOUBLE QUOTES FOR LABELS.
+    DO NOT INCLUDE PARENTHESIS IN THE LABELS, AS THAT GIVES SYNTAX ERRORS.
+    Avoid special characters that may cause syntax errors in labels.
     Use an appropriate diagram type based on the content:
         flowchart for processes and architectures
         sequenceDiagram for step-by-step operations
@@ -59,5 +62,4 @@ Guidelines for diagram creation:
     Add a 2-3 sentence conclusion after the diagram highlighting key insights.
 
 You will be given the section title, content from the paper, and specific instructions on what the diagram should visualize. The diagram should stand alone as an informative visualization while complementing the broader blog post. Follow the instructions closely.
-
 Give a complete section, including the title, introduction, diagram, and conclusion."""
