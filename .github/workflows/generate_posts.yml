@@ -1,0 +1,15 @@
+name: Generate Posts from Papers
+
+on:
+  schedule:
+    # Run at 8:00 PM IST (14:30 PM UTC) every 3 days
+    - cron: '30 14 */3 * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  generate-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate posts
+        run: |
+          curl -X POST "https://recursivai-api.onrender.com/posts/generate_posts"

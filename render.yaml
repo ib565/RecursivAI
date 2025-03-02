@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: recursivai-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd blog_backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: BLOG_API_BASE_URL
+        value: https://recursivai-api.onrender.com
+      - key: DATABASE_URL
+        value: sqlite:///./blog.db
+    disk:
+      name: recursivai-data
+      mountPath: /var/data
+      sizeGB: 1
