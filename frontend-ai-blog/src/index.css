@@ -34,7 +34,8 @@ body::after {
 
 
 .markdown-content > svg[id^="mermaid-"] {
-  max-width: 1200px !important; /* Or whatever maximum you want */
+  max-width: 1300px !important; /* Or whatever maximum you want */
+  max-height: 900px !important;
   width: 100vw !important; /* Take full viewport width */
   position: relative !important;
   left: 50% !important;
