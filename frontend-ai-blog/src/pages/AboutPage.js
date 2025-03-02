@@ -1,29 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from "remark-gfm";
-import SEO from '../components/SEO';
-
-// Sample about page content - replace with your own
-const ABOUT_CONTENT = `
-# About RecursivAI
-
-RecursivAI is an AI-powered blog that explores cutting-edge research papers in machine learning. Our mission is to make the latest AI research accessible to everyone, from seasoned researchers to newcomers in the field.
-`;
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import MarkdownRenderer from '../components/MarkdownRenderer';
+import SEO from "../components/SEO";
 
 const AboutPage = () => {
   const navigate = useNavigate();
+  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate loading for consistent feel with other pages
-    const timer = setTimeout(() => {
-      setLoading(false);
-      // Scroll to top when page loads
-      window.scrollTo(0, 0);
-    }, 500);
-
-    return () => clearTimeout(timer);
+    const fetchContent = async () => {
+      try {
+        setLoading(true);
+        // Fetch the markdown file from the public directory
+        const response = await fetch('/content/about.md');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch about page content: ${response.status}`);
+        }
+        const markdownContent = await response.text();
+        setContent(markdownContent);
+        setError(null);
+        // Scroll to top when content loads
+        window.scrollTo(0, 0);
+      } catch (err) {
+        console.error('Failed to fetch about page content:', err);
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchContent();
   }, []);
 
   // Handle back button
@@ -33,62 +40,70 @@ const AboutPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen pt-24 flex items-center justify-center">
-        <div className="text-cyber-neon animate-pulse">
-          Loading...
+      <>
+        <SEO
+          title="Loading... | RecursivAI"
+          description="About RecursivAI - AI-powered analysis of machine learning research papers"
+        />
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <div className="text-cyber-neon animate-pulse">
+            Loading...
+          </div>
         </div>
-      </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SEO
+          title="Error | RecursivAI"
+          description="About page could not be loaded"
+        />
+        <div className="container mx-auto px-4 py-24">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-cyber-dark p-6 rounded-lg border border-cyber-pink">
+              <h2 className="text-cyber-pink text-xl mb-4">
+                Error Loading About Page
+              </h2>
+              <p className="text-gray-300 mb-6">
+                {error?.message || "The about page content could not be loaded."}
+              </p>
+              <button onClick={goBack} className="cyber-btn-pink mb-8">
+                ← Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
   return (
     <>
-      <SEO  
-        title="About RecursivAI | AI-Generated Research Analysis" 
-        description="Learn about RecursivAI - an experiment in AI-powered content generation focused on machine learning research"
+      <SEO
+        title="About | RecursivAI"
+        description="About RecursivAI - AI-powered analysis of machine learning research papers"
       />
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-4 text-white">
-            About
-          </h1>
-          
-          {/* About page highlight box */}
-          <div className="bg-cyber-dark p-5 rounded-lg mb-8 border-l-4 border-cyber-pink">
-            <p className="text-cyber-neon">
-              Exploring the frontiers of artificial intelligence research and making it accessible to everyone.
-            </p>
-          </div>
-          
-          {/* About content */}
+        <div className="max-w-4xl mx-auto">          
+          {/* About page content */}
           <div className="prose prose-invert max-w-none mb-12">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {ABOUT_CONTENT}
-            </ReactMarkdown>
+            {content ? (
+              <MarkdownRenderer>
+                {content}
+              </MarkdownRenderer>
+            ) : (
+              <p className="text-gray-400">
+                No content available for the about page.
+              </p>
+            )}
           </div>
           
-          {/* Additional highlight section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div className="bg-cyber-dark p-5 rounded-lg border border-cyber-pink">
-              <h3 className="text-xl font-bold mb-2 text-cyber-pink">Our Expertise</h3>
-              <p className="text-gray-300">
-                From transformer architectures to reinforcement learning, our analysis covers the full spectrum of AI research.
-              </p>
-            </div>
-            <div className="bg-cyber-dark p-5 rounded-lg border border-cyber-neon">
-              <h3 className="text-xl font-bold mb-2 text-cyber-neon">Stay Updated</h3>
-              <p className="text-gray-300">
-                Follow our blog for weekly updates on the most significant AI research papers and industry developments.
-              </p>
-            </div>
-          </div>
-          
-          {/* Back button */}
-          <button 
-            onClick={goBack}
-            className="cyber-btn-pink mb-8"
-          >
-            ← Back
+          {/* Home button */}
+          <button onClick={() => navigate('/')} className="cyber-btn-pink mb-8">
+            Explore AI Research
           </button>
         </div>
       </div>
