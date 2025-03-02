@@ -6,7 +6,11 @@ from ..database import get_session
 from typing import List, Dict
 from datetime import datetime
 import logging
-from ..ai_integration import process_papers_and_create_posts
+from ..ai_integration import (
+    process_papers_create_posts_background,  # does both
+    find_papers_background,  # finds papers
+    generate_posts_background,  # creates posts
+)
 from fastapi import BackgroundTasks
 
 logger = logging.getLogger(__name__)
@@ -15,15 +19,6 @@ router = APIRouter(
     prefix="/posts",
     tags=["posts"],
 )
-
-
-def process_papers_background(force_regenerate=False) -> None:
-    """Process papers in background."""
-    try:
-        result = process_papers_and_create_posts(force_regenerate=force_regenerate)
-        logger.info(f"Background paper processing completed with result: {result}")
-    except Exception as e:
-        logger.error(f"Error in background paper processing: {str(e)}", exc_info=True)
 
 
 def get_unique_slug(session: Session, original_slug: str) -> str:
@@ -57,14 +52,44 @@ def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
 def api_process_papers_create_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
+    find_new_papers: bool = False,
 ) -> Dict[str, str]:
     """Process papers from top_papers.json and create posts in the background."""
     try:
-        background_tasks.add_task(process_papers_background, force_regenerate)
+        background_tasks.add_task(
+            process_papers_create_posts_background, force_regenerate, find_new_papers
+        )
         return {"detail": "Paper processing started in background"}
     except Exception as e:
         logger.error(f"Failed to start background processing: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to start paper processing")
+
+
+@router.post("/find_top_papers")
+def api_find_top_papers(
+    background_tasks: BackgroundTasks,
+) -> Dict[str, str]:
+    """Find top papers and save to a dated JSON file."""
+    try:
+        background_tasks.add_task(find_papers_background)
+        return {"detail": "Paper finding started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start paper finding: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to start paper finding")
+
+
+@router.post("/generate_posts")
+def api_generate_posts(
+    background_tasks: BackgroundTasks,
+    force_regenerate: bool = False,
+) -> Dict[str, str]:
+    """Generate posts from the latest papers file."""
+    try:
+        background_tasks.add_task(generate_posts_background, force_regenerate)
+        return {"detail": "Post generation started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start post generation: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to start post generation")
 
 
 @router.get("/by-slug/{slug}", response_model=Post)

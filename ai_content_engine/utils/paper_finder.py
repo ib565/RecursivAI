@@ -81,11 +81,11 @@ def deduplicate_papers(papers):
     return unique_papers
 
 
-def download_top_papers():
+def find_top_papers():
     top_papers = get_top_papers()
     top_papers_unique = deduplicate_papers(top_papers)
     save_papers(top_papers_unique[:10])
 
 
 if __name__ == "__main__":
-    download_top_papers()
+    find_top_papers()

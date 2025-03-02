@@ -5,9 +5,11 @@ import json
 import logging
 from ai_content_engine.generator import generate_blog_post
 from ai_content_engine.utils.process_paper import extract_arxiv_id
+from ai_content_engine.utils.paper_finder import find_top_papers
 from dotenv import load_dotenv
 from typing import Dict, Any, Optional
 from pathlib import Path
+from datetime import datetime
 
 load_dotenv()
 
@@ -17,6 +19,44 @@ PAPERS_JSON_PATH = os.path.join(
     BASE_DIR, "ai_content_engine", "content", "top_papers.json"
 )
 API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
+
+
+def find_latest_top_papers_file():
+    """Find the latest top_papers file based on the date in the filename."""
+    import glob
+
+    # Look for dated top_papers files
+    paper_files = glob.glob(
+        os.path.join(BASE_DIR, "ai_content_engine", "content", "top_papers_*.json")
+    )
+
+    if not paper_files:
+        # Fall back to the original filename if no dated files exist
+        default_path = os.path.join(
+            BASE_DIR, "ai_content_engine", "content", "top_papers.json"
+        )
+        return default_path if os.path.exists(default_path) else None
+
+    # Extract dates and find the latest
+    latest_file = None
+    latest_date = datetime(1970, 1, 1)  # Start with an old date
+
+    for file_path in paper_files:
+        filename = os.path.basename(file_path)
+        # Extract date using regex
+        match = re.search(r"top_papers_(\d{2}-\d{2}-\d{4})\.json", filename)
+        if match:
+            date_str = match.group(1)
+            try:
+                # Parse the date (MM-DD-YYYY format)
+                file_date = datetime.strptime(date_str, "%m-%d-%Y")
+                if file_date > latest_date:
+                    latest_date = file_date
+                    latest_file = file_path
+            except ValueError:
+                continue
+
+    return latest_file
 
 
 def generate_slug(title: str) -> str:
@@ -43,10 +83,6 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
     # Step 2: Format and prepare data
     slug = generate_slug(blog_title)
 
-    # Extract first 300 characters as summary (strip markdown)
-    # plain_content = re.sub(r"#.*?\n", "", blog_post)  # Remove headers
-    # plain_content = re.sub(r"\[.*?\]\(.*?\)", "", plain_content)  # Remove links
-    # summary = plain_content.strip()[:300] + "..."
     summary = blog_summary
 
     content_json = {
@@ -90,9 +126,58 @@ def is_paper_processed(paper_id: str) -> bool:
         return False
 
 
-def process_papers_and_create_posts(force_regenerate: bool = False) -> bool:
+def find_papers_background() -> None:
+    """Find top papers in background and save to dated file."""
     try:
-        with open(PAPERS_JSON_PATH, "r") as f:
+        find_top_papers()
+        logger.info(
+            f"Found latest top papers and saved as JSON with date: {datetime.now().strftime('%d-%m-%Y')}"
+        )
+    except Exception as e:
+        logger.error(f"Error in background paper finding: {str(e)}", exc_info=True)
+
+
+def process_papers_create_posts_background(
+    force_regenerate=False, find_new_papers=False
+) -> None:
+    """find papers, process papers, and create posts in background."""
+    try:
+        result = process_papers_and_create_posts(
+            force_regenerate=force_regenerate, find_new_papers=find_new_papers
+        )
+        logger.info(f"Background paper processing completed with result: {result}")
+    except Exception as e:
+        logger.error(f"Error in background paper processing: {str(e)}", exc_info=True)
+
+
+def generate_posts_background(force_regenerate=False) -> None:
+    """Create posts from latest file in background"""
+    try:
+        # Use existing function but without finding new papers
+        result = process_papers_and_create_posts(
+            force_regenerate=force_regenerate,
+            find_new_papers=False,  # Never find new papers here
+        )
+        logger.info(f"Background post generation completed with result: {result}")
+    except Exception as e:
+        logger.error(f"Error in background post generation: {str(e)}", exc_info=True)
+
+
+def process_papers_and_create_posts(
+    force_regenerate: bool = False, find_new_papers: bool = False
+) -> bool:
+    """Process papers from top_papers.json and create posts."""
+    if find_new_papers:
+        find_papers_background()
+
+    latest_papers_file = find_latest_top_papers_file()
+    if not latest_papers_file:
+        logger.error("No top papers file found")
+        return False
+    logger.info(f"Using papers file: {latest_papers_file}")
+
+    try:
+        with open(latest_papers_file, "r") as f:
             papers = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         logger.error(f"Error loading papers JSON: {e}")
