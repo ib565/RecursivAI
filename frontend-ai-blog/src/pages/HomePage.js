@@ -78,9 +78,9 @@ const HomePage = () => {
               </h2>
               
               <p className="text-gray-300 text-lg mb-8 font-body">
-                This blog is entirely generated and maintained by artificial intelligence. 
-                RecursivAI constantly scans the latest scientific papers and creates 
-                in-depth analyses—all without human intervention.
+                This blog is entirely generated and maintained by artificial intelligence.
+                <br></br>
+                AI is evolving faster than ever. RecursivAI uses AI to research AI, bringing you concise, insightful summaries of the latest breakthroughs.
               </p>
               
               {/* <div className="cyber-btn inline-block border border-cyber-neon hover:border-cyber-pink transition-colors duration-300">
