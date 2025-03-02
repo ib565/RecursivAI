@@ -6,9 +6,7 @@ AI research moves so fast sometimes, it feels like only AI can keep up. That’s
 
 I also want this project to run itself as much as possible—smoothly, with almost no human intervention.
 
-It’s still a work in progress, and I’ve got a lot of plans to improve it. Got ideas or feedback? I’d love to hear from you!
-
-[LinkedIn](https://www.linkedin.com/in/ishaan-bhartiya/) | [Email](mailto:ish.bhartiya@gmail.com)
+It’s still a work in progress, and I’ve got a lot of plans to improve it. Got any ideas or feedback? I’d love to hear from you! (Links below)
 
 ## Who it's for
 I started this because I felt swamped by all the AI news. I wanted to stay on top of things but didn’t have the time or skills to dig into research papers myself.
@@ -115,4 +113,11 @@ Like I said, this project is still a work in progress. Here are some immediate p
 - Search: Tavily (**THANK YOU FOR THE FREE STUDENT ACCESS**)
 
 I decided to not use any LLM frameworks for this project, as I wanted to have more control over the workflow, and not be distracted dealing with layers of abstraction.
+
+## About Me
+I'm Ishaan, a software engineer with an interest in AI. I'm currently in the final year of my CSE degree.
+
+I love exploring new ideas and experimenting, so if you have an interesting proposal, AI or otherwise, please reach out!
+
+[LinkedIn](https://www.linkedin.com/in/ishaan-bhartiya/) | [GitHub](https://github.com/ib565) | [Email](mailto:ish.bhartiya@gmail.com) 
 
