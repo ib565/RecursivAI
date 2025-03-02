@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 from tavily import AsyncTavilyClient
 from ai_content_engine.models import Section, Outline
-from ai_content_engine.prompts import writer_prompt
+from ai_content_engine.prompts import writer_diagram_prompt, writer_text_prompt
 import logging
 from google.api_core.exceptions import TooManyRequests, ResourceExhausted
 
@@ -57,7 +57,10 @@ async def generate_section(section: Section):
     else:
         research_content = None
 
-    system_prompt = writer_prompt
+    if section.type == "diagram":
+        system_prompt = writer_diagram_prompt
+    else:
+        system_prompt = writer_text_prompt
     content_prompt = f"""
     Title: {section.title}\n\n
     Content: {section.context}\n\n
@@ -93,8 +96,6 @@ async def generate_blog_post_from_outline(outline: Outline):
     title = outline.title
     section_tasks = [generate_section(section) for section in outline.sections]
     section_outputs = await asyncio.gather(*section_tasks)
-
-    # blog = f"# {title}\n\n"
 
     blog = "\n\n".join(section_outputs)
     logger.info(f"Blog post generated: {title}")
