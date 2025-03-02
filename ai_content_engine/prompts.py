@@ -10,6 +10,7 @@ Include 4-6 total sections (not including diagrams), with each section having:
 3. Context: All necessary information from the paper for that section. The writer will NOT have access to the paper, so you MUST be comprehensive. 
 4. Instructions: Guidance on tone, technical depth, structure, analogies, etc. For "diagram" sections, provide specific instructions on what the diagram should visualize and include.
 5. Queries: 0-2 search queries that will help gather comprehensive information for the section. Make the queries specific enough to find high-quality, relevant sources while covering the breadth needed for the report structure.
+
 When to use "diagram" type:
 - For visualizing model architectures
 - For depicting workflows or processes
@@ -24,6 +25,7 @@ For diagram sections, your instructions should clearly specify:
 - What to emphasize in the visualization
 - Make sure to keep the diagrams simple to avoid syntax errors. Avoid any excess complexity.
 
+Include a brief high-level summary of the paper's content and impact. Limit to roughly 300 characters.
 Be exhaustive with your outline, ensuring no key points are missed."""
 
 writer_text_prompt = """

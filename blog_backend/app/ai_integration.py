@@ -33,7 +33,7 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
     """Create a blog post from an arXiv paper."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title = generate_blog_post(paper_id)
+        blog_post, blog_title, blog_summary = generate_blog_post(paper_id)
     except Exception as e:
         logger.error(
             f"Error generating blog content for {paper_id}: {e}", exc_info=True
@@ -44,9 +44,10 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
     slug = generate_slug(blog_title)
 
     # Extract first 300 characters as summary (strip markdown)
-    plain_content = re.sub(r"#.*?\n", "", blog_post)  # Remove headers
-    plain_content = re.sub(r"\[.*?\]\(.*?\)", "", plain_content)  # Remove links
-    summary = plain_content.strip()[:300] + "..."
+    # plain_content = re.sub(r"#.*?\n", "", blog_post)  # Remove headers
+    # plain_content = re.sub(r"\[.*?\]\(.*?\)", "", plain_content)  # Remove links
+    # summary = plain_content.strip()[:300] + "..."
+    summary = blog_summary
 
     content_json = {
         "body": blog_post,
@@ -97,10 +98,13 @@ def process_papers_and_create_posts(force_regenerate: bool = False) -> bool:
         logger.error(f"Error loading papers JSON: {e}")
         return False
 
+    papers = papers.get("papers", [])
+    papers.reverse()
+
     success_count = 0
     total_count = 0
 
-    for paper in papers.get("papers", []):
+    for paper in papers:
         total_count += 1
         try:
             paper_url = paper.get("url")

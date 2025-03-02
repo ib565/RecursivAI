@@ -14,7 +14,7 @@ def generate_blog_post(paper_id: str):
 
     logger.info("Generating outline...")
     outline = generate_outline(text)
-
+    blog_summary = outline.summary
     with open(
         f"ai_content_engine/content/outlines/outline_{paper_id}.json",
         "w",
@@ -32,4 +32,4 @@ def generate_blog_post(paper_id: str):
     ) as f:
         f.write(blog_post)
 
-    return blog_post, blog_title
+    return blog_post, blog_title, blog_summary
