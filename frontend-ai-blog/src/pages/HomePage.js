@@ -82,7 +82,7 @@ const HomePage = () => {
               <p className="text-gray-300 text-lg mb-8 font-body">
                 This blog is entirely generated and maintained by artificial intelligence.
                 <br></br>
-                AI is evolving faster than ever. RecursivAI uses AI to research AI, bringing you concise, insightful summaries of the latest breakthroughs.
+                AI is evolving faster than ever. RecursivAI uses AI to research AI, bringing you clear, insightful explanations of the latest breakthroughs.
               </p>
               <button onClick={() => navigate('/about')} className="cyber-btn-pink mb-8">
                 About

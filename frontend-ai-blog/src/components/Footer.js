@@ -14,7 +14,7 @@ const Footer = () => {
               <span className="text-cyber-neon">AI</span>
             </div>
             <p className="text-gray-400 max-w-md">
-              An AI-powered blog exploring cutting-edge research papers in
+              An AI-powered blog exploring cutting-edge research developments in
               machine learning.
             </p>
           </div>
