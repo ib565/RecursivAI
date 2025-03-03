@@ -3,9 +3,13 @@ import datetime
 import json
 import time
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_top_papers(days=7):
+    logger.info("Fetching papers from paperswithcode")
     threshold_date = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime(
         "%Y-%m-%d"
     )
@@ -55,7 +59,7 @@ def get_top_papers(days=7):
             break
         page += 1
         time.sleep(1)
-
+    logger.info(f"Found {len(papers)} papers")
     top_papers = sorted(papers, key=lambda x: x["github_stars"], reverse=True)
 
     return top_papers
@@ -88,6 +92,7 @@ def find_top_papers():
     top_papers = get_top_papers()
     top_papers_unique = deduplicate_papers(top_papers)
     # save_papers(top_papers_unique[:10])
+    logger.info("Returning top 10 papers")
     return top_papers_unique[:10]
 
 

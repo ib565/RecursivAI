@@ -71,7 +71,7 @@ def api_process_papers_create_posts(
 def api_find_top_papers(
     background_tasks: BackgroundTasks,
 ) -> Dict[str, str]:
-    """Find top papers and save to a dated JSON file."""
+    """Find top papers and save to DB."""
     try:
         background_tasks.add_task(find_papers_background)
         return {"detail": "Paper finding started in background"}

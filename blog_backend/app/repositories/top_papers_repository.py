@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 def save_papers_to_db(papers_data: Dict[str, Any], batch_date: str) -> int:
     """Save top papers data to database."""
+    logger.info(f"Saving papers to database with batch date {batch_date}")
     with Session(engine) as session:
         papers_record = TopPapers(batch_date=batch_date, data=papers_data)
         session.add(papers_record)
