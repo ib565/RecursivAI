@@ -2,6 +2,7 @@ import requests
 import datetime
 import json
 import time
+import os
 
 
 def get_top_papers(days=7):
@@ -60,11 +61,13 @@ def get_top_papers(days=7):
     return top_papers
 
 
-def save_papers(papers, filename="ai_content_engine/content/top_papers.json"):
+def save_papers(papers, filename="top_papers.json"):
+    PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
     data = {"last_updated": datetime.datetime.now().isoformat(), "papers": papers}
     today = datetime.datetime.now().strftime("%d-%m-%Y")
     filename = filename.replace(".json", f"_{today}.json")
-    with open(filename, "w") as f:
+    filepath = os.path.join(PAPERS_DIR, filename)
+    with open(filepath, "w") as f:
         json.dump(data, f, indent=2)
 
 

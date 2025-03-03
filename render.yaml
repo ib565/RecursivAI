@@ -8,7 +8,15 @@ services:
       - key: BLOG_API_BASE_URL
         value: https://recursivai-api.onrender.com
       - key: DATABASE_URL
-        value: sqlite:///./blog.db
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: PAPERS_DIR
+        value: /var/data/papers
+      - key: SAVE_INTERMEDIATES
+        value: "False"  
     disk:
       name: recursivai-data
       mountPath: /var/data

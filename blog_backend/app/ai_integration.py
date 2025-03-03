@@ -14,10 +14,8 @@ from datetime import datetime
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-PAPERS_JSON_PATH = os.path.join(
-    BASE_DIR, "ai_content_engine", "content", "top_papers.json"
-)
+PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
+os.makedirs(PAPERS_DIR, exist_ok=True)
 API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
 
 
@@ -26,15 +24,11 @@ def find_latest_top_papers_file():
     import glob
 
     # Look for dated top_papers files
-    paper_files = glob.glob(
-        os.path.join(BASE_DIR, "ai_content_engine", "content", "top_papers_*.json")
-    )
+    paper_files = glob.glob(os.path.join(PAPERS_DIR, "top_papers_*.json"))
 
     if not paper_files:
         # Fall back to the original filename if no dated files exist
-        default_path = os.path.join(
-            BASE_DIR, "ai_content_engine", "content", "top_papers.json"
-        )
+        default_path = os.path.join(PAPERS_DIR, "top_papers.json")
         return default_path if os.path.exists(default_path) else None
 
     # Extract dates and find the latest
