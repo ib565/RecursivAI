@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Ping API
         run: |
-          curl "https://recursivai.onrender.com/healthcheck" || echo "Ping complete"
+          curl "https://recursivai.onrender.com/posts/healthcheck" || echo "Ping complete"
