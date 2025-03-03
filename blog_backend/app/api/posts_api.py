@@ -107,6 +107,12 @@ def update_papers(papers_data: Dict) -> Dict[str, str]:
         raise HTTPException(status_code=500, detail=f"Error updating papers: {str(e)}")
 
 
+@router.get("/healthcheck", response_model=Dict[str, str])
+def healthcheck() -> Dict[str, str]:
+    """Healthcheck endpoint."""
+    return {"status": "ok", "timestamp": str(datetime.now())}
+
+
 @router.get("/top_papers", response_model=Dict)
 def get_latest_papers() -> Dict:
     """Get the latest top papers data for review."""
