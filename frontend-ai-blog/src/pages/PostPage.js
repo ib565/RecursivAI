@@ -43,7 +43,7 @@ const PostPage = () => {
       <>
         <SEO
           title="Loading... | RecursivAI"
-          description="AI-powered analysis of machine learning research papers"
+          description="An AI-powered blog exploring cutting-edge research papers in tech and machine learning"
         />
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-cyber-neon animate-pulse">

@@ -43,7 +43,7 @@ const AboutPage = () => {
       <>
         <SEO
           title="Loading... | RecursivAI"
-          description="About RecursivAI - AI-powered analysis of machine learning research papers"
+          description="About RecursivAI - An AI-powered blog exploring cutting-edge research papers in tech and machine learning"
         />
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-cyber-neon animate-pulse">
@@ -84,7 +84,7 @@ const AboutPage = () => {
     <>
       <SEO
         title="About | RecursivAI"
-        description="About RecursivAI - AI-powered analysis of machine learning research papers"
+        description="About RecursivAI - An AI-powered blog exploring cutting-edge research papers in tech and machine learning"
       />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">          
