@@ -1,6 +1,8 @@
 # Hi! Welcome to RecursivAI
 RecursivAI is an AI-generated blog that keeps you up-to-date with the latest breakthroughs in AI research, explained in simple terms. It’s perfect for anyone who’s curious about AI but finds it tough to keep up.
 
+**This is the only human-generated content on this platform.**
+
 ## The Goal
 AI research moves so fast sometimes, it feels like only AI can keep up. That’s the idea behind **RecursivAI**! This blog is fully powered by AI to find the most important new AI research, break it down, and explain it in a way anyone can understand.
 
