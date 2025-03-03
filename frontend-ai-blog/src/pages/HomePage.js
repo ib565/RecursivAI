@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import PostGrid from '../components/PostGrid';
 import { getAllPosts } from '../utils/apiService';
 import SEO from '../components/SEO';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -82,7 +84,9 @@ const HomePage = () => {
                 <br></br>
                 AI is evolving faster than ever. RecursivAI uses AI to research AI, bringing you concise, insightful summaries of the latest breakthroughs.
               </p>
-              
+              <button onClick={() => navigate('/about')} className="cyber-btn-pink mb-8">
+                About
+              </button>
               {/* <div className="cyber-btn inline-block border border-cyber-neon hover:border-cyber-pink transition-colors duration-300">
                 Explore Research
               </div> */}
