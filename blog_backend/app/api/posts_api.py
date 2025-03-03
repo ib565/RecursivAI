@@ -99,7 +99,7 @@ def update_papers(papers_data: Dict) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
     try:
         now = datetime.now()
-        date_str = now.strftime("%m-%d-%Y")
+        date_str = now.strftime("%d-%m-%Y")
         save_papers_to_db(papers_data, f"{date_str}-edited")
         return {"detail": "Papers data updated successfully"}
     except Exception as e:
