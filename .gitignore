@@ -3,4 +3,5 @@
 *.py[cod]
 .env
 .env.production
-/ai_content_engine/content
+ai_content_engine/content
+blog_backend/ai_content_engine/content
