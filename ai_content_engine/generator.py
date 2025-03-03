@@ -14,7 +14,7 @@ def generate_blog_post(paper_id: str):
     SAVE_INTERMEDIATES = os.getenv("SAVE_INTERMEDIATES", "False").lower() == "true"
 
     if SAVE_INTERMEDIATES:
-        PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
+        PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
         OUTLINES_DIR = os.path.join(PAPERS_DIR, "outlines")
         POSTS_DIR = os.path.join(PAPERS_DIR, "posts")
 

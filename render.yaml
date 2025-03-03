@@ -14,10 +14,6 @@ services:
       - key: TAVILY_API_KEY
         sync: false
       - key: PAPERS_DIR
-        value: /var/data/papers
+        value: /tmp/papers
       - key: SAVE_INTERMEDIATES
         value: "False"  
-    disk:
-      name: recursivai-data
-      mountPath: /var/data
-      sizeGB: 1

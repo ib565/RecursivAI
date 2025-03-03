@@ -10,6 +10,8 @@ from ..ai_integration import (
     process_papers_create_posts_background,  # does both
     find_papers_background,  # finds papers
     generate_posts_background,  # creates posts
+    get_latest_papers_from_db,  # gets papers from db
+    save_papers_to_db,  # saves papers to db
 )
 from fastapi import BackgroundTasks
 
@@ -90,6 +92,34 @@ def api_generate_posts(
     except Exception as e:
         logger.error(f"Failed to start post generation: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to start post generation")
+
+
+@router.post("/top_papers", response_model=Dict[str, str])
+def update_papers(papers_data: Dict) -> Dict[str, str]:
+    """Update the latest top papers data with edited data."""
+    try:
+        now = datetime.now()
+        date_str = now.strftime("%m-%d-%Y")
+        save_papers_to_db(papers_data, f"{date_str}-edited")
+        return {"detail": "Papers data updated successfully"}
+    except Exception as e:
+        logger.error(f"Error updating top papers: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating papers: {str(e)}")
+
+
+@router.get("/top_papers", response_model=Dict)
+def get_latest_papers() -> Dict:
+    """Get the latest top papers data for review."""
+    try:
+        papers = get_latest_papers_from_db()
+        if not papers:
+            raise HTTPException(status_code=404, detail="No papers found")
+        return papers
+    except Exception as e:
+        logger.error(f"Error retrieving top papers: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving papers: {str(e)}"
+        )
 
 
 @router.get("/by-slug/{slug}", response_model=Post)

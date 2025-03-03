@@ -6,6 +6,10 @@ import logging
 from ai_content_engine.generator import generate_blog_post
 from ai_content_engine.utils.process_paper import extract_arxiv_id
 from ai_content_engine.utils.paper_finder import find_top_papers
+from .repositories.top_papers_repository import (
+    get_latest_papers_from_db,
+    save_papers_to_db,
+)
 from dotenv import load_dotenv
 from typing import Dict, Any, Optional
 from pathlib import Path
@@ -14,43 +18,14 @@ from datetime import datetime
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
+PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
 os.makedirs(PAPERS_DIR, exist_ok=True)
 API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
 
 
-def find_latest_top_papers_file():
-    """Find the latest top_papers file based on the date in the filename."""
-    import glob
-
-    # Look for dated top_papers files
-    paper_files = glob.glob(os.path.join(PAPERS_DIR, "top_papers_*.json"))
-
-    if not paper_files:
-        # Fall back to the original filename if no dated files exist
-        default_path = os.path.join(PAPERS_DIR, "top_papers.json")
-        return default_path if os.path.exists(default_path) else None
-
-    # Extract dates and find the latest
-    latest_file = None
-    latest_date = datetime(1970, 1, 1)  # Start with an old date
-
-    for file_path in paper_files:
-        filename = os.path.basename(file_path)
-        # Extract date using regex
-        match = re.search(r"top_papers_(\d{2}-\d{2}-\d{4})\.json", filename)
-        if match:
-            date_str = match.group(1)
-            try:
-                # Parse the date (MM-DD-YYYY format)
-                file_date = datetime.strptime(date_str, "%m-%d-%Y")
-                if file_date > latest_date:
-                    latest_date = file_date
-                    latest_file = file_path
-            except ValueError:
-                continue
-
-    return latest_file
+def find_latest_top_papers() -> Optional[Dict[str, Any]]:
+    """Find the latest papers data (now from database)."""
+    return get_latest_papers_from_db()
 
 
 def generate_slug(title: str) -> str:
@@ -123,12 +98,15 @@ def is_paper_processed(paper_id: str) -> bool:
 def find_papers_background() -> None:
     """Find top papers in background and save to dated file."""
     try:
-        find_top_papers()
+        top_papers = find_top_papers()
+        save_papers_to_db(top_papers, datetime.now().strftime("%d-%m-%Y"))
         logger.info(
             f"Found latest top papers and saved as JSON with date: {datetime.now().strftime('%d-%m-%Y')}"
         )
     except Exception as e:
-        logger.error(f"Error in background paper finding: {str(e)}", exc_info=True)
+        logger.error(
+            f"Error in background paper finding and saving: {str(e)}", exc_info=True
+        )
 
 
 def process_papers_create_posts_background(
@@ -164,17 +142,9 @@ def process_papers_and_create_posts(
     if find_new_papers:
         find_papers_background()
 
-    latest_papers_file = find_latest_top_papers_file()
-    if not latest_papers_file:
-        logger.error("No top papers file found")
-        return False
-    logger.info(f"Using papers file: {latest_papers_file}")
-
-    try:
-        with open(latest_papers_file, "r") as f:
-            papers = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.error(f"Error loading papers JSON: {e}")
+    papers_data = get_latest_papers_from_db()
+    if not papers_data:
+        logger.error("No papers data found in database")
         return False
 
     papers = papers.get("papers", [])

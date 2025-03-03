@@ -16,7 +16,7 @@ def extract_arxiv_id(url: str) -> str:
 def download_arxiv_pdf(arxiv_url):
     """Download arXiv PDF to persistent storage."""
     # Use persistent storage path
-    PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
+    PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
     PDF_DIR = os.path.join(PAPERS_DIR, "pdf")
     os.makedirs(PDF_DIR, exist_ok=True)
 
@@ -34,7 +34,7 @@ def download_arxiv_pdf(arxiv_url):
 
 def extract_text_from_pdf(pdf_path: str, cleanup_pdf=False) -> str:
 
-    # PAPERS_DIR = os.getenv("PAPERS_DIR", "/var/data/papers")
+    # PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
     # TEXT_DIR = os.path.join(PAPERS_DIR, "text")
     # os.makedirs(TEXT_DIR, exist_ok=True)
 
