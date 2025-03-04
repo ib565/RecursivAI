@@ -2,7 +2,7 @@ name: Keep Render App Awake
 
 on:
   schedule:
-    - cron: '*/13 * * * *'  # Run every 13 minutes
+    - cron: '*/10 * * * *'  # Run every 10 minutes
   workflow_dispatch:         # Allow manual triggering
 
 jobs:
