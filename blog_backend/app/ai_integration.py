@@ -95,93 +95,106 @@ def is_paper_processed(paper_id: str) -> bool:
         return False
 
 
-def find_papers_background() -> None:
-    """Find top papers in background and save to dated file."""
+def find_top_papers_and_save() -> bool:
+    """Find top papers and save to database."""
     try:
         top_papers = find_top_papers()
-        save_papers_to_db(top_papers, datetime.now().strftime("%d-%m-%Y"))
+        date_str = datetime.now().strftime("%d-%m-%Y")
+        save_papers_to_db(top_papers, date_str)
         logger.info(
-            f"Found latest top papers and saved as JSON with date: {datetime.now().strftime('%d-%m-%Y')}"
+            f"Found latest top papers and saved to database with date: {date_str}"
         )
+        return True
     except Exception as e:
-        logger.error(
-            f"Error in background paper finding and saving: {str(e)}", exc_info=True
+        logger.error(f"Error finding and saving papers: {str(e)}", exc_info=True)
+        return False
+
+
+def find_papers_background() -> None:
+    """Background task to find papers."""
+    find_top_papers_and_save()
+
+
+def process_papers_to_posts(force_regenerate: bool = False) -> bool:
+    """Process papers from database and create posts."""
+    try:
+        papers_data = get_latest_papers_from_db()
+        if not papers_data:
+            logger.error("No papers data found in database")
+            return False
+
+        papers = papers_data.get("papers", [])
+        papers.reverse()  # Process oldest papers first
+
+        success_count = 0
+        total_count = 0
+
+        for paper in papers:
+            total_count += 1
+            try:
+                paper_url = paper.get("url")
+                if not paper_url:
+                    logger.warning(
+                        f"Paper missing URL: {paper.get('title', 'Unknown')}"
+                    )
+                    continue
+
+                paper_id = extract_arxiv_id(paper_url)
+                if not paper_id:
+                    logger.warning(f"Could not extract arXiv ID from URL: {paper_url}")
+                    continue
+
+                if not force_regenerate and is_paper_processed(paper_id):
+                    logger.info(f"Skipping already processed paper: {paper_id}")
+                    continue
+
+                result = create_blog_post(paper_id)
+                if result:
+                    success_count += 1
+                else:
+                    logger.warning(f"Error creating blog post for paper {paper_id}")
+            except Exception as e:
+                logger.error(
+                    f"Error processing paper {paper.get('title', 'Unknown')}: {str(e)}"
+                )
+                continue
+
+        logger.info(
+            f"Processed {total_count} papers, successfully created {success_count} blog posts"
         )
+        return success_count > 0
+    except Exception as e:
+        logger.error(f"Error processing papers to posts: {str(e)}", exc_info=True)
+        return False
+
+
+def generate_posts_background(force_regenerate: bool = False) -> None:
+    """Background task to generate posts."""
+    process_papers_to_posts(force_regenerate=force_regenerate)
 
 
 def process_papers_create_posts_background(
-    force_regenerate=False, find_new_papers=False
+    force_regenerate: bool = False, find_new_papers: bool = False
 ) -> None:
-    """find papers, process papers, and create posts in background."""
-    try:
-        result = process_papers_and_create_posts(
-            force_regenerate=force_regenerate, find_new_papers=find_new_papers
-        )
-        logger.info(f"Background paper processing completed with result: {result}")
-    except Exception as e:
-        logger.error(f"Error in background paper processing: {str(e)}", exc_info=True)
+    """Background task to find papers and create posts."""
+    if find_new_papers:
+        find_top_papers_and_save()
+
+    process_papers_to_posts(force_regenerate=force_regenerate)
 
 
-def generate_posts_background(force_regenerate=False) -> None:
-    """Create posts from latest file in background"""
-    try:
-        # Use existing function but without finding new papers
-        result = process_papers_and_create_posts(
-            force_regenerate=force_regenerate,
-            find_new_papers=False,  # Never find new papers here
-        )
-        logger.info(f"Background post generation completed with result: {result}")
-    except Exception as e:
-        logger.error(f"Error in background post generation: {str(e)}", exc_info=True)
-
-
+# legacy function
 def process_papers_and_create_posts(
     force_regenerate: bool = False, find_new_papers: bool = False
 ) -> bool:
     """Process papers from top_papers.json and create posts."""
+    result = False
+
     if find_new_papers:
-        find_papers_background()
+        papers_found = find_top_papers_and_save()
+        result = papers_found
 
-    papers_data = get_latest_papers_from_db()
-    if not papers_data:
-        logger.error("No papers data found in database")
-        return False
+    posts_created = process_papers_to_posts(force_regenerate=force_regenerate)
 
-    papers = papers.get("papers", [])
-    papers.reverse()
-
-    success_count = 0
-    total_count = 0
-
-    for paper in papers:
-        total_count += 1
-        try:
-            paper_url = paper.get("url")
-            if not paper_url:
-                logger.warning(f"Paper missing URL: {paper.get('title', 'Unknown')}")
-                continue
-
-            paper_id = extract_arxiv_id(paper_url)
-            if not paper_id:
-                logger.warning(f"Could not extract arXiv ID from URL: {paper_url}")
-                continue
-
-            if not force_regenerate and is_paper_processed(paper_id):
-                logger.info(f"Skipping already processed paper: {paper_id}")
-                continue
-
-            result = create_blog_post(paper_id)
-            if result:
-                success_count += 1
-            else:
-                logger.warning(f"Error creating blog post for paper {paper_id}")
-        except Exception as e:
-            logger.error(
-                f"Error processing paper {paper.get('title', 'Unknown')}: {str(e)}"
-            )
-            continue
-
-    logger.info(
-        f"Processed {total_count} papers, successfully created {success_count} blog posts"
-    )
-    return success_count > 0
+    # Return True if either operation was successful
+    return result or posts_created

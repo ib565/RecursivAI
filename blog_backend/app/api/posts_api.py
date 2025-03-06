@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
@@ -7,13 +7,12 @@ from typing import List, Dict
 from datetime import datetime
 import logging
 from ..ai_integration import (
-    process_papers_create_posts_background,  # does both
-    find_papers_background,  # finds papers
-    generate_posts_background,  # creates posts
-    get_latest_papers_from_db,  # gets papers from db
-    save_papers_to_db,  # saves papers to db
+    process_papers_create_posts_background,
+    find_papers_background,
+    generate_posts_background,
+    get_latest_papers_from_db,
+    save_papers_to_db,
 )
-from fastapi import BackgroundTasks
 
 logger = logging.getLogger(__name__)
 
@@ -99,8 +98,8 @@ def update_papers(papers_data: Dict) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
     try:
         now = datetime.now()
-        date_str = now.strftime("%d-%m-%Y")
-        save_papers_to_db(papers_data, f"{date_str}-edited")
+        date_str = f"{now.strftime('%d-%m-%Y')}-edited"
+        save_papers_to_db(papers_data, date_str)
         return {"detail": "Papers data updated successfully"}
     except Exception as e:
         logger.error(f"Error updating top papers: {str(e)}")
@@ -133,9 +132,7 @@ def get_post_by_slug(
     slug: str,
     session: Session = Depends(get_session),
 ) -> Post:
-    """
-    Get a single post by its slug.
-    """
+    """Get a single post by its slug."""
     try:
         query = select(Post).where(Post.slug == slug)
         post = session.exec(query).first()
@@ -160,6 +157,7 @@ def get_posts(
     status: str = None,
     session: Session = Depends(get_session),
 ) -> List[Post]:
+    """Get posts with optional filtering and pagination."""
     try:
         query = select(Post).order_by(Post.created_at.desc())
 
@@ -192,6 +190,7 @@ def check_paper_exists(
 
 @router.get("/{post_id}", response_model=Post)
 def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
+    """Get a post by its ID."""
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -208,6 +207,7 @@ def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 def update_post(
     post_id: int, post_update: PostUpdate, session: Session = Depends(get_session)
 ) -> Post:
+    """Update a post."""
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -250,6 +250,7 @@ def publish_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 def delete_post(
     post_id: int, session: Session = Depends(get_session)
 ) -> Dict[str, str]:
+    """Delete a post."""
     try:
         post = session.get(Post, post_id)
         if not post:
