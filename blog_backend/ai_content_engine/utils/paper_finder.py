@@ -48,7 +48,7 @@ def get_top_papers(days=7):
                             "title": paper["title"],
                             "url": paper["url_pdf"],
                             "published": paper["published"],
-                            "abstract": paper["abstract"],
+                            "repos": [repo["url"] for repo in repos],
                             "github_stars": stars,
                         }
                         papers.append(paper_dict)
