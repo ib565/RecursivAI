@@ -10,7 +10,7 @@ connect_args = {}
 if DATABASE_URL.startswith("postgresql"):
     connect_args = {"sslmode": "require"}
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
 
 
 def create_db_and_tables():
