@@ -111,8 +111,8 @@ Like I said, this project is still a work in progress. Here are some immediate p
 ## Tech Stack
 - Frontend: React, TailwindCSS
 - Backend: FastAPI, SQLite
-- LLM: Gemini Flash 2.0 (**THANK YOU DEEPMIND FOR THE AMAZING FREE API TIER**)
-- Search: Tavily (**THANK YOU FOR THE FREE STUDENT ACCESS**)
+- LLM: Gemini Flash 2.0
+- Search: Tavily
 
 I decided to not use any LLM frameworks for this project, as I wanted to have more control over the workflow, and not be distracted dealing with layers of abstraction.
 
