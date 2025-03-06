@@ -100,7 +100,7 @@ def api_generate_posts(
 
 
 @router.post("/top_papers", response_model=Dict[str, str])
-def update_papers(papers_data: Dict) -> Dict[str, str]:
+def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
     try:
         now = datetime.now()
