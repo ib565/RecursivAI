@@ -118,12 +118,11 @@ def find_papers_background(days=7, num_papers=10) -> None:
 def process_papers_to_posts(force_regenerate: bool = False) -> bool:
     """Process papers from database and create posts."""
     try:
-        papers_data = get_latest_papers_from_db()
-        if not papers_data:
+        papers = get_latest_papers_from_db()
+        if not papers:
             logger.error("No papers data found in database")
             return False
 
-        papers = papers_data.get("papers", [])
         papers.reverse()  # Process oldest papers first
 
         success_count = 0
