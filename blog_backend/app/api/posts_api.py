@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
 from ..database import get_session
-from typing import List, Dict
+from typing import List, Dict, Any
 from datetime import datetime
 import logging
 from ..ai_integration import (
@@ -118,8 +118,8 @@ def healthcheck() -> Dict[str, str]:
     return {"status": "ok", "timestamp": str(datetime.now())}
 
 
-@router.get("/top_papers", response_model=Dict)
-def get_latest_papers() -> Dict:
+@router.get("/top_papers", response_model=List[Dict[str, Any]])
+def get_latest_papers() -> List[Dict[str, Any]]:
     """Get the latest top papers data for review."""
     try:
         papers = get_latest_papers_from_db()
