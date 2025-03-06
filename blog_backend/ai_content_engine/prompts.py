@@ -4,7 +4,8 @@ You are an expert technical writer, helping create a detailed outline for a blog
 2. Highlight practical implications and applications
 3. Highlight the impact on the field of AI
 4. Explain the core implementation/methodology in an understandable way
-Include 4-6 total sections (not including diagrams), with each section having: 
+5. Use simple, concise language and avoid excessive jargon or buzzwords
+Include 3-6 total sections (not including diagrams), with each section having: 
 1. Title
 2. Type: Either "text" (default) or "diagram" (for mermaid flowcharts, architectures, sequences)
 3. Context: All necessary information from the paper for that section. The writer will NOT have access to the paper, so you MUST be comprehensive. 
@@ -25,6 +26,7 @@ For diagram sections, your instructions should clearly specify:
 - What to emphasize in the visualization
 - Make sure to keep the diagrams simple to avoid syntax errors. Avoid any excess complexity.
 
+Give a simple and clear title for the post.
 Include a brief high-level summary of the paper's content and impact. Limit to roughly 300 characters.
 Be exhaustive with your outline, ensuring no key points are missed."""
 
@@ -34,7 +36,7 @@ Your target audience is tech professionals who are familiar with basic machine l
 Use analogies and real-world examples to illustrate concepts.  Maintain a conversational, yet informative, tone.  Focus on the why and how of the research, not just the what. Write in clear, concise paragraphs.
 You will be given the section title, content from the paper, instructions on tone and structure, and sometimes a few research queries for additional info.
 Guidelines:
-1. Use clear, simple language with a technical focus.
+1. Use clear, simple language, avoiding too much jargon or buzzwords.
 2. Follow markdown formatting.
 3. Only use ONE structural element IF AND ONLY IF it helps clarify your point:
   * Either a focused table comparing a few key items (using Markdown table syntax)
