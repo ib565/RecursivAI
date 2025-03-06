@@ -95,14 +95,14 @@ def is_paper_processed(paper_id: str) -> bool:
         return False
 
 
-def find_top_papers_and_save() -> bool:
+def find_top_papers_and_save(days=7, num_papers=10) -> bool:
     """Find top papers and save to database."""
     try:
-        top_papers = find_top_papers()
+        top_papers = find_top_papers(days, num_papers)
         date_str = datetime.now().strftime("%d-%m-%Y")
         save_papers_to_db(top_papers, date_str)
         logger.info(
-            f"Found latest top papers and saved to database with date: {date_str}"
+            f"Found latest top {num_papers} papers from the past {days} days and saved to database with date: {date_str}"
         )
         return True
     except Exception as e:
@@ -110,9 +110,9 @@ def find_top_papers_and_save() -> bool:
         return False
 
 
-def find_papers_background() -> None:
+def find_papers_background(days=7, num_papers=10) -> None:
     """Background task to find papers."""
-    find_top_papers_and_save()
+    find_top_papers_and_save(days=days, num_papers=num_papers)
 
 
 def process_papers_to_posts(force_regenerate: bool = False) -> bool:
@@ -174,24 +174,24 @@ def generate_posts_background(force_regenerate: bool = False) -> None:
 
 
 def process_papers_create_posts_background(
-    force_regenerate: bool = False, find_new_papers: bool = False
+    force_regenerate: bool = False, find_new_papers: bool = False, days=7, num_papers=10
 ) -> None:
     """Background task to find papers and create posts."""
     if find_new_papers:
-        find_top_papers_and_save()
+        find_top_papers_and_save(days=days, num_papers=num_papers)
 
     process_papers_to_posts(force_regenerate=force_regenerate)
 
 
 # legacy function
 def process_papers_and_create_posts(
-    force_regenerate: bool = False, find_new_papers: bool = False
+    force_regenerate: bool = False, find_new_papers: bool = False, days=7, num_papers=10
 ) -> bool:
     """Process papers from top_papers.json and create posts."""
     result = False
 
     if find_new_papers:
-        papers_found = find_top_papers_and_save()
+        papers_found = find_top_papers_and_save(days=days, num_papers=num_papers)
         result = papers_found
 
     posts_created = process_papers_to_posts(force_regenerate=force_regenerate)

@@ -88,12 +88,11 @@ def deduplicate_papers(papers):
     return unique_papers
 
 
-def find_top_papers():
-    top_papers = get_top_papers()
+def find_top_papers(days=7, num_papers=10):
+    top_papers = get_top_papers(days=days)
     top_papers_unique = deduplicate_papers(top_papers)
-    # save_papers(top_papers_unique[:10])
-    logger.info("Returning top 10 papers")
-    return top_papers_unique[:10]
+    logger.info(f"Returning top {num_papers} papers")
+    return top_papers_unique[:num_papers]
 
 
 if __name__ == "__main__":

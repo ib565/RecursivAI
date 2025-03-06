@@ -54,11 +54,17 @@ def api_process_papers_create_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
     find_new_papers: bool = False,
+    days: int = 7,
+    num_papers: int = 10,
 ) -> Dict[str, str]:
     """Process papers from top_papers.json and create posts in the background."""
     try:
         background_tasks.add_task(
-            process_papers_create_posts_background, force_regenerate, find_new_papers
+            process_papers_create_posts_background,
+            force_regenerate,
+            find_new_papers,
+            days,
+            num_papers,
         )
         return {"detail": "Paper processing started in background"}
     except Exception as e:
@@ -68,11 +74,11 @@ def api_process_papers_create_posts(
 
 @router.post("/find_top_papers")
 def api_find_top_papers(
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks, days: int = 7, num_papers: int = 10
 ) -> Dict[str, str]:
     """Find top papers and save to DB."""
     try:
-        background_tasks.add_task(find_papers_background)
+        background_tasks.add_task(find_papers_background, days, num_papers)
         return {"detail": "Paper finding started in background"}
     except Exception as e:
         logger.error(f"Failed to start paper finding: {str(e)}")
