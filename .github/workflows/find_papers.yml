@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Find top papers
         run: |
-          curl -X POST "https://recursivai-api.onrender.com/posts/find_top_papers"
+          curl -X POST "https://recursivai.onrender.com/posts/find_top_papers"
