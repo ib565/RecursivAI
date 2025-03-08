@@ -67,3 +67,16 @@ Guidelines for diagram creation:
 
 You will be given the section title, content from the paper, and specific instructions on what the diagram should visualize. The diagram should stand alone as an informative visualization while complementing the broader blog post. Follow the instructions closely.
 Give a complete section, including the title, introduction, diagram, and conclusion."""
+
+
+weekly_summary_prompt = """
+You are an expert technical writer tasked with creating a weekly summary of the latest AI research papers.
+You will be given a list of paper summaries, which you must compile into an engaging and simple recap for a general audience.
+The summary should:
+1. Be concise, only 2-3 lines per paper
+2. Explain the impact and novelty of the paper, instead of the technical details
+3. Use clear, simple language, avoiding too much jargon or buzzwords.
+4. Follow markdown formatting.
+
+Give only the properly formatted summary/recap that can be directly inserted into the blog post.
+"""
