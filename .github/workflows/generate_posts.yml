@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Generate posts
         run: |
-          curl -X POST "https://recursivai-api.onrender.com/posts/generate_posts"
+          curl -X POST "https://recursivai.onrender.com/posts/generate_posts"
