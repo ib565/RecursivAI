@@ -38,7 +38,9 @@ def generate_slug(title: str) -> str:
     return slug.strip("-")
 
 
-def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
+def create_blog_post(
+    paper_id: str, published_date: str = None
+) -> Optional[Dict[str, Any]]:
     """Create a blog post from an arXiv paper."""
     # Step 1: Generate content
     try:
@@ -61,6 +63,16 @@ def create_blog_post(paper_id: str) -> Optional[Dict[str, Any]]:
     }
 
     ai_metadata = {"paper_id": paper_id}
+
+    if published_date:
+        try:
+            # Parse the YYYY-MM-DD format into a datetime object
+            parsed_date = datetime.fromisoformat(published_date)
+            # Store as ISO format string for JSON compatibility
+            ai_metadata["published_date"] = parsed_date.isoformat()
+        except ValueError:
+            # Log if date format is unexpected but don't fail the whole process
+            logger.warning(f"Could not parse published date: {published_date}")
 
     post_data = {
         "title": blog_title,
@@ -132,6 +144,7 @@ def process_papers_to_posts(force_regenerate: bool = False) -> bool:
             total_count += 1
             try:
                 paper_url = paper.get("url")
+                published_date = paper.get("published")
                 if not paper_url:
                     logger.warning(
                         f"Paper missing URL: {paper.get('title', 'Unknown')}"
@@ -147,7 +160,7 @@ def process_papers_to_posts(force_regenerate: bool = False) -> bool:
                     logger.info(f"Skipping already processed paper: {paper_id}")
                     continue
 
-                result = create_blog_post(paper_id)
+                result = create_blog_post(paper_id, published_date)
                 if result:
                     success_count += 1
                 else:
