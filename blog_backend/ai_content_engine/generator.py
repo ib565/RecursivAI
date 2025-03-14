@@ -1,18 +1,24 @@
 from ai_content_engine.agents.planner_agent import generate_outline
 from ai_content_engine.utils.process_paper import process_arxiv_paper
 from ai_content_engine.agents.writer_agent import generate_blog_post_from_outline
-from ai_content_engine.agents.summary_agent import generate_weekly_summary_from_summaries
+from ai_content_engine.agents.summary_agent import (
+    generate_weekly_summary_from_summaries,
+)
 import asyncio
 import os
 import logging
 
 logger = logging.getLogger(__name__)
 
+
 def generate_weekly_summary(paper_summaries_dict: list[dict]):
     logger.info("Generating weekly summary...")
-    paper_summaries = [f"{paper["title"]}: {paper["summary"]}" for paper in paper_summaries_dict]
+    paper_summaries = [
+        f'{paper["title"]}: {paper["summary"]}' for paper in paper_summaries_dict
+    ]
     weekly_summary = generate_weekly_summary_from_summaries(paper_summaries)
     return weekly_summary
+
 
 def generate_blog_post(paper_id: str):
     """Generate a blog post from an arXiv paper."""
