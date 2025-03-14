@@ -81,6 +81,11 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.5);
 }
 
+.cyber-card-pink::before {
+  background-color: #ff00ff;
+  box-shadow: 0 0 15px 3px rgba(255, 0, 255, 0.5);
+}
+
 .cyber-btn {
   @apply px-4 py-2 bg-cyber-dark border border-cyber-neon text-cyber-neon font-cyber transition-all duration-300 relative;
   text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);

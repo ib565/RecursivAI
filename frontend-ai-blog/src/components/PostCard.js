@@ -8,7 +8,7 @@ const PostCard = ({ post }) => {
   
   return (
     <Link to={`/post/${post.slug}`} className="block h-full">
-      <article className={`cyber-card hover:translate-y-[-4px] h-full flex flex-col ${isWeeklySummary ? 'border-cyber-pink' : 'border-cyber-neon'}`}
+      <article className={`cyber-card ${isWeeklySummary ? 'cyber-card-pink border-cyber-pink' : 'border-cyber-neon'} hover:translate-y-[-4px] h-full flex flex-col`}
         style={{
           boxShadow: isWeeklySummary ? '0 0 10px rgba(255, 0, 255, 0.15)' : '0 0 10px rgba(0, 255, 255, 0.15)'
         }}>
@@ -24,7 +24,7 @@ const PostCard = ({ post }) => {
           {post.summary}
         </p>
         
-        <div className={`${isWeeklySummary ? 'text-cyber-pink' : 'text-cyber-neon'} text-sm hover:underline mt-auto`}>
+        <div className={`text-sm hover:underline mt-auto ${isWeeklySummary ? 'text-cyber-pink' : 'text-cyber-neon'}`}>
           Read analysis →
         </div>
       </article>
