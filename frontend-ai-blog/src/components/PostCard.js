@@ -3,10 +3,16 @@ import { Link } from 'react-router-dom';
 import { formatDate } from '../utils/formatters';
 
 const PostCard = ({ post }) => {
+  // Check if this is a weekly summary post
+  const isWeeklySummary = post.ai_metadata?.post_type === "weekly_summary";
+  
   return (
     <Link to={`/post/${post.slug}`} className="block h-full">
-      <article className="cyber-card hover:translate-y-[-4px] h-full flex flex-col">
-        <h2 className="text-xl font-bold mb-2 text-white hover:text-cyber-neon line-clamp-3">
+      <article className={`cyber-card hover:translate-y-[-4px] h-full flex flex-col ${isWeeklySummary ? 'border-cyber-pink' : 'border-cyber-neon'}`}
+        style={{
+          boxShadow: isWeeklySummary ? '0 0 10px rgba(255, 0, 255, 0.15)' : '0 0 10px rgba(0, 255, 255, 0.15)'
+        }}>
+        <h2 className={`text-xl font-bold mb-2 text-white line-clamp-3 ${isWeeklySummary ? 'hover:text-cyber-pink' : 'hover:text-cyber-neon'}`}>
           {post.title}
         </h2>
         
@@ -18,12 +24,10 @@ const PostCard = ({ post }) => {
           {post.summary}
         </p>
         
-        <div className="text-cyber-neon text-sm hover:underline mt-auto">
+        <div className={`${isWeeklySummary ? 'text-cyber-pink' : 'text-cyber-neon'} text-sm hover:underline mt-auto`}>
           Read analysis →
         </div>
       </article>
     </Link>
   );
 };
-
-export default PostCard;
