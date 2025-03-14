@@ -15,7 +15,8 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
-def generate_weekly_summary(paper_summaries: List):
+def generate_weekly_summary_from_summaries(paper_summaries: List):
+    """Generate a weekly summary of the latest AI research papers."""
     paper_summaries_str = "\n\n".join(paper_summaries)
 
     logger.info("Starting weekly summary generation...")

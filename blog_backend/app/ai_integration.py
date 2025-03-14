@@ -3,7 +3,7 @@ import os
 import requests
 import json
 import logging
-from ai_content_engine.generator import generate_blog_post
+from ai_content_engine.generator import generate_blog_post, generate_weekly_summary
 from ai_content_engine.utils.process_paper import extract_arxiv_id
 from ai_content_engine.utils.paper_finder import find_top_papers
 from .repositories.top_papers_repository import (
@@ -13,7 +13,7 @@ from .repositories.top_papers_repository import (
 from dotenv import load_dotenv
 from typing import Dict, Any, Optional
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -62,7 +62,7 @@ def create_blog_post(
         "codeSnippets": [],  # Placeholder for future code snippets
     }
 
-    ai_metadata = {"paper_id": paper_id}
+    ai_metadata = {"paper_id": paper_id, "post_type": "regular"}
 
     if published_date:
         try:
@@ -178,6 +178,132 @@ def process_papers_to_posts(force_regenerate: bool = False) -> bool:
     except Exception as e:
         logger.error(f"Error processing papers to posts: {str(e)}", exc_info=True)
         return False
+
+
+def get_recent_post_summaries(days=7, max_posts=100) -> list[dict]:
+    """Get summaries of recent posts based on paper published date."""
+    try:
+        # Step 1: Get a reasonable number of recent posts by created_at (which is indexed)
+        now = datetime.now()
+        wider_cutoff = now - timedelta(days=days * 3)
+        url = f"{API_BASE_URL}/posts?limit={max_posts}&created_after={wider_cutoff.strftime('%Y-%m-%d')}"
+        response = requests.get(url)
+        response.raise_for_status()
+        posts = response.json()
+
+        # Step 2: Filter posts by published_date in ai_metadata
+        cutoff_date = now - timedelta(days=days)
+        summaries = []
+        consecutive_old_papers = 0
+        max_consecutive_old = 5  # Early stopping parameter
+
+        for post in posts:
+            # Skip existing summary posts
+            ai_metadata = post.get("ai_metadata", {})
+            if ai_metadata and ai_metadata.get("post_type") == "weekly_summary":
+                continue
+
+            # Get paper published date, with fallbacks
+            paper_date = None
+            if ai_metadata and "published_date" in ai_metadata:
+                try:
+                    paper_date = datetime.fromisoformat(
+                        ai_metadata["published_date"].replace("Z", "+00:00")
+                    )
+                except (ValueError, TypeError):
+                    logger.warning(
+                        f"Invalid published_date format in post {post['id']}"
+                    )
+
+            # Fallback to post creation date if no valid paper date
+            if not paper_date:
+                if post.get("published_at"):
+                    paper_date = datetime.fromisoformat(
+                        post["published_at"].replace("Z", "+00:00")
+                    )
+                else:
+                    paper_date = datetime.fromisoformat(
+                        post["created_at"].replace("Z", "+00:00")
+                    )
+
+            # Check if the paper is within our date range
+            if paper_date >= cutoff_date:
+                consecutive_old_papers = 0  # Reset counter
+                summaries.append(
+                    {
+                        "id": post["id"],
+                        "title": post["title"],
+                        "summary": post["summary"],
+                        "published_at": post.get("published_at"),
+                        "paper_date": paper_date.isoformat(),
+                        "paper_id": ai_metadata.get("paper_id"),
+                    }
+                )
+            else:
+                consecutive_old_papers += 1
+                if consecutive_old_papers >= max_consecutive_old and len(summaries) > 0:
+                    logger.info(
+                        f"Early stopping after {consecutive_old_papers} consecutive old papers"
+                    )
+                    break
+
+        return summaries
+    except Exception as e:
+        logger.error(f"Error getting recent post summaries: {e}", exc_info=True)
+        return []
+
+
+def create_weekly_summary_post() -> Optional[Dict[str, Any]]:
+    """Create a weekly summary blog post from recent posts."""
+    try:
+        # Get summaries of posts from the past 7 days
+        recent_summaries = get_recent_post_summaries(days=7)
+
+        if not recent_summaries:
+            logger.warning("No recent posts found to create weekly summary")
+            return None
+
+        # Generate the summary content using your existing function
+        weekly_content = generate_weekly_summary(recent_summaries)
+
+        # Create a period identifier (e.g., "2025-03-07_to_2025-03-14")
+        today = datetime.now()
+        week_ago = today - timedelta(days=7)
+        period = f"{week_ago.strftime('%Y-%m-%d')}_to_{today.strftime('%Y-%m-%d')}"
+        title = f"Last week in AI Research: {today.strftime('%d-%m-%Y')}"
+        # Format slug
+        slug = generate_slug(f"weekly-ai-summary-{today.strftime('%Y-%m-%d')}")
+
+        content_json = {"body": weekly_content, "images": [], "codeSnippets": []}
+
+        ai_metadata = {
+            "post_type": "weekly_summary",
+            "summary_period": period,
+            "included_posts": [s["id"] for s in recent_summaries],
+            "post_count": len(recent_summaries),
+        }
+
+        post_data = {
+            "title": title,
+            "slug": slug,
+            "summary": "The latest in AI research from the past week.",
+            "content": content_json,
+            "ai_metadata": ai_metadata,
+        }
+
+        # Submit to API
+        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
+        response.raise_for_status()
+        logger.info(f"Successfully created weekly summary: {title}")
+        return response.json()
+    except Exception as e:
+        logger.error(f"Error creating weekly summary post: {e}", exc_info=True)
+        return None
+
+
+def generate_weekly_summary_background() -> None:
+    """Background task to generate weekly summary post."""
+    create_weekly_summary_post()
 
 
 def generate_posts_background(force_regenerate: bool = False) -> None:

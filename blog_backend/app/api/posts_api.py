@@ -8,6 +8,7 @@ from datetime import datetime
 import logging
 from ..ai_integration import (
     process_papers_create_posts_background,
+    generate_weekly_summary_background,
     find_papers_background,
     generate_posts_background,
     get_latest_papers_from_db,
@@ -99,6 +100,21 @@ def api_generate_posts(
         raise HTTPException(status_code=500, detail="Failed to start post generation")
 
 
+@router.post("/generate_weekly_summary")
+def api_generate_weekly_summary(
+    background_tasks: BackgroundTasks,
+) -> Dict[str, str]:
+    """Generate a weekly summary post from recent posts."""
+    try:
+        background_tasks.add_task(generate_weekly_summary_background)
+        return {"detail": "Weekly summary generation started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start weekly summary generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start weekly summary generation"
+        )
+
+
 @router.post("/top_papers", response_model=Dict[str, str])
 def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
@@ -161,6 +177,7 @@ def get_posts(
     offset: int = 0,
     limit: int = 10,
     status: str = None,
+    created_after: str = None,
     session: Session = Depends(get_session),
 ) -> List[Post]:
     """Get posts with optional filtering and pagination."""
@@ -169,6 +186,13 @@ def get_posts(
 
         if status in {"published", "draft"}:
             query = query.where(Post.status == status)
+
+        if created_after:
+            try:
+                date_obj = datetime.strptime(created_after, "%Y-%m-%d")
+                query = query.where(Post.created_at >= date_obj)
+            except ValueError:
+                logger.error(f"Invalid date format: {created_after}")
 
         query = query.offset(offset).limit(limit)
 
