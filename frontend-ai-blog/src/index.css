@@ -61,7 +61,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom component classes */
 .cyber-card {
-  @apply bg-cyber-dark p-6 rounded-lg border-l-4 border-cyber-neon transition-all duration-300 relative overflow-hidden;
+  @apply bg-cyber-dark p-6 rounded-lg border-cyber-neon transition-all duration-300 relative overflow-hidden;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.15);
 }
 
