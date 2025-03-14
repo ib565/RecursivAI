@@ -31,3 +31,6 @@ const PostCard = ({ post }) => {
     </Link>
   );
 };
+
+
+export default PostCard;
