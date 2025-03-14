@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import logging
 from typing import List
-from prompts import weekly_summary_prompt
+from ai_content_engine.prompts import weekly_summary_prompt
 import time
 from google.api_core.exceptions import TooManyRequests, ResourceExhausted
 
