@@ -14,7 +14,7 @@ const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const POSTS_PER_PAGE = 21; // Changed from 20 to 21 as requested
 
-  const fetchPosts = async (isInitialLoad = true) => {
+  const fetchPosts = async (isInitialLoad = true, currentOffset = offset) => {
     try {
       if (isInitialLoad) {
         setLoading(true);
@@ -22,11 +22,11 @@ const HomePage = () => {
         setLoadingMore(true);
       }
 
-      // Fetch posts with the current offset
+      // Fetch posts with the provided offset
       const data = await getAllPosts({ 
         // status: 'published',
         limit: POSTS_PER_PAGE,
-        offset: isInitialLoad ? 0 : offset
+        offset: isInitialLoad ? 0 : currentOffset
       });
 
       if (data.length < POSTS_PER_PAGE) {
@@ -60,7 +60,7 @@ const HomePage = () => {
   const handleLoadMore = () => {
     const newOffset = offset + POSTS_PER_PAGE;
     setOffset(newOffset);
-    fetchPosts(false);
+    fetchPosts(false, newOffset);  // Pass the new offset directly
   };
 
   return (
