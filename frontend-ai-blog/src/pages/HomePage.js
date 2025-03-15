@@ -8,31 +8,60 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const POSTS_PER_PAGE = 21; // Changed from 20 to 21 as requested
+
+  const fetchPosts = async (isInitialLoad = true) => {
+    try {
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      // Fetch posts with the current offset
+      const data = await getAllPosts({ 
+        // status: 'published',
+        limit: POSTS_PER_PAGE,
+        offset: isInitialLoad ? 0 : offset
+      });
+
+      if (data.length < POSTS_PER_PAGE) {
+        setHasMore(false);
+      }
+
+      if (isInitialLoad) {
+        setPosts(data);
+      } else {
+        setPosts(prevPosts => [...prevPosts, ...data]);
+      }
+      
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch posts:', err);
+      setError(err);
+    } finally {
+      if (isInitialLoad) {
+        setLoading(false);
+      } else {
+        setLoadingMore(false);
+      }
+    }
+  };
 
   useEffect(() => {
-    // Fetch posts from the API service
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        // Only fetch published posts, with a reasonable limit
-        const data = await getAllPosts({ 
-          // status: 'published',
-          limit: 20,
-          offset: 0
-        });
-        setPosts(data);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to fetch posts:', err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    // Initial fetch
     fetchPosts();
   }, []);
+
+  const handleLoadMore = () => {
+    const newOffset = offset + POSTS_PER_PAGE;
+    setOffset(newOffset);
+    fetchPosts(false);
+  };
 
   return (
     <>
@@ -117,6 +146,28 @@ const HomePage = () => {
           </div>
           
           <PostGrid posts={posts} loading={loading} error={error} />
+          
+          {/* Load More Button */}
+          {!loading && !error && hasMore && (
+            <div className="flex justify-center mt-12">
+              <button 
+                onClick={handleLoadMore} 
+                disabled={loadingMore}
+                className="cyber-btn-neon flex items-center space-x-2"
+              >
+                {loadingMore ? (
+                  <>
+                    <span className="animate-pulse">Loading...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Load More</span>
+                    <span className="text-xl">&#8659;</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>
