@@ -38,7 +38,7 @@ async def get_docs(admin: bool = Depends(verify_admin)):
 
 
 @app.get("/admin/openapi.json", response_class=JSONResponse)
-async def get_openapi(admin: bool = Depends(verify_admin)):
+async def get_openapi_route(admin: bool = Depends(verify_admin)):
     return JSONResponse(
         get_openapi(title=app.title, version=app.version, routes=app.routes)
     )
