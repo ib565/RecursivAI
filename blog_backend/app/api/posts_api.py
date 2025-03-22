@@ -13,6 +13,7 @@ from ..ai_integration import (
     generate_posts_background,
     get_latest_papers_from_db,
     save_papers_to_db,
+    process_curated_papers_background,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,26 @@ def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
         session.rollback()
         logger.error(f"Error creating post: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error creating post")
+
+
+@router.post("/process_curated_background", response_model=Dict[str, str])
+def api_process_curated_papers_background(
+    paper_ids: List[str],
+    notes: Dict[str, str] = None,
+    background_tasks: BackgroundTasks = None,
+) -> Dict[str, str]:
+    """Create blog posts from manually curated arXiv papers in the background."""
+    try:
+        background_tasks.add_task(
+            process_curated_papers_background, paper_ids=paper_ids, notes=notes
+        )
+
+        return {"detail": f"Processing {len(paper_ids)} curated papers in background"}
+    except Exception as e:
+        logger.error(f"Failed to start background curated paper processing: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start curated paper processing"
+        )
 
 
 @router.post("/process_papers_create_posts")
@@ -201,6 +222,29 @@ def get_posts(
     except Exception as e:
         logger.error(f"Error retrieving posts: {str(e)}")
         raise HTTPException(500, f"Error retrieving posts: {str(e)}")
+
+
+@router.get("/curated", response_model=List[Post])
+def get_curated_posts(
+    offset: int = 0,
+    limit: int = 10,
+    session: Session = Depends(get_session),
+) -> List[Post]:
+    """Get all curated posts with pagination."""
+    try:
+        query = (
+            select(Post)
+            .where(Post.ai_metadata["post_type"].as_string() == "curated")
+            .order_by(Post.created_at.desc())
+        )
+
+        query = query.offset(offset).limit(limit)
+
+        posts = session.exec(query).all()
+        return posts
+    except Exception as e:
+        logger.error(f"Error retrieving curated posts: {str(e)}")
+        raise HTTPException(500, f"Error retrieving curated posts: {str(e)}")
 
 
 @router.get("/{paper_id}/exists", response_model=Dict[str, bool])

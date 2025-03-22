@@ -200,7 +200,10 @@ def get_recent_post_summaries(days=7, max_posts=100) -> list[dict]:
         for post in posts:
             # Skip existing summary posts
             ai_metadata = post.get("ai_metadata", {})
-            if ai_metadata and ai_metadata.get("post_type") == "weekly_summary":
+            if ai_metadata and (
+                ai_metadata.get("post_type") == "weekly_summary"
+                or ai_metadata.get("post_type") == "curated"
+            ):
                 continue
 
             # Get paper published date, with fallbacks
@@ -251,6 +254,100 @@ def get_recent_post_summaries(days=7, max_posts=100) -> list[dict]:
     except Exception as e:
         logger.error(f"Error getting recent post summaries: {e}", exc_info=True)
         return []
+
+
+def create_curated_blog_post(
+    paper_id: str, curator_notes: str = None
+) -> Optional[Dict[str, Any]]:
+    """Create a curated blog post from an arXiv paper.
+    Similar to create_blog_post but marks the post as curated and published."""
+    # Step 1: Generate content
+    try:
+        blog_post, blog_title, blog_summary = generate_blog_post(paper_id)
+    except Exception as e:
+        logger.error(
+            f"Error generating curated blog content for {paper_id}: {e}", exc_info=True
+        )
+        return None
+
+    # Step 2: Format and prepare data
+    slug = generate_slug(blog_title)
+    summary = blog_summary
+
+    content_json = {
+        "body": blog_post,
+        "images": [],
+        "codeSnippets": [],
+    }
+
+    ai_metadata = {"paper_id": paper_id, "post_type": "curated"}
+
+    if curator_notes:
+        ai_metadata["curator_notes"] = curator_notes
+
+    post_data = {
+        "title": blog_title,
+        "slug": slug,
+        "summary": summary,
+        "content": content_json,
+        "ai_metadata": ai_metadata,
+    }
+
+    # Step 3: Submit to API
+    try:
+        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
+        response.raise_for_status()
+        logger.info(f"Successfully created curated blog post: {blog_title}")
+        return response.json()
+    except Exception as e:
+        logger.error(f"API error while creating curated blog post for {paper_id}: {e}")
+        return None
+
+
+def process_curated_papers(
+    paper_ids: list[str], notes: Dict[str, str] = None
+) -> Dict[str, Any]:
+    """Process a list of arXiv IDs and create curated blog posts."""
+    success_count = 0
+    total_count = len(paper_ids)
+    failed_papers = []
+
+    notes = notes or {}
+
+    for paper_id in paper_ids:
+        try:
+            if is_paper_processed(paper_id):
+                logger.info(f"Skipping already processed paper: {paper_id}")
+                failed_papers.append(
+                    {"paper_id": paper_id, "reason": "already_processed"}
+                )
+                continue
+
+            curator_notes = notes.get(paper_id)
+            result = create_curated_blog_post(paper_id, curator_notes)
+
+            if result:
+                success_count += 1
+            else:
+                failed_papers.append(
+                    {"paper_id": paper_id, "reason": "generation_failed"}
+                )
+        except Exception as e:
+            logger.error(f"Error processing curated paper {paper_id}: {str(e)}")
+            failed_papers.append({"paper_id": paper_id, "reason": str(e)})
+
+    logger.info(
+        f"Processed {total_count} curated papers, successfully created {success_count} blog posts"
+    )
+
+    return {"total": total_count, "success": success_count, "failed": failed_papers}
+
+
+def process_curated_papers_background(
+    paper_ids: list[str], notes: Dict[str, str] = None
+) -> None:
+    """Background task to process curated papers."""
+    process_curated_papers(paper_ids=paper_ids, notes=notes)
 
 
 def create_weekly_summary_post() -> Optional[Dict[str, Any]]:
