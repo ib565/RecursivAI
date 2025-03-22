@@ -199,9 +199,19 @@ def get_posts(
     limit: int = 10,
     status: str = None,
     created_after: str = None,
+    post_types: List[str] = None,
     session: Session = Depends(get_session),
 ) -> List[Post]:
-    """Get posts with optional filtering and pagination."""
+    """Get posts with optional filtering and pagination.
+
+    Args:
+        offset: Pagination offset
+        limit: Maximum number of posts to return
+        status: Filter by post status ('published' or 'draft')
+        created_after: Filter posts created after this date (format: YYYY-MM-DD)
+        post_types: Filter by post types in ai_metadata (default: regular and weekly_summary)
+        session: Database session
+    """
     try:
         query = select(Post).order_by(Post.created_at.desc())
 
@@ -214,6 +224,12 @@ def get_posts(
                 query = query.where(Post.created_at >= date_obj)
             except ValueError:
                 logger.error(f"Invalid date format: {created_after}")
+
+        # Apply post type filter
+        if post_types is None:
+            # Default to regular and weekly summary if not specified
+            post_types = ["regular", "weekly_summary"]
+        query = query.where(Post.ai_metadata["post_type"].as_string().in_(post_types))
 
         query = query.offset(offset).limit(limit)
 
