@@ -114,10 +114,10 @@ Like I said, this project is still a work in progress. Here are some immediate p
 - LLM: Gemini Flash 2.0
 - Search: Tavily
 
-I decided to not use any LLM frameworks for this project, as I wanted to have more control over the workflow, and not be distracted dealing with layers of abstraction.
+I decided not to use any LLM frameworks for this project because I wanted more control over the workflow and didn't want to be distracted by abstractions.
 
 ## About Me
-I'm Ishaan, a software engineer with an interest in AI. I'm currently in the final year of my CSE degree.
+I'm Ishaan, a software engineer with an interest in AI. I'm currently in the final year of my Computer Science and Engineering degree.
 
 I love exploring new ideas and experimenting, so if you have an interesting proposal, AI or otherwise, please reach out!
 
