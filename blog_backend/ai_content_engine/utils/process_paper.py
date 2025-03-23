@@ -1,11 +1,46 @@
 import requests
 import pathlib
 import re
+import xml.etree.ElementTree as ET
+from datetime import datetime
 import os
 from pdfminer.high_level import extract_text
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def get_arxiv_published_date(arxiv_id):
+    """
+    Retrieves the published date of an arXiv paper given its ID.
+    Args:
+        arxiv_id (str): The arXiv ID of the paper (e.g., '2203.02155')
+    Returns:
+        str: The published date in ISO format
+    """
+    url = f"http://export.arxiv.org/api/query?id_list={arxiv_id}"
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to retrieve data: HTTP {response.status_code}")
+
+    root = ET.fromstring(response.content)
+
+    namespaces = {
+        "atom": "http://www.w3.org/2005/Atom",
+        "arxiv": "http://arxiv.org/schemas/atom",
+    }
+
+    published_element = root.find(".//atom:published", namespaces)
+
+    if published_element is None:
+        raise Exception("Published date not found in the response")
+
+    published_date = published_element.text
+
+    parsed_date = datetime.fromisoformat(published_date)
+
+    return parsed_date.isoformat()
 
 
 def extract_arxiv_id(url: str) -> str:

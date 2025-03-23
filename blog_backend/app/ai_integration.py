@@ -4,7 +4,10 @@ import requests
 import json
 import logging
 from ai_content_engine.generator import generate_blog_post, generate_weekly_summary
-from ai_content_engine.utils.process_paper import extract_arxiv_id
+from ai_content_engine.utils.process_paper import (
+    extract_arxiv_id,
+    get_arxiv_published_date,
+)
 from ai_content_engine.utils.paper_finder import find_top_papers
 from .repositories.top_papers_repository import (
     get_latest_papers_from_db,
@@ -279,6 +282,9 @@ def create_curated_blog_post(
         "images": [],
         "codeSnippets": [],
     }
+
+    published_date = get_arxiv_published_date(paper_id)
+    ai_metadata["published_date"] = published_date
 
     ai_metadata = {"paper_id": paper_id, "post_type": "curated"}
 
