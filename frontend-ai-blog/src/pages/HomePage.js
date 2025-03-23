@@ -116,9 +116,21 @@ const HomePage = () => {
               <button onClick={() => navigate('/about')} className="cyber-btn-pink mb-8">
                 About
               </button>
-              {/* <div className="cyber-btn inline-block border border-cyber-neon hover:border-cyber-pink transition-colors duration-300">
-                Explore Research
-              </div> */}
+              <button 
+                onClick={() => navigate('/curated')} 
+                className="cyber-btn-neon mb-8"
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#0f0f12',
+                  color: '#FFC107',
+                  border: '1px solid #FFC107',
+                  textShadow: '0 0 5px rgba(255, 193, 7, 0.5)',
+                  boxShadow: '0 0 8px rgba(255, 193, 7, 0.2)',
+                  transition: 'all 0.3s',
+                  fontFamily: "'Share Tech Mono', monospace"
+                }}>
+                Curated AI Research
+              </button>
             </div>
           </div>
           
