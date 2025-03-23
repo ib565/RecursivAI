@@ -283,10 +283,10 @@ def create_curated_blog_post(
         "codeSnippets": [],
     }
 
+    ai_metadata = {"paper_id": paper_id, "post_type": "curated"}
+
     published_date = get_arxiv_published_date(paper_id)
     ai_metadata["published_date"] = published_date
-
-    ai_metadata = {"paper_id": paper_id, "post_type": "curated"}
 
     if curator_notes:
         ai_metadata["curator_notes"] = curator_notes
