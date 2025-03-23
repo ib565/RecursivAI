@@ -25,6 +25,7 @@ const CuratedPage = () => {
       // Fetch curated posts with the provided offset
       const data = await getAllPosts({
         post_types: "curated",
+        sort_by: "published_date",
         limit: POSTS_PER_PAGE,
         offset: isInitialLoad ? 0 : currentOffset,
       });
@@ -70,9 +71,7 @@ const CuratedPage = () => {
         description="A collection of the most influential and groundbreaking AI research papers that defined the field."
       />
       <div>
-        {/* Enhanced Hero Section with gold accent */}
         <div className="relative bg-cyber-black py-16 overflow-hidden">
-          {/* Background neural network pattern - subtle gold */}
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -98,7 +97,6 @@ const CuratedPage = () => {
                 </span>
               </h1>
 
-              {/* Gold divider for visual balance */}
               <div className="flex mb-6">
                 <div
                   className="w-28 h-1 relative"
@@ -174,7 +172,7 @@ const CuratedPage = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="mb-12">
             <h2 className="text-2xl font-cyber font-bold mb-2">
-              Landmark Papers
+              Essential Papers
             </h2>
             {/* Gold accent for section head */}
             <div className="flex">
