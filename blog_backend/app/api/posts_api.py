@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
@@ -199,7 +199,7 @@ def get_posts(
     limit: int = 10,
     status: str = None,
     created_after: str = None,
-    post_types: List[str] = None,
+    post_types: List[str] = Query(default=["regular", "weekly_summary"]),
     session: Session = Depends(get_session),
 ) -> List[Post]:
     """Get posts with optional filtering and pagination.
@@ -226,9 +226,9 @@ def get_posts(
                 logger.error(f"Invalid date format: {created_after}")
 
         # Apply post type filter
-        if post_types is None:
-            # Default to regular and weekly summary if not specified
-            post_types = ["regular", "weekly_summary"]
+        # if post_types is None:
+        #     # Default to regular and weekly summary if not specified
+        #     post_types = ["regular", "weekly_summary"]
         query = query.where(Post.ai_metadata["post_type"].as_string().in_(post_types))
 
         query = query.offset(offset).limit(limit)
