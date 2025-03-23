@@ -66,7 +66,7 @@ const CuratedPage = () => {
   return (
     <>
       <SEO
-        title="The AI Canon - RecursivAI"
+        title="Pillars of AI - RecursivAI"
         description="A collection of the most influential and groundbreaking AI research papers that defined the field."
       />
       <div>
@@ -86,7 +86,7 @@ const CuratedPage = () => {
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-2xl">
               <h1 className="text-5xl font-cyber font-bold mb-4">
-                <span className="text-white">The AI </span>
+                <span className="text-white">Pillars of </span>
                 <span
                   style={{
                     color: "#FFC107",
@@ -94,7 +94,7 @@ const CuratedPage = () => {
                       "0 0 5px rgba(255, 193, 7, 0.7), 0 0 10px rgba(255, 193, 7, 0.5)",
                   }}
                 >
-                  Canon
+                  AI
                 </span>
               </h1>
 
@@ -128,14 +128,15 @@ const CuratedPage = () => {
                       "0 0 5px rgba(255, 193, 7, 0.7), 0 0 10px rgba(255, 193, 7, 0.5)",
                   }}
                 >
-                  The algorithms that changed everything
+                  The Cornerstones of Modern AI Research
                 </span>
               </h2>
 
               <p className="text-gray-300 text-lg mb-8 font-body">
-                This collection features the groundbreaking papers that
-                fundamentally altered AI's trajectory - the mathematical and
-                algorithmic innovations upon which modern systems are built.
+                A curated collection of must-read AI papers that define the
+                field today. From foundational breakthroughs to cutting-edge
+                advancements, these research papers form the bedrock of modern
+                artificial intelligence.
               </p>
 
               <div className="flex space-x-4">

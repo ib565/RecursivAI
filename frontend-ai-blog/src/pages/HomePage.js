@@ -149,7 +149,7 @@ const HomePage = () => {
                     fontFamily: "'Share Tech Mono', monospace",
                   }}
                 >
-                  AI Canon
+                  Foundational AI Research
                 </button>
               </div>
             </div>
@@ -163,7 +163,6 @@ const HomePage = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="mb-12">
             <h2 className="text-2xl font-cyber font-bold mb-2">Latest Posts</h2>
-            {/* Reversed colors from hero section for visual balance */}
             <div className="flex">
               <div className="w-12 h-1 bg-cyber-pink relative">
                 <div
