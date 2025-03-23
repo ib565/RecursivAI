@@ -200,20 +200,23 @@ def get_posts(
     status: str = None,
     created_after: str = None,
     post_types: List[str] = Query(default=["regular", "weekly_summary"]),
+    sort_by: str = "created_at",
+    sort_order: str = "desc",
     session: Session = Depends(get_session),
 ) -> List[Post]:
     """Get posts with optional filtering and pagination.
-
     Args:
         offset: Pagination offset
         limit: Maximum number of posts to return
         status: Filter by post status ('published' or 'draft')
         created_after: Filter posts created after this date (format: YYYY-MM-DD)
         post_types: Filter by post types in ai_metadata (default: regular and weekly_summary)
+        sort_by: Field to sort by ('created_at' or 'published_date')
+        sort_order: Sort order ('asc' or 'desc')
         session: Database session
     """
     try:
-        query = select(Post).order_by(Post.created_at.desc())
+        query = select(Post)
 
         if status in {"published", "draft"}:
             query = query.where(Post.status == status)
@@ -225,11 +228,24 @@ def get_posts(
             except ValueError:
                 logger.error(f"Invalid date format: {created_after}")
 
-        # Apply post type filter
-        # if post_types is None:
-        #     # Default to regular and weekly summary if not specified
-        #     post_types = ["regular", "weekly_summary"]
         query = query.where(Post.ai_metadata["post_type"].as_string().in_(post_types))
+
+        is_ascending = sort_order.lower() == "asc"
+
+        if sort_by == "published_date":
+            if is_ascending:
+                query = query.order_by(
+                    Post.ai_metadata["published_date"].as_string().asc()
+                )
+            else:
+                query = query.order_by(
+                    Post.ai_metadata["published_date"].as_string().desc()
+                )
+        else:
+            if is_ascending:
+                query = query.order_by(Post.created_at.asc())
+            else:
+                query = query.order_by(Post.created_at.desc())
 
         query = query.offset(offset).limit(limit)
 
