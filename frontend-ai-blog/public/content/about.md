@@ -110,7 +110,7 @@ Like I said, this project is still a work in progress. Here are some immediate p
 
 ## Tech Stack
 - Frontend: React, TailwindCSS
-- Backend: FastAPI, SQLite
+- Backend: FastAPI, Supabase
 - LLM: Gemini Flash 2.0
 - Search: Tavily
 
