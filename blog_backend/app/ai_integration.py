@@ -266,7 +266,7 @@ def create_curated_blog_post(
     Similar to create_blog_post but marks the post as curated and published."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title, blog_summary = generate_blog_post(paper_id)
+        blog_post, blog_title, blog_summary = generate_blog_post(paper_id, curated=True)
     except Exception as e:
         logger.error(
             f"Error generating curated blog content for {paper_id}: {e}", exc_info=True
@@ -311,7 +311,7 @@ def create_curated_blog_post(
 
 
 def process_curated_papers(
-    paper_ids: list[str], notes: Dict[str, str] = None
+    paper_ids: list[str], notes: Dict[str, str] = None, force_regenerate: bool = False
 ) -> Dict[str, Any]:
     """Process a list of arXiv IDs and create curated blog posts."""
     success_count = 0
@@ -322,7 +322,7 @@ def process_curated_papers(
 
     for paper_id in paper_ids:
         try:
-            if is_paper_processed(paper_id):
+            if not force_regenerate and is_paper_processed(paper_id):
                 logger.info(f"Skipping already processed paper: {paper_id}")
                 failed_papers.append(
                     {"paper_id": paper_id, "reason": "already_processed"}
@@ -350,10 +350,12 @@ def process_curated_papers(
 
 
 def process_curated_papers_background(
-    paper_ids: list[str], notes: Dict[str, str] = None
+    paper_ids: list[str], notes: Dict[str, str] = None, force_regenerate: bool = False
 ) -> None:
     """Background task to process curated papers."""
-    process_curated_papers(paper_ids=paper_ids, notes=notes)
+    process_curated_papers(
+        paper_ids=paper_ids, notes=notes, force_regenerate=force_regenerate
+    )
 
 
 def create_weekly_summary_post() -> Optional[Dict[str, Any]]:

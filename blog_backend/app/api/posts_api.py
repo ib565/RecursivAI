@@ -56,11 +56,15 @@ def api_process_curated_papers_background(
     paper_ids: List[str],
     notes: Dict[str, str] = None,
     background_tasks: BackgroundTasks = None,
+    force_regenerate: bool = False,
 ) -> Dict[str, str]:
     """Create blog posts from manually curated arXiv papers in the background."""
     try:
         background_tasks.add_task(
-            process_curated_papers_background, paper_ids=paper_ids, notes=notes
+            process_curated_papers_background,
+            paper_ids=paper_ids,
+            notes=notes,
+            force_regenerate=force_regenerate,
         )
 
         return {"detail": f"Processing {len(paper_ids)} curated papers in background"}

@@ -2,7 +2,7 @@ from google import genai
 from google.genai import types
 import os
 from dotenv import load_dotenv
-from ai_content_engine.prompts import planner_prompt
+from ai_content_engine.prompts import planner_prompt, planner_prompt_curated
 from ai_content_engine.models import Outline
 import logging
 import time
@@ -14,16 +14,19 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
-def generate_outline(paper_text):
+def generate_outline(paper_text, curated=False) -> Outline:
     logger.debug("Starting outline generation...")
-
+    if curated:
+        system_prompt = planner_prompt_curated
+    else:
+        system_prompt = planner_prompt
     for attempt in range(2):  # Maximum of 2 attempts
         try:
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=[paper_text],
                 config=types.GenerateContentConfig(
-                    system_instruction=planner_prompt,
+                    system_instruction=system_prompt,
                     response_mime_type="application/json",
                     response_schema=Outline,
                     max_output_tokens=8192,

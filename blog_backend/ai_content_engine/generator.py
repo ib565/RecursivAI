@@ -20,7 +20,7 @@ def generate_weekly_summary(paper_summaries_dict: list[dict]):
     return weekly_summary
 
 
-def generate_blog_post(paper_id: str):
+def generate_blog_post(paper_id: str, curated=False):
     """Generate a blog post from an arXiv paper."""
     # Check if we should save intermediate files
     SAVE_INTERMEDIATES = os.getenv("SAVE_INTERMEDIATES", "False").lower() == "true"
@@ -37,7 +37,7 @@ def generate_blog_post(paper_id: str):
     text = process_arxiv_paper(f"https://arxiv.org/pdf/{paper_id}.pdf")
 
     logger.info("Generating outline...")
-    outline = generate_outline(text)
+    outline = generate_outline(text, curated)
     blog_summary = outline.summary
 
     if SAVE_INTERMEDIATES:
