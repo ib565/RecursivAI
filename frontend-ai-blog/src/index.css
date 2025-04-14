@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@300;400;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,6 +32,59 @@ body::after {
   opacity: 0.3;
 }
 
+.font-serif {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+/* For the main title - even more dramatic */
+h1.text-4xl {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+/* For article titles */
+h2.font-serif, h3.font-serif {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Placeholder for images */
+.aspect-w-16 {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+.aspect-h-9 {
+  position: relative;
+}
+
+.aspect-w-16 > div,
+.aspect-h-9 > div {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover effects for story links */
+a:hover h2, a:hover h3 {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1.text-4xl {
+    font-size: 2rem;
+  }
+  
+  h2.text-3xl {
+    font-size: 1.75rem;
+  }
+}
 
 .markdown-content > svg[id^="mermaid-"] {
   max-width: 1300px !important; /* Or whatever maximum you want */
