@@ -34,6 +34,7 @@ async def async_research_queries(queries):
 
     search_tasks = []
     for query in queries:
+        logger.info(f"Searching: {query}")
         search_tasks.append(
             tavily_async_client.search(
                 query, include_answer="advanced", topic="general"
@@ -54,6 +55,7 @@ async def generate_section(section: Section):
     if section.queries:
         search_docs = await async_research_queries(section.queries)
         research_content = "\n\n".join([doc["answer"] for doc in search_docs])
+        logger.info(f"Research content: {research_content}")
     else:
         research_content = None
     if section.type.value == "diagram":
@@ -68,7 +70,6 @@ async def generate_section(section: Section):
     content_prompt += (
         f"Researched context: {research_content}" if research_content else ""
     )
-
     for attempt in range(2):  # Max 2 attempts
         try:
             response = await client.aio.models.generate_content(

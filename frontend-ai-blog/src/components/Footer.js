@@ -14,7 +14,7 @@ const Footer = () => {
               <span className="text-cyber-neon">AI</span>
             </div>
             <p className="text-gray-400 max-w-md">
-              An AI-powered blog exploring cutting-edge research papers in
+              An AI-powered blog exploring cutting-edge research developments in
               machine learning.
             </p>
           </div>
@@ -25,6 +25,11 @@ const Footer = () => {
               <li>
                 <Link to="/" className="hover:text-cyber-neon">
                   Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/curated" className="hover:text-amber-400">
+                  Curated
                 </Link>
               </li>
               <li>

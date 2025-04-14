@@ -43,7 +43,7 @@ const PostPage = () => {
       <>
         <SEO
           title="Loading... | RecursivAI"
-          description="AI-powered analysis of machine learning research papers"
+          description="An AI-powered blog exploring cutting-edge research papers in tech and machine learning"
         />
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-cyber-neon animate-pulse">
@@ -82,20 +82,29 @@ const PostPage = () => {
 
   return (
     <>
-      <SEO
-        title={`${post.title} | RecursivAI`}
-        description={
-          post.summary || "AI-powered analysis of machine learning research"
-        }
+      {/* Native Metadata Support in React 19 */}
+      <title>{`${post.title} | RecursivAI`}</title>
+      <meta
+        name="description"
+        content={post.summary || "AI-powered analysis of machine learning research"}
       />
+      <meta property="og:title" content={post.title} />
+      <meta property="og:description" content={post.summary} />
+      <meta property="og:image" content={post.image} />
+      <meta property="og:url" content={`https://recursivai.com/blog/${post.slug}`} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={post.title} />
+      <meta name="twitter:description" content={post.summary} />
+      <meta name="twitter:image" content={post.image} />
+  
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold mb-4 text-white">{post.title}</h1>
-
+  
           <div className="text-gray-400 text-sm mb-8">
             {formatDate(post.created_at)}
           </div>
-
+  
           {/* Paper Info */}
           {post.ai_metadata?.paper_id && (
             <div className="bg-cyber-dark p-4 rounded-lg mb-8">
@@ -112,20 +121,20 @@ const PostPage = () => {
               </div>
             </div>
           )}
-
+  
           {/* Post content */}
           <div className="prose prose-invert max-w-none mb-12">
-          {post.content && post.content.body ? (
-  <MarkdownRenderer>
-    {post.content.body}
-  </MarkdownRenderer>
-) : (
-  <p className="text-gray-400">
-    No content available for this post.
-  </p>
-)}
+            {post.content && post.content.body ? (
+              <MarkdownRenderer>
+                {post.content.body}
+              </MarkdownRenderer>
+            ) : (
+              <p className="text-gray-400">
+                No content available for this post.
+              </p>
+            )}
           </div>
-
+  
           {/* Back button */}
           <button onClick={goBack} className="cyber-btn-pink mb-8">
             ← Back
@@ -134,6 +143,7 @@ const PostPage = () => {
       </div>
     </>
   );
+  
 };
 
 export default PostPage;

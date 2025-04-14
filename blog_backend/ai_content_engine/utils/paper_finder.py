@@ -2,9 +2,14 @@ import requests
 import datetime
 import json
 import time
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_top_papers(days=7):
+    logger.info("Fetching papers from paperswithcode")
     threshold_date = (datetime.datetime.now() - datetime.timedelta(days=days)).strftime(
         "%Y-%m-%d"
     )
@@ -43,7 +48,7 @@ def get_top_papers(days=7):
                             "title": paper["title"],
                             "url": paper["url_pdf"],
                             "published": paper["published"],
-                            "abstract": paper["abstract"],
+                            "repos": [repo["url"] for repo in repos],
                             "github_stars": stars,
                         }
                         papers.append(paper_dict)
@@ -54,17 +59,19 @@ def get_top_papers(days=7):
             break
         page += 1
         time.sleep(1)
-
+    logger.info(f"Found {len(papers)} papers")
     top_papers = sorted(papers, key=lambda x: x["github_stars"], reverse=True)
 
     return top_papers
 
 
-def save_papers(papers, filename="ai_content_engine/content/top_papers.json"):
+def save_papers(papers, filename="top_papers.json"):
+    PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
     data = {"last_updated": datetime.datetime.now().isoformat(), "papers": papers}
     today = datetime.datetime.now().strftime("%d-%m-%Y")
     filename = filename.replace(".json", f"_{today}.json")
-    with open(filename, "w") as f:
+    filepath = os.path.join(PAPERS_DIR, filename)
+    with open(filepath, "w") as f:
         json.dump(data, f, indent=2)
 
 
@@ -81,10 +88,11 @@ def deduplicate_papers(papers):
     return unique_papers
 
 
-def find_top_papers():
-    top_papers = get_top_papers()
+def find_top_papers(days=7, num_papers=10):
+    top_papers = get_top_papers(days=days)
     top_papers_unique = deduplicate_papers(top_papers)
-    save_papers(top_papers_unique[:10])
+    logger.info(f"Returning top {num_papers} papers")
+    return top_papers_unique[:num_papers]
 
 
 if __name__ == "__main__":

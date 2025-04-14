@@ -1,17 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
 from ..database import get_session
-from typing import List, Dict
+from typing import List, Dict, Any
 from datetime import datetime
 import logging
 from ..ai_integration import (
-    process_papers_create_posts_background,  # does both
-    find_papers_background,  # finds papers
-    generate_posts_background,  # creates posts
+    process_papers_create_posts_background,
+    generate_weekly_summary_background,
+    find_papers_background,
+    generate_posts_background,
+    get_latest_papers_from_db,
+    save_papers_to_db,
+    process_curated_papers_background,
 )
-from fastapi import BackgroundTasks
 
 logger = logging.getLogger(__name__)
 
@@ -48,16 +51,46 @@ def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
         raise HTTPException(status_code=500, detail=f"Error creating post")
 
 
+@router.post("/process_curated_background", response_model=Dict[str, str])
+def api_process_curated_papers_background(
+    paper_ids: List[str],
+    notes: Dict[str, str] = None,
+    background_tasks: BackgroundTasks = None,
+    force_regenerate: bool = False,
+) -> Dict[str, str]:
+    """Create blog posts from manually curated arXiv papers in the background."""
+    try:
+        background_tasks.add_task(
+            process_curated_papers_background,
+            paper_ids=paper_ids,
+            notes=notes,
+            force_regenerate=force_regenerate,
+        )
+
+        return {"detail": f"Processing {len(paper_ids)} curated papers in background"}
+    except Exception as e:
+        logger.error(f"Failed to start background curated paper processing: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start curated paper processing"
+        )
+
+
 @router.post("/process_papers_create_posts")
 def api_process_papers_create_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
     find_new_papers: bool = False,
+    days: int = 7,
+    num_papers: int = 10,
 ) -> Dict[str, str]:
     """Process papers from top_papers.json and create posts in the background."""
     try:
         background_tasks.add_task(
-            process_papers_create_posts_background, force_regenerate, find_new_papers
+            process_papers_create_posts_background,
+            force_regenerate,
+            find_new_papers,
+            days,
+            num_papers,
         )
         return {"detail": "Paper processing started in background"}
     except Exception as e:
@@ -67,11 +100,11 @@ def api_process_papers_create_posts(
 
 @router.post("/find_top_papers")
 def api_find_top_papers(
-    background_tasks: BackgroundTasks,
+    background_tasks: BackgroundTasks, days: int = 7, num_papers: int = 10
 ) -> Dict[str, str]:
-    """Find top papers and save to a dated JSON file."""
+    """Find top papers and save to DB."""
     try:
-        background_tasks.add_task(find_papers_background)
+        background_tasks.add_task(find_papers_background, days, num_papers)
         return {"detail": "Paper finding started in background"}
     except Exception as e:
         logger.error(f"Failed to start paper finding: {str(e)}")
@@ -92,14 +125,61 @@ def api_generate_posts(
         raise HTTPException(status_code=500, detail="Failed to start post generation")
 
 
+@router.post("/generate_weekly_summary")
+def api_generate_weekly_summary(
+    background_tasks: BackgroundTasks,
+) -> Dict[str, str]:
+    """Generate a weekly summary post from recent posts."""
+    try:
+        background_tasks.add_task(generate_weekly_summary_background)
+        return {"detail": "Weekly summary generation started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start weekly summary generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start weekly summary generation"
+        )
+
+
+@router.post("/top_papers", response_model=Dict[str, str])
+def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Update the latest top papers data with edited data."""
+    try:
+        now = datetime.now()
+        date_str = f"{now.strftime('%d-%m-%Y')}-edited"
+        save_papers_to_db(papers_data, date_str)
+        return {"detail": "Papers data updated successfully"}
+    except Exception as e:
+        logger.error(f"Error updating top papers: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error updating papers: {str(e)}")
+
+
+@router.get("/healthcheck", response_model=Dict[str, str])
+def healthcheck() -> Dict[str, str]:
+    """Healthcheck endpoint."""
+    return {"status": "ok", "timestamp": str(datetime.now())}
+
+
+@router.get("/top_papers", response_model=List[Dict[str, Any]])
+def get_latest_papers() -> List[Dict[str, Any]]:
+    """Get the latest top papers data for review."""
+    try:
+        papers = get_latest_papers_from_db()
+        if not papers:
+            raise HTTPException(status_code=404, detail="No papers found")
+        return papers
+    except Exception as e:
+        logger.error(f"Error retrieving top papers: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error retrieving papers: {str(e)}"
+        )
+
+
 @router.get("/by-slug/{slug}", response_model=Post)
 def get_post_by_slug(
     slug: str,
     session: Session = Depends(get_session),
 ) -> Post:
-    """
-    Get a single post by its slug.
-    """
+    """Get a single post by its slug."""
     try:
         query = select(Post).where(Post.slug == slug)
         post = session.exec(query).first()
@@ -122,13 +202,54 @@ def get_posts(
     offset: int = 0,
     limit: int = 10,
     status: str = None,
+    created_after: str = None,
+    post_types: List[str] = Query(default=["regular", "weekly_summary"]),
+    sort_by: str = "created_at",
+    sort_order: str = "desc",
     session: Session = Depends(get_session),
 ) -> List[Post]:
+    """Get posts with optional filtering and pagination.
+    Args:
+        offset: Pagination offset
+        limit: Maximum number of posts to return
+        status: Filter by post status ('published' or 'draft')
+        created_after: Filter posts created after this date (format: YYYY-MM-DD)
+        post_types: Filter by post types in ai_metadata (default: regular and weekly_summary)
+        sort_by: Field to sort by ('created_at' or 'published_date')
+        sort_order: Sort order ('asc' or 'desc')
+        session: Database session
+    """
     try:
-        query = select(Post).order_by(Post.created_at.desc())
+        query = select(Post)
 
         if status in {"published", "draft"}:
             query = query.where(Post.status == status)
+
+        if created_after:
+            try:
+                date_obj = datetime.strptime(created_after, "%Y-%m-%d")
+                query = query.where(Post.created_at >= date_obj)
+            except ValueError:
+                logger.error(f"Invalid date format: {created_after}")
+
+        query = query.where(Post.ai_metadata["post_type"].as_string().in_(post_types))
+
+        is_ascending = sort_order.lower() == "asc"
+
+        if sort_by == "published_date":
+            if is_ascending:
+                query = query.order_by(
+                    Post.ai_metadata["published_date"].as_string().asc()
+                )
+            else:
+                query = query.order_by(
+                    Post.ai_metadata["published_date"].as_string().desc()
+                )
+        else:
+            if is_ascending:
+                query = query.order_by(Post.created_at.asc())
+            else:
+                query = query.order_by(Post.created_at.desc())
 
         query = query.offset(offset).limit(limit)
 
@@ -137,6 +258,29 @@ def get_posts(
     except Exception as e:
         logger.error(f"Error retrieving posts: {str(e)}")
         raise HTTPException(500, f"Error retrieving posts: {str(e)}")
+
+
+@router.get("/curated", response_model=List[Post])
+def get_curated_posts(
+    offset: int = 0,
+    limit: int = 10,
+    session: Session = Depends(get_session),
+) -> List[Post]:
+    """Get all curated posts with pagination."""
+    try:
+        query = (
+            select(Post)
+            .where(Post.ai_metadata["post_type"].as_string() == "curated")
+            .order_by(Post.created_at.desc())
+        )
+
+        query = query.offset(offset).limit(limit)
+
+        posts = session.exec(query).all()
+        return posts
+    except Exception as e:
+        logger.error(f"Error retrieving curated posts: {str(e)}")
+        raise HTTPException(500, f"Error retrieving curated posts: {str(e)}")
 
 
 @router.get("/{paper_id}/exists", response_model=Dict[str, bool])
@@ -156,6 +300,7 @@ def check_paper_exists(
 
 @router.get("/{post_id}", response_model=Post)
 def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
+    """Get a post by its ID."""
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -172,6 +317,7 @@ def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 def update_post(
     post_id: int, post_update: PostUpdate, session: Session = Depends(get_session)
 ) -> Post:
+    """Update a post."""
     try:
         post = session.get(Post, post_id)
         if not post:
@@ -214,6 +360,7 @@ def publish_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 def delete_post(
     post_id: int, session: Session = Depends(get_session)
 ) -> Dict[str, str]:
+    """Delete a post."""
     try:
         post = session.get(Post, post_id)
         if not post:
