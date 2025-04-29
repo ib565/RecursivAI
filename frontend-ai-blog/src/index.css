@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@300;400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,6 +12,70 @@ body {
   color: #f0f0f0;
   font-family: 'Chakra Petch', sans-serif;
   position: relative;
+}
+
+/* Newspaper specific styles */
+.newspaper-page {
+  font-family: 'Source Serif Pro', 'Times New Roman', serif;
+  background-color: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.newspaper-container,
+.newspaper-page {
+  font-family: 'Source Serif Pro', 'Times New Roman', serif;
+}
+
+.newspaper-page h1,
+.newspaper-container h1 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.newspaper-page h2, 
+.newspaper-page h3, 
+.newspaper-page h4,
+.newspaper-container h2, 
+.newspaper-container h3, 
+.newspaper-container h4 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.02em;
+}
+
+.newspaper-page p,
+.newspaper-container p {
+  font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+  line-height: 1.6;
+}
+
+.newspaper-page .leading-tight,
+.newspaper-container .leading-tight {
+  line-height: 1.2;
+}
+
+.newspaper-page img.grayscale,
+.newspaper-container img.grayscale {
+  filter: grayscale(30%);
+  transition: filter 0.3s ease;
+}
+
+.newspaper-page img.grayscale:hover,
+.newspaper-container img.grayscale:hover {
+  filter: grayscale(0%);
+}
+
+/* Dropcap for first paragraph in main articles */
+.dropcap:first-letter {
+  float: left;
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  line-height: 0.8;
+  padding-right: 8px;
+  margin-top: 8px;
+  font-weight: 700;
 }
 
 /* Scanline effect overlay */
@@ -32,6 +98,11 @@ body::after {
   opacity: 0.3;
 }
 
+/* Remove scanline effect for newspaper page */
+.newspaper-page::after {
+  display: none;
+}
+
 .font-serif {
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
@@ -47,8 +118,6 @@ h2.font-serif, h3.font-serif {
   font-weight: 700;
   line-height: 1.2;
 }
-
-
 
 .aspect-w-16 {
   position: relative;
@@ -113,6 +182,16 @@ a:hover h2, a:hover h3 {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Share Tech Mono', monospace;
+}
+
+/* Override font family for newspaper page */
+.newspaper-page h1, 
+.newspaper-page h2, 
+.newspaper-page h3, 
+.newspaper-page h4, 
+.newspaper-page h5, 
+.newspaper-page h6 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
 
 /* Neon text effect */

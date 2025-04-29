@@ -37,9 +37,9 @@ const NewsPage = () => {
     fetchPosts();
   }, []);
 
-  if (loading) return <div className="text-center py-10">Loading posts...</div>;
+  if (loading) return <div className="text-center py-10 bg-white text-black">Loading posts...</div>;
   if (error)
-    return <div className="text-center py-10 text-red-600">{error}</div>;
+    return <div className="text-center py-10 bg-white text-red-600">{error}</div>;
 
   // Separate posts for different sections
   const mainFeature = posts[0];
@@ -47,12 +47,11 @@ const NewsPage = () => {
   const remainingPosts = posts.slice(3, 9);
 
   return (
-    // Added a news-page-container class for targeting in CSS
-    <div className="news-page-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="newspaper-page min-h-screen w-full bg-white text-black">
       {/* Header/Navigation */}
-      <header className="border-b border-gray-200">
-        <div className="grid grid-cols-3 items-center py-3">
-          <div className="text-s">
+      <header className="py-4 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-xs uppercase tracking-wider text-center text-gray-500 mb-2">
             {today.toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
@@ -60,20 +59,20 @@ const NewsPage = () => {
               year: "numeric",
             })}
           </div>
-          <h1 className="text-3xl font-serif font-bold text-center">
-            RecursivAI
+          <h1 className="text-5xl font-serif font-black text-center mb-4">
+            RecursivAI Times
           </h1>
         </div>
       </header>
 
-      <main className="py-4">
+      <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-black">
         {/* Top Stories */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
           {/* Main Feature */}
           {mainFeature && (
-            <div className="md:col-span-8 border-b pb-4 md:border-b-0 md:border-r md:pr-4">
+            <div className="md:col-span-8 border-b pb-6 md:border-b-0 md:border-r md:pr-6 border-gray-300">
               <Link to={`/post/${mainFeature.slug}`}>
-                <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
+                <div className="aspect-w-16 aspect-h-9 mb-4 overflow-hidden">
                   {mainFeature.image ? (
                     <img
                       src={mainFeature.image}
@@ -84,16 +83,16 @@ const NewsPage = () => {
                     <img
                       src={getPlaceholderImage(0)}
                       alt="Featured image placeholder"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover grayscale"
                     />
                   )}
                 </div>
-                <h2 className="text-2xl font-serif font-bold mb-1">
+                <h2 className="text-3xl font-serif font-bold mb-3 leading-tight">
                   {mainFeature.title}
                 </h2>
-                <p className="text-base mb-1">{mainFeature.summary}</p>
-                <p className="text-xs text-gray-500">
-                  {formatDate(mainFeature.created_at)}
+                <p className="text-base mb-2 font-serif dropcap">{mainFeature.summary}</p>
+                <p className="text-xs text-gray-500 italic">
+                  By Staff Reporter • {formatDate(mainFeature.created_at)}
                 </p>
               </Link>
             </div>
@@ -103,8 +102,8 @@ const NewsPage = () => {
           <div className="md:col-span-4">
             {secondaryFeatures.map((post, index) => (
               <Link key={post.slug} to={`/post/${post.slug}`}>
-                <div className={`${index !== 0 ? "border-t pt-3 mt-3" : ""}`}>
-                  <div className="aspect-w-16 aspect-h-9 mb-2 overflow-hidden">
+                <div className={`${index !== 0 ? "border-t pt-4 mt-4 border-gray-300" : ""}`}>
+                  <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
                     {post.image ? (
                       <img
                         src={post.image}
@@ -115,15 +114,15 @@ const NewsPage = () => {
                       <img
                         src={getPlaceholderImage(index + 1)}
                         alt="Image placeholder"
-                        className="w-full h-full object-cover bg-gray-200"
+                        className="w-full h-full object-cover grayscale"
                       />
                     )}
                   </div>
-                  <h3 className="text-lg font-serif font-bold mb-1">
+                  <h3 className="text-xl font-serif font-bold mb-2 leading-tight">
                     {post.title}
                   </h3>
-                  <p className="text-sm mb-1">{post.summary}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm mb-2 font-serif">{post.summary}</p>
+                  <p className="text-xs text-gray-500 italic">
                     {formatDate(post.created_at)}
                   </p>
                 </div>
@@ -132,15 +131,20 @@ const NewsPage = () => {
           </div>
         </div>
 
+        {/* Section Divider */}
+        <div className="border-t border-gray-300 mb-6 pt-1">
+          <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">Latest News</h4>
+        </div>
+
         {/* Remaining Stories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 border-t pt-4">
-          {remainingPosts.map((post) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {remainingPosts.map((post, index) => (
             <Link
               key={post.slug}
               to={`/post/${post.slug}`}
-              className="border-b pb-3"
+              className={`pb-4 ${index % 3 !== 2 ? "md:border-r md:pr-6 border-gray-300" : ""}`}
             >
-              <div className="aspect-w-16 aspect-h-9 mb-2 overflow-hidden">
+              <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
                 {post.image ? (
                   <img
                     src={post.image}
@@ -151,21 +155,28 @@ const NewsPage = () => {
                   <img
                     src={getPlaceholderImage(remainingPosts.indexOf(post) + 3)}
                     alt="Image placeholder"
-                    className="w-full h-full object-cover bg-gray-200"
+                    className="w-full h-full object-cover grayscale"
                   />
                 )}
               </div>
-              <h3 className="text-lg font-serif font-bold mb-1">
+              <h3 className="text-lg font-serif font-bold mb-2 leading-tight">
                 {post.title}
               </h3>
-              <p className="text-sm mb-1">{post.summary}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm mb-2 font-serif">{post.summary}</p>
+              <p className="text-xs text-gray-500 italic">
                 {formatDate(post.created_at)}
               </p>
             </Link>
           ))}
         </div>
       </main>
+
+      {/* Simple Footer */}
+      <footer className="mt-8 pt-6 border-t border-gray-300 text-sm text-gray-500 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-center">
+          © {new Date().getFullYear()} RecursivAI Times. All Rights Reserved.
+        </div>
+      </footer>
     </div>
   );
 };
