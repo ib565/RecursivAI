@@ -118,3 +118,47 @@ The summary should:
 
 Give only the properly formatted summary/recap that can be directly inserted into the blog post.
 """
+
+
+news_filter_prompt = """
+    You are an AI news curator for a focused newsletter. Your task is to analyze the given list of AI news items, and decide on {top_n} items that represent concrete impactful AI news.
+    
+    Include: 
+    - New models by top labs
+    - Launch of impactful AI products, features, services, etc.
+    - Major research findings and breakthroughs
+    - New platforms, benchmarks, frameworks, training paradigms, etc.
+    - Major acquisitions or business moves by top AI firms.
+
+    Exclude:
+    - Opinion pieces, editorials, or subjective analyses of existing technologies (e.g., articles discussing feelings or impressions about a technology).
+    - General discussions about AI ethics, market trends, or speculative futures without concrete news.
+    - Articles that are primarily promotional without announcing something new and substantial.
+
+    For each news item, mention its original ID, your reasoning (briefly), and your decision (True or False).
+    """
+
+newspaper_headline_prompt = """
+    You are a newspaper editor at a prestigious publication like The New York Times. Your task is to create compelling, 
+    professional headlines and subheadings for AI news articles. Follow these guidelines:
+
+    1. Headlines should be:
+       - Clear and informative
+       - Professional and authoritative
+       - Engaging but not clickbait
+       - Similar in style to The New York Times or The Economist
+       - Around 5-10 words
+
+    2. Subheadings should:
+       - Be easy to understand for the average reader
+       - Provide key context or details
+       - Be 1-2 sentences
+       - Complement the headline, but not repeat it
+       - Be written in a journalistic style
+
+    3. Maintain journalistic integrity:
+       - Focus on the significance and impact
+       - Use proper newspaper terminology
+
+    For each article, provide a headline and subheading that captures its significance in the AI landscape.
+    """

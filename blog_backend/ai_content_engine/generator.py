@@ -4,6 +4,8 @@ from ai_content_engine.agents.writer_agent import generate_blog_post_from_outlin
 from ai_content_engine.agents.summary_agent import (
     generate_weekly_summary_from_summaries,
 )
+from ai_content_engine.utils.news_finder import get_top_articles
+from ai_content_engine.agents.news_agent import generate_newspaper_headlines
 import asyncio
 import os
 import logging
@@ -18,6 +20,16 @@ def generate_weekly_summary(paper_summaries_dict: list[dict]):
     ]
     weekly_summary = generate_weekly_summary_from_summaries(paper_summaries)
     return weekly_summary
+
+
+async def generate_news_headlines(days_ago: int = 7):
+    logger.info("Generating news headlines...")
+    top_articles = get_top_articles(days_ago=days_ago)
+    if not top_articles:
+        logger.info("No top articles found, returning empty list.")
+        return []
+    headlines = await generate_newspaper_headlines(top_articles)
+    return headlines
 
 
 def generate_blog_post(paper_id: str, curated=False):
