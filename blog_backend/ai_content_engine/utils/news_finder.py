@@ -2,11 +2,8 @@ import os
 import requests
 import logging
 import feedparser
-import time
+import concurrent.futures
 import trafilatura
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from google import genai
@@ -231,80 +228,87 @@ def filter_top_articles_llm(all_articles, top_n=10):
     return filtered_articles
 
 
-def scrape_article_content(articles):
+def _scrape_and_process_article(article_info):
     """
-    Scrapes the full content of articles from their URLs.
-    Returns a list of dictionaries containing title, description, content, and source.
-    Falls back to description if scraping fails.
+    Scrapes a single article using trafilatura. Designed to be run in a thread.
+    Unpacks a tuple containing the article and its index.
     """
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    )
+    article, index, total_articles = article_info
+    logger.info(f"({index}/{total_articles}) Scraping: {article['title'][:50]}...")
 
-    driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install(), log_output=os.devnull),
-        options=options,
-    )
+    try:
+        downloaded_html = trafilatura.fetch_url(article["link"])
 
-    scraped_articles = []
-
-    for i, article in enumerate(articles, start=1):
-        logger.info(f"({i}/{len(articles)}) Scraping: {article['title'][:50]}...")
-        try:
-            # Go to the URL
-            driver.get(article["link"])
-            # Wait for page load
-            time.sleep(5)
-
-            # Get the page source
-            page_html = driver.page_source
-
-            # Try to extract content using trafilatura
+        if downloaded_html is None:
+            logger.warning(
+                f"({index}/{total_articles}) Failed to download article, falling back to description: {article['link']}"
+            )
+            content = article["description"]
+        else:
             content = trafilatura.extract(
-                page_html,
+                downloaded_html,
                 include_comments=False,
                 include_tables=False,
                 no_fallback=True,
             )
 
-            # If trafilatura fails, fall back to description
-            if not content or len(content) < 200:
-                content = article["description"]
-                logger.info("Success (using fallback description)")
-            else:
-                logger.info("Success")
-
-            scraped_articles.append(
-                {
-                    "title": article["title"],
-                    "description": article["description"],
-                    "content": content,
-                    "source": article["source"],
-                    "link": article["link"],
-                    "published_date": article.get("published_date"),
-                }
+        # If trafilatura fails to extract meaningful content, fall back to description
+        if not content or len(content) < 200:
+            content = article["description"]
+            logger.info(
+                f"({index}/{total_articles}) Success (fallback): {article['title'][:40]}..."
+            )
+        else:
+            logger.info(
+                f"({index}/{total_articles}) Success (scraped): {article['title'][:40]}..."
             )
 
-        except Exception as e:
-            logger.error(f"Error scraping article: {e}")
-            # Fall back to description if scraping fails
-            scraped_articles.append(
-                {
-                    "title": article["title"],
-                    "description": article["description"],
-                    "content": article["description"],  # Use description as content
-                    "source": article["source"],
-                    "link": article["link"],
-                    "published_date": article.get("published_date"),
-                }
-            )
+        return {
+            "title": article["title"],
+            "description": article["description"],
+            "content": content,
+            "source": article["source"],
+            "link": article["link"],
+            "published_date": article.get("published_date"),
+        }
+    except Exception as e:
+        logger.error(
+            f"({index}/{total_articles}) Error scraping {article['link']} with trafilatura: {e}"
+        )
+        # Fallback to description on any exception
+        return {
+            "title": article["title"],
+            "description": article["description"],
+            "content": article["description"],
+            "source": article["source"],
+            "link": article["link"],
+            "published_date": article.get("published_date"),
+        }
 
-    driver.quit()
-    # print truncated content of articles for error checking
+
+def scrape_article_content(articles: list[dict]) -> list[dict]:
+    """
+    Scrapes the full content of articles from their URLs in parallel using trafilatura.
+    Returns a list of dictionaries containing title, description, content, and source.
+    Falls back to description if scraping fails.
+    """
+    if not articles:
+        return []
+
+    logger.info("Starting parallel scraping with trafilatura...")
+
+    scraped_articles = []
+    total_articles = len(articles)
+
+    # Since these are lightweight network requests, we can use more workers.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        article_packages = [
+            (article, i + 1, total_articles) for i, article in enumerate(articles)
+        ]
+
+        results = executor.map(_scrape_and_process_article, article_packages)
+        scraped_articles = list(results)
+
     for article in scraped_articles:
         logger.info(
             f"Article content length: {len(article['content'])}: {article['content'][:300]}..."
