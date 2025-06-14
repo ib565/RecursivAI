@@ -24,7 +24,7 @@ def generate_weekly_summary(paper_summaries_dict: list[dict]):
 
 async def generate_news_headlines(days_ago: int = 7):
     logger.info("Generating news headlines...")
-    top_articles = get_top_articles(days_ago=days_ago)
+    top_articles = await asyncio.to_thread(get_top_articles, days_ago=days_ago)
     if not top_articles:
         logger.info("No top articles found, returning empty list.")
         return []

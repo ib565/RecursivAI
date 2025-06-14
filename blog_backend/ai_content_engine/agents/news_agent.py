@@ -29,15 +29,17 @@ async def _generate_single_headline(article: dict) -> HeadlineArticle:
         response = await client.aio.models.generate_content(
             model="gemini-2.0-flash",
             contents=[article_text],
-            generation_config=types.GenerationConfig(
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
                 response_mime_type="application/json",
                 response_schema=HeadlineResponse,
                 max_output_tokens=2048,
             ),
-            system_instruction=system_prompt,
         )
         result: HeadlineResponse = response.parsed
-
+        logger.info(
+            f"Headline for {article['title'][:50]}...: {result.headline} - {result.subheading}"
+        )
         return HeadlineArticle(
             original_article=article,
             headline=result.headline,

@@ -272,7 +272,7 @@ def scrape_article_content(articles):
             )
 
             # If trafilatura fails, fall back to description
-            if not content:
+            if not content or len(content) < 200:
                 content = article["description"]
                 logger.info("Success (using fallback description)")
             else:
@@ -285,6 +285,7 @@ def scrape_article_content(articles):
                     "content": content,
                     "source": article["source"],
                     "link": article["link"],
+                    "published_date": article.get("published_date"),
                 }
             )
 
@@ -298,6 +299,7 @@ def scrape_article_content(articles):
                     "content": article["description"],  # Use description as content
                     "source": article["source"],
                     "link": article["link"],
+                    "published_date": article.get("published_date"),
                 }
             )
 

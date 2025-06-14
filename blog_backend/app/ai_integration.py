@@ -3,7 +3,11 @@ import os
 import requests
 import json
 import logging
-from ai_content_engine.generator import generate_blog_post, generate_weekly_summary
+from ai_content_engine.generator import (
+    generate_blog_post,
+    generate_weekly_summary,
+    generate_news_headlines,
+)
 from ai_content_engine.utils.process_paper import (
     extract_arxiv_id,
     get_arxiv_published_date,
@@ -14,7 +18,7 @@ from .repositories.top_papers_repository import (
     save_papers_to_db,
 )
 from dotenv import load_dotenv
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -24,6 +28,12 @@ logger = logging.getLogger(__name__)
 PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
 os.makedirs(PAPERS_DIR, exist_ok=True)
 API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
+
+
+async def get_news_headlines() -> Optional[List[Any]]:
+    """Get the latest news headlines."""
+    headlines = await generate_news_headlines()
+    return headlines
 
 
 def find_latest_top_papers() -> Optional[Dict[str, Any]]:

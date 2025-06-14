@@ -14,6 +14,7 @@ from ..ai_integration import (
     get_latest_papers_from_db,
     save_papers_to_db,
     process_curated_papers_background,
+    get_news_headlines,
 )
 
 logger = logging.getLogger(__name__)
@@ -157,6 +158,13 @@ def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
 def healthcheck() -> Dict[str, str]:
     """Healthcheck endpoint."""
     return {"status": "ok", "timestamp": str(datetime.now())}
+
+
+@router.get("/news_headlines", response_model=List[Dict[str, Any]])
+async def get_news_headlines_api() -> List[Dict[str, Any]]:
+    """Get the latest news headlines."""
+    headlines = await get_news_headlines()
+    return [h.model_dump() for h in headlines]
 
 
 @router.get("/top_papers", response_model=List[Dict[str, Any]])

@@ -114,3 +114,11 @@ export const processPapers = () => {
     method: 'POST',
   });
 };
+
+/**
+ * Get news headlines
+ * @returns {Promise} - Array of news headlines
+ */
+export const getNewsHeadlines = (signal) => {
+  return fetchFromAPI('/posts/news_headlines', { signal });
+};
