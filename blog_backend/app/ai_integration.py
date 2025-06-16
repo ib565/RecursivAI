@@ -51,6 +51,19 @@ def generate_slug(title: str) -> str:
     return slug.strip("-")
 
 
+def _submit_post(post_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Submit post data to the blog API."""
+    title = post_data.get("title", "No Title")
+    try:
+        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
+        response.raise_for_status()
+        logger.info(f"Successfully submitted post: {title}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"API error while submitting post '{title}': {e}")
+        return None
+
+
 def create_blog_post(
     paper_id: str, published_date: str = None
 ) -> Optional[Dict[str, Any]]:
@@ -96,14 +109,7 @@ def create_blog_post(
     }
 
     # Step 3: Submit to API
-    try:
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created blog post: {blog_title}")
-        return response.json()
-    except Exception as e:
-        logger.error(f"API error while creating blog post for {paper_id}: {e}")
-        return None
+    return _submit_post(post_data)
 
 
 def is_paper_processed(paper_id: str) -> bool:
@@ -312,14 +318,7 @@ def create_curated_blog_post(
     }
 
     # Step 3: Submit to API
-    try:
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created curated blog post: {blog_title}")
-        return response.json()
-    except Exception as e:
-        logger.error(f"API error while creating curated blog post for {paper_id}: {e}")
-        return None
+    return _submit_post(post_data)
 
 
 def process_curated_papers(
@@ -382,40 +381,37 @@ def create_weekly_summary_post() -> Optional[Dict[str, Any]]:
 
         # Generate the summary content using your existing function
         weekly_content = generate_weekly_summary(recent_summaries)
-
-        # Create a period identifier (e.g., "2025-03-07_to_2025-03-14")
-        today = datetime.now()
-        week_ago = today - timedelta(days=7)
-        period = f"{week_ago.strftime('%Y-%m-%d')}_to_{today.strftime('%Y-%m-%d')}"
-        title = f"Last week in AI Research: {today.strftime('%d-%m-%Y')}"
-        # Format slug
-        slug = generate_slug(f"weekly-ai-summary-{today.strftime('%Y-%m-%d')}")
-
-        content_json = {"body": weekly_content, "images": [], "codeSnippets": []}
-
-        ai_metadata = {
-            "post_type": "weekly_summary",
-            "summary_period": period,
-            "included_posts": [s["id"] for s in recent_summaries],
-            "post_count": len(recent_summaries),
-        }
-
-        post_data = {
-            "title": title,
-            "slug": slug,
-            "summary": "The latest in AI research from the past week.",
-            "content": content_json,
-            "ai_metadata": ai_metadata,
-        }
-
-        # Submit to API
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created weekly summary: {title}")
-        return response.json()
     except Exception as e:
-        logger.error(f"Error creating weekly summary post: {e}", exc_info=True)
+        logger.error(f"Error generating weekly summary content: {e}", exc_info=True)
         return None
+
+    # Create a period identifier (e.g., "2025-03-07_to_2025-03-14")
+    today = datetime.now()
+    week_ago = today - timedelta(days=7)
+    period = f"{week_ago.strftime('%Y-%m-%d')}_to_{today.strftime('%Y-%m-%d')}"
+    title = f"Last week in AI Research: {today.strftime('%d-%m-%Y')}"
+    # Format slug
+    slug = generate_slug(f"weekly-ai-summary-{today.strftime('%Y-%m-%d')}")
+
+    content_json = {"body": weekly_content, "images": [], "codeSnippets": []}
+
+    ai_metadata = {
+        "post_type": "weekly_summary",
+        "summary_period": period,
+        "included_posts": [s["id"] for s in recent_summaries],
+        "post_count": len(recent_summaries),
+    }
+
+    post_data = {
+        "title": title,
+        "slug": slug,
+        "summary": "The latest in AI research from the past week.",
+        "content": content_json,
+        "ai_metadata": ai_metadata,
+    }
+
+    # Submit to API
+    return _submit_post(post_data)
 
 
 def generate_weekly_summary_background() -> None:
