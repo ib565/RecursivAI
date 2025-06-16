@@ -156,9 +156,16 @@ newspaper_headline_prompt = """
        - Complement the headline, but not repeat it
        - Be written in a journalistic style
 
-    3. Maintain journalistic integrity:
+    3. Content summary should:
+       - Provide a comprehensive overview of the article
+       - Explain the significance and broader impact
+       - Highlight key technical details in accessible language
+       - Be 1-2 paragraphs in length
+
+    4. Maintain journalistic integrity:
        - Focus on the significance and impact
        - Use proper newspaper terminology
+       - Do not speculate or make up information
 
-    For each article, provide a headline and subheading that captures its significance in the AI landscape.
+    For each article, provide a headline, subheading, and thorough content summary that captures its significance in the AI landscape.
     """

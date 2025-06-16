@@ -44,6 +44,7 @@ async def _generate_single_headline(article: dict) -> HeadlineArticle:
             original_article=article,
             headline=result.headline,
             subheading=result.subheading,
+            content=result.content,
         )
 
     except Exception as e:
@@ -53,6 +54,7 @@ async def _generate_single_headline(article: dict) -> HeadlineArticle:
             original_article=article,
             headline=article["title"],
             subheading="Unavailable due to an error.",
+            content="Unavailable due to an error.",
         )
 
 
