@@ -4,7 +4,7 @@ import requests
 import json
 import logging
 from ai_content_engine.generator import (
-    generate_blog_post,
+    generate_blog_post_content,
     generate_weekly_summary,
     generate_news_headlines,
 )
@@ -57,7 +57,7 @@ def create_blog_post(
     """Create a blog post from an arXiv paper."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title, blog_summary = generate_blog_post(paper_id)
+        blog_post, blog_title, blog_summary = generate_blog_post_content(paper_id)
     except Exception as e:
         logger.error(
             f"Error generating blog content for {paper_id}: {e}", exc_info=True
@@ -276,7 +276,9 @@ def create_curated_blog_post(
     Similar to create_blog_post but marks the post as curated and published."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title, blog_summary = generate_blog_post(paper_id, curated=True)
+        blog_post, blog_title, blog_summary = generate_blog_post_content(
+            paper_id, curated=True
+        )
     except Exception as e:
         logger.error(
             f"Error generating curated blog content for {paper_id}: {e}", exc_info=True

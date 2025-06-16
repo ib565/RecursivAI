@@ -32,7 +32,7 @@ async def generate_news_headlines(days_ago: int = 7):
     return headlines
 
 
-def generate_blog_post(paper_id: str, curated=False):
+def generate_blog_post_content(paper_id: str, curated=False):
     """Generate a blog post from an arXiv paper."""
     # Check if we should save intermediate files
     SAVE_INTERMEDIATES = os.getenv("SAVE_INTERMEDIATES", "False").lower() == "true"
