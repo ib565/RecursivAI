@@ -76,15 +76,21 @@ def api_process_curated_papers_background(
         )
 
 
-@router.post("/process_papers_create_posts")
-def api_process_papers_create_posts(
+@router.post("/discover_and_generate_posts", response_model=Dict[str, str])
+def api_discover_and_generate_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
     find_new_papers: bool = False,
     days: int = 7,
     num_papers: int = 10,
 ) -> Dict[str, str]:
-    """Process papers from top_papers.json and create posts in the background."""
+    """
+    Discovers new top papers from arXiv, saves them to the database,
+    and then generates blog posts from them in the background.
+
+    - `find_new_papers`: If `True`, searches for new papers before generating.
+    - `force_regenerate`: If `True`, regenerates posts even if they already exist.
+    """
     try:
         background_tasks.add_task(
             process_papers_create_posts_background,
@@ -93,7 +99,7 @@ def api_process_papers_create_posts(
             days,
             num_papers,
         )
-        return {"detail": "Paper processing started in background"}
+        return {"detail": "Paper discovery and generation started in background."}
     except Exception as e:
         logger.error(f"Failed to start background processing: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to start paper processing")
