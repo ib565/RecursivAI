@@ -153,7 +153,7 @@ const NewsPage = () => {
                   />
                 ) : (
                   <img
-                    src={getPlaceholderImage(remainingPosts.indexOf(post) + 3)}
+                    src={getPlaceholderImage(index + 3)}
                     alt="Image placeholder"
                     className="w-full h-full object-cover grayscale"
                   />
