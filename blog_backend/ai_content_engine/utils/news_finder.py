@@ -25,6 +25,7 @@ RSS_FEEDS = {
     "Anthropic": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic.xml",
     "Ollama": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_ollama.xml",
     "Microsoft": "https://www.microsoft.com/en-us/research/feed/",
+    "Hugging Face": "https://huggingface.co/blog/feed.xml",
     "KnowTechie AI": "https://knowtechie.com/category/ai/feed/",
 }
 
@@ -184,48 +185,56 @@ def is_valid_article(article):
 
 
 def filter_top_articles_llm(all_articles, top_n=10):
-    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    try:
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-    system_prompt = news_filter_prompt.format(top_n=top_n)
+        system_prompt = news_filter_prompt.format(top_n=top_n)
 
-    all_articles_text = ""
-    for i, item in enumerate(all_articles):
-        all_articles_text += f"News item {i+1}:\n"
-        all_articles_text += f"   Title: {item["title"]}\n"
-        all_articles_text += f"   Description: {item["description"]}\n"
-        all_articles_text += f"   Source: {item["source"]}\n\n"
+        all_articles_text = ""
+        for i, item in enumerate(all_articles):
+            all_articles_text += f"News item {i+1}:\n"
+            all_articles_text += f"   Title: {item['title']}\n"
+            all_articles_text += f"   Description: {item['description']}\n"
+            all_articles_text += f"   Source: {item['source']}\n\n"
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=[all_articles_text],
-        config=types.GenerateContentConfig(
-            system_instruction=system_prompt,
-            response_mime_type="application/json",
-            response_schema=list[NewsItemSelected],
-            max_output_tokens=8192,
-        ),
-    )
-    results: list[NewsItemSelected] = response.parsed
-    filtered_articles = []
-    logger.info("LLM Curation Decisions:")
-    for r in results:
-        # The prompt asks for top_n items, but Gemini might return more or less.
-        # We will filter based on the `is_relevant_news` flag.
-        if r.is_relevant_news:
-            decision = "INCLUDED"
-            # Add to list if relevant
-            if 0 < r.id <= len(all_articles):
-                filtered_articles.append(all_articles[r.id - 1])
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[all_articles_text],
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                response_mime_type="application/json",
+                response_schema=list[NewsItemSelected],
+                max_output_tokens=8192,
+            ),
+        )
+        results: list[NewsItemSelected] = response.parsed
+        filtered_articles = []
+        logger.info("LLM Curation Decisions:")
+        for r in results:
+            # The prompt asks for top_n items, but Gemini might return more or less.
+            # We will filter based on the `is_relevant_news` flag.
+            if r.is_relevant_news:
+                decision = "INCLUDED"
+                # Add to list if relevant
+                if 0 < r.id <= len(all_articles):
+                    filtered_articles.append(all_articles[r.id - 1])
+                else:
+                    logger.warning(
+                        f"LLM returned an invalid article ID: {r.id}. Skipping."
+                    )
+                    continue
             else:
-                logger.warning(f"LLM returned an invalid article ID: {r.id}. Skipping.")
-                continue
-        else:
-            decision = "EXCLUDED"
+                decision = "EXCLUDED"
 
-        logger.info(f"Item {r.id} ('{r.title[:40]}...'): {decision}")
-        logger.info(f"Reasoning: {r.reasoning}")
-
-    return filtered_articles
+            logger.info(f"Item {r.id} ('{r.title[:40]}...'): {decision}")
+            logger.info(f"Reasoning: {r.reasoning}")
+        logger.info(f"Number of selected articles: {len(filtered_articles)}")
+        return filtered_articles
+    except Exception as e:
+        logger.error(
+            f"Error during LLM filtering: {e}. Returning all articles as a fallback."
+        )
+        return all_articles
 
 
 def _scrape_and_process_article(article_info):
