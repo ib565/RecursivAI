@@ -1,0 +1,15 @@
+name: Generate weekly summary and post it
+
+on:
+  schedule:
+    # Run at 10:00 PM IST (16:30 UTC) every monday
+    - cron: '30 16  * * 1'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  generate-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate weekly summary
+        run: |
+          curl -X POST "https://recursivai.onrender.com/posts/generate_weekly_summary"
