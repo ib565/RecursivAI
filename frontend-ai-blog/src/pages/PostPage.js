@@ -91,7 +91,7 @@ const PostPage = () => {
       <meta property="og:title" content={post.title} />
       <meta property="og:description" content={post.summary} />
       <meta property="og:image" content={post.image} />
-      <meta property="og:url" content={`https://recursivai.com/blog/${post.slug}`} />
+      <meta property="og:url" content={`https://recursivai.vercel.app/post/${post.slug}`} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={post.title} />
       <meta name="twitter:description" content={post.summary} />
@@ -117,6 +117,23 @@ const PostPage = () => {
                   className="ml-2 text-cyber-neon hover:underline"
                 >
                   {post.ai_metadata.paper_id}
+                </a>
+              </div>
+            </div>
+          )}
+  
+          {/* News Source Info */}
+          {post.ai_metadata?.post_type === "news" && post.ai_metadata.original_article_url && (
+            <div className="bg-cyber-dark p-4 rounded-lg mb-8">
+              <div className="text-sm text-gray-400">
+                Original Source:
+                <a
+                  href={post.ai_metadata.original_article_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-cyber-neon hover:underline"
+                >
+                  {post.ai_metadata.original_article_source || "Source"}
                 </a>
               </div>
             </div>

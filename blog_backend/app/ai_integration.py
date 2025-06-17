@@ -3,7 +3,11 @@ import os
 import requests
 import json
 import logging
-from ai_content_engine.generator import generate_blog_post, generate_weekly_summary
+from ai_content_engine.generator import (
+    generate_blog_post_content,
+    generate_weekly_summary,
+    generate_news_headlines,
+)
 from ai_content_engine.utils.process_paper import (
     extract_arxiv_id,
     get_arxiv_published_date,
@@ -14,9 +18,11 @@ from .repositories.top_papers_repository import (
     save_papers_to_db,
 )
 from dotenv import load_dotenv
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pathlib import Path
 from datetime import datetime, timedelta
+from urllib.parse import quote
+import asyncio
 
 load_dotenv()
 
@@ -41,13 +47,62 @@ def generate_slug(title: str) -> str:
     return slug.strip("-")
 
 
+def _submit_post(post_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Submit post data to the blog API."""
+    title = post_data.get("title", "No Title")
+    try:
+        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
+        response.raise_for_status()
+        logger.info(f"Successfully submitted post: {title}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"API error while submitting post '{title}': {e}")
+        return None
+
+
+def create_news_post(headline_article) -> Optional[Dict[str, Any]]:
+    """Create a blog post from a news headline article."""
+    blog_title = headline_article.headline
+    blog_summary = headline_article.subheading
+    blog_post = headline_article.content
+    original_article = headline_article.original_article
+
+    # Step 2: Format and prepare data
+    slug = generate_slug(blog_title)
+
+    content_json = {
+        "body": blog_post,
+        "images": [],
+        "codeSnippets": [],
+    }
+
+    ai_metadata = {
+        "post_type": "news",
+        "original_article_url": original_article.get("link"),
+        "original_article_source": original_article.get("source"),
+        "original_article_title": original_article.get("title"),
+    }
+
+    post_data = {
+        "title": blog_title,
+        "slug": slug,
+        "summary": blog_summary,
+        "content": content_json,
+        "ai_metadata": ai_metadata,
+        "status": "published",
+    }
+
+    # Step 3: Submit to API
+    return _submit_post(post_data)
+
+
 def create_blog_post(
     paper_id: str, published_date: str = None
 ) -> Optional[Dict[str, Any]]:
     """Create a blog post from an arXiv paper."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title, blog_summary = generate_blog_post(paper_id)
+        blog_post, blog_title, blog_summary = generate_blog_post_content(paper_id)
     except Exception as e:
         logger.error(
             f"Error generating blog content for {paper_id}: {e}", exc_info=True
@@ -86,14 +141,25 @@ def create_blog_post(
     }
 
     # Step 3: Submit to API
+    return _submit_post(post_data)
+
+
+def is_article_processed(article_url: str) -> bool:
+    """Check if an article has already been processed by making a GET request to the API."""
     try:
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created blog post: {blog_title}")
-        return response.json()
+        if not article_url:
+            return False
+        # The URL needs to be encoded to be safely passed as a query parameter
+        encoded_url = quote(article_url, safe="")
+        url = f"{API_BASE_URL}/posts/article_exists?url={encoded_url}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json().get("exists", False)
+        return False
     except Exception as e:
-        logger.error(f"API error while creating blog post for {paper_id}: {e}")
-        return None
+        logger.error(f"Error checking if article exists: {e}")
+        return False
 
 
 def is_paper_processed(paper_id: str) -> bool:
@@ -266,7 +332,9 @@ def create_curated_blog_post(
     Similar to create_blog_post but marks the post as curated and published."""
     # Step 1: Generate content
     try:
-        blog_post, blog_title, blog_summary = generate_blog_post(paper_id, curated=True)
+        blog_post, blog_title, blog_summary = generate_blog_post_content(
+            paper_id, curated=True
+        )
     except Exception as e:
         logger.error(
             f"Error generating curated blog content for {paper_id}: {e}", exc_info=True
@@ -300,14 +368,7 @@ def create_curated_blog_post(
     }
 
     # Step 3: Submit to API
-    try:
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created curated blog post: {blog_title}")
-        return response.json()
-    except Exception as e:
-        logger.error(f"API error while creating curated blog post for {paper_id}: {e}")
-        return None
+    return _submit_post(post_data)
 
 
 def process_curated_papers(
@@ -370,40 +431,37 @@ def create_weekly_summary_post() -> Optional[Dict[str, Any]]:
 
         # Generate the summary content using your existing function
         weekly_content = generate_weekly_summary(recent_summaries)
-
-        # Create a period identifier (e.g., "2025-03-07_to_2025-03-14")
-        today = datetime.now()
-        week_ago = today - timedelta(days=7)
-        period = f"{week_ago.strftime('%Y-%m-%d')}_to_{today.strftime('%Y-%m-%d')}"
-        title = f"Last week in AI Research: {today.strftime('%d-%m-%Y')}"
-        # Format slug
-        slug = generate_slug(f"weekly-ai-summary-{today.strftime('%Y-%m-%d')}")
-
-        content_json = {"body": weekly_content, "images": [], "codeSnippets": []}
-
-        ai_metadata = {
-            "post_type": "weekly_summary",
-            "summary_period": period,
-            "included_posts": [s["id"] for s in recent_summaries],
-            "post_count": len(recent_summaries),
-        }
-
-        post_data = {
-            "title": title,
-            "slug": slug,
-            "summary": "The latest in AI research from the past week.",
-            "content": content_json,
-            "ai_metadata": ai_metadata,
-        }
-
-        # Submit to API
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
-        response.raise_for_status()
-        logger.info(f"Successfully created weekly summary: {title}")
-        return response.json()
     except Exception as e:
-        logger.error(f"Error creating weekly summary post: {e}", exc_info=True)
+        logger.error(f"Error generating weekly summary content: {e}", exc_info=True)
         return None
+
+    # Create a period identifier (e.g., "2025-03-07_to_2025-03-14")
+    today = datetime.now()
+    week_ago = today - timedelta(days=7)
+    period = f"{week_ago.strftime('%Y-%m-%d')}_to_{today.strftime('%Y-%m-%d')}"
+    title = f"Last week in AI Research: {today.strftime('%d-%m-%Y')}"
+    # Format slug
+    slug = generate_slug(f"weekly-ai-summary-{today.strftime('%Y-%m-%d')}")
+
+    content_json = {"body": weekly_content, "images": [], "codeSnippets": []}
+
+    ai_metadata = {
+        "post_type": "weekly_summary",
+        "summary_period": period,
+        "included_posts": [s["id"] for s in recent_summaries],
+        "post_count": len(recent_summaries),
+    }
+
+    post_data = {
+        "title": title,
+        "slug": slug,
+        "summary": "The latest in AI research from the past week.",
+        "content": content_json,
+        "ai_metadata": ai_metadata,
+    }
+
+    # Submit to API
+    return _submit_post(post_data)
 
 
 def generate_weekly_summary_background() -> None:
@@ -441,3 +499,79 @@ def process_papers_and_create_posts(
 
     # Return True if either operation was successful
     return result or posts_created
+
+
+async def process_news_headlines_to_posts(
+    force_regenerate: bool = False, days_ago: int = 7
+) -> bool:
+    """Generate news headlines and create posts from them."""
+    try:
+        headlines = await generate_news_headlines(
+            days_ago=days_ago
+        )  # This calls generate_news_headlines from generator.py
+        if not headlines:
+            logger.info("No news headlines generated.")
+            return False
+
+        articles_to_process = []
+        for headline in headlines:
+            article_url = headline.original_article.get("link")
+            if not article_url:
+                logger.warning(f"Headline missing article URL: {headline.headline}")
+                continue
+
+            if not force_regenerate and await asyncio.to_thread(
+                is_article_processed, article_url
+            ):
+                logger.info(f"Skipping already processed article: {article_url}")
+                continue
+            articles_to_process.append(headline)
+
+        if not articles_to_process:
+            logger.info("No new news articles to process.")
+            return False
+
+        tasks = [
+            asyncio.to_thread(create_news_post, headline)
+            for headline in articles_to_process
+        ]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        success_count = 0
+        total_count = len(results)
+
+        for headline, result in zip(articles_to_process, results):
+            article_url = headline.original_article.get("link", "N/A")
+            if isinstance(result, Exception):
+                logger.error(
+                    f"Error processing headline '{headline.headline}' ({article_url}): {result}"
+                )
+            elif result:
+                success_count += 1
+            else:
+                logger.warning(
+                    f"Failed to create news post for article '{headline.headline}' ({article_url})"
+                )
+
+        logger.info(
+            f"Processed {total_count} headlines, successfully created {success_count} blog posts"
+        )
+        return success_count > 0
+    except Exception as e:
+        logger.error(
+            f"Error processing news headlines to posts: {str(e)}", exc_info=True
+        )
+        return False
+
+
+def generate_news_posts_background(
+    force_regenerate: bool = False, days_ago: int = 7
+) -> None:
+    """Background task to generate news posts."""
+    logger.info("Starting background task to generate news posts.")
+    asyncio.run(
+        process_news_headlines_to_posts(
+            force_regenerate=force_regenerate, days_ago=days_ago
+        )
+    )

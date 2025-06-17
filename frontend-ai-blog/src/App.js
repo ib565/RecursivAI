@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import AboutPage from './pages/AboutPage';
 import CuratedPage from './pages/CuratedPage';
+import NewsPage from './pages/NewsPage';
 import './index.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/post/:slug" element={<PostPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/curated" element={<CuratedPage />} />
+            <Route path="/news" element={<NewsPage />} />
             <Route path="*" element={
               <div className="container mx-auto px-4 py-24">
                 <div className="max-w-3xl mx-auto bg-cyber-dark p-6 rounded-lg border border-cyber-pink relative">
