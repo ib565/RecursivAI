@@ -94,7 +94,7 @@ const PostPage = () => {
       <meta property="og:url" content={`https://recursivai.vercel.app/post/${post.slug}`} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={post.title} />
-      <meta name="twitter:sdescription" content={post.summary} />
+      <meta name="twitter:description" content={post.summary} />
       <meta name="twitter:image" content={post.image} />
   
       <div className="container mx-auto px-4 py-16">
