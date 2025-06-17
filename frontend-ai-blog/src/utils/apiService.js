@@ -115,13 +115,6 @@ export const processPapers = () => {
   });
 };
 
-/**
- * Get news headlines
- * @returns {Promise} - Array of news headlines
- */
-export const getNewsHeadlines = (signal) => {
-  return fetchFromAPI('/posts/news_headlines', { signal });
-};
 
 /**
  * Get all news posts with optional filtering
