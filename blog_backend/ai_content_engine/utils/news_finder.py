@@ -46,7 +46,7 @@ def parse_newsapi_date(date_str):
                 date_str = date_str[:-1] + "+00:00"
             return datetime.fromisoformat(date_str)
         except ValueError:
-            print(f"Warning: Could not parse date string: {date_str}")
+            logger.warning(f"Warning: Could not parse date string: {date_str}")
             return None
     return None
 
