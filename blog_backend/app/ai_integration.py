@@ -21,6 +21,8 @@ from dotenv import load_dotenv
 from typing import Dict, Any, Optional, List
 from pathlib import Path
 from datetime import datetime, timedelta
+from urllib.parse import quote
+import asyncio
 
 load_dotenv()
 
@@ -28,12 +30,6 @@ logger = logging.getLogger(__name__)
 PAPERS_DIR = os.getenv("PAPERS_DIR", "/tmp/papers")
 os.makedirs(PAPERS_DIR, exist_ok=True)
 API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
-
-
-async def get_news_headlines() -> Optional[List[Any]]:
-    """Get the latest news headlines."""
-    headlines = await generate_news_headlines()
-    return headlines
 
 
 def find_latest_top_papers() -> Optional[Dict[str, Any]]:
@@ -62,6 +58,42 @@ def _submit_post(post_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     except requests.exceptions.RequestException as e:
         logger.error(f"API error while submitting post '{title}': {e}")
         return None
+
+
+def create_news_post(headline_article) -> Optional[Dict[str, Any]]:
+    """Create a blog post from a news headline article."""
+    blog_title = headline_article.headline
+    blog_summary = headline_article.subheading
+    blog_post = headline_article.content
+    original_article = headline_article.original_article
+
+    # Step 2: Format and prepare data
+    slug = generate_slug(blog_title)
+
+    content_json = {
+        "body": blog_post,
+        "images": [],
+        "codeSnippets": [],
+    }
+
+    ai_metadata = {
+        "post_type": "news",
+        "original_article_url": original_article.get("link"),
+        "original_article_source": original_article.get("source"),
+        "original_article_title": original_article.get("title"),
+    }
+
+    post_data = {
+        "title": blog_title,
+        "slug": slug,
+        "summary": blog_summary,
+        "content": content_json,
+        "ai_metadata": ai_metadata,
+        "status": "published",
+    }
+
+    # Step 3: Submit to API
+    return _submit_post(post_data)
 
 
 def create_blog_post(
@@ -110,6 +142,24 @@ def create_blog_post(
 
     # Step 3: Submit to API
     return _submit_post(post_data)
+
+
+def is_article_processed(article_url: str) -> bool:
+    """Check if an article has already been processed by making a GET request to the API."""
+    try:
+        if not article_url:
+            return False
+        # The URL needs to be encoded to be safely passed as a query parameter
+        encoded_url = quote(article_url, safe="")
+        url = f"{API_BASE_URL}/posts/article_exists?url={encoded_url}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json().get("exists", False)
+        return False
+    except Exception as e:
+        logger.error(f"Error checking if article exists: {e}")
+        return False
 
 
 def is_paper_processed(paper_id: str) -> bool:
@@ -449,3 +499,79 @@ def process_papers_and_create_posts(
 
     # Return True if either operation was successful
     return result or posts_created
+
+
+async def process_news_headlines_to_posts(
+    force_regenerate: bool = False, days_ago: int = 7
+) -> bool:
+    """Generate news headlines and create posts from them."""
+    try:
+        headlines = await generate_news_headlines(
+            days_ago=days_ago
+        )  # This calls generate_news_headlines from generator.py
+        if not headlines:
+            logger.info("No news headlines generated.")
+            return False
+
+        articles_to_process = []
+        for headline in headlines:
+            article_url = headline.original_article.get("link")
+            if not article_url:
+                logger.warning(f"Headline missing article URL: {headline.headline}")
+                continue
+
+            if not force_regenerate and await asyncio.to_thread(
+                is_article_processed, article_url
+            ):
+                logger.info(f"Skipping already processed article: {article_url}")
+                continue
+            articles_to_process.append(headline)
+
+        if not articles_to_process:
+            logger.info("No new news articles to process.")
+            return False
+
+        tasks = [
+            asyncio.to_thread(create_news_post, headline)
+            for headline in articles_to_process
+        ]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        success_count = 0
+        total_count = len(results)
+
+        for headline, result in zip(articles_to_process, results):
+            article_url = headline.original_article.get("link", "N/A")
+            if isinstance(result, Exception):
+                logger.error(
+                    f"Error processing headline '{headline.headline}' ({article_url}): {result}"
+                )
+            elif result:
+                success_count += 1
+            else:
+                logger.warning(
+                    f"Failed to create news post for article '{headline.headline}' ({article_url})"
+                )
+
+        logger.info(
+            f"Processed {total_count} headlines, successfully created {success_count} blog posts"
+        )
+        return success_count > 0
+    except Exception as e:
+        logger.error(
+            f"Error processing news headlines to posts: {str(e)}", exc_info=True
+        )
+        return False
+
+
+def generate_news_posts_background(
+    force_regenerate: bool = False, days_ago: int = 7
+) -> None:
+    """Background task to generate news posts."""
+    logger.info("Starting background task to generate news posts.")
+    asyncio.run(
+        process_news_headlines_to_posts(
+            force_regenerate=force_regenerate, days_ago=days_ago
+        )
+    )

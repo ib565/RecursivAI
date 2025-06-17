@@ -14,7 +14,7 @@ from ..ai_integration import (
     get_latest_papers_from_db,
     save_papers_to_db,
     process_curated_papers_background,
-    get_news_headlines,
+    generate_news_posts_background,
 )
 
 logger = logging.getLogger(__name__)
@@ -147,6 +147,25 @@ def api_generate_weekly_summary(
         )
 
 
+@router.post("/generate_news", response_model=Dict[str, str])
+def api_generate_news_posts(
+    background_tasks: BackgroundTasks,
+    force_regenerate: bool = False,
+    days_ago: int = 7,
+) -> Dict[str, str]:
+    """Generate news posts from latest headlines in the background."""
+    try:
+        background_tasks.add_task(
+            generate_news_posts_background, force_regenerate, days_ago
+        )
+        return {"detail": "News post generation started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start news post generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start news post generation"
+        )
+
+
 @router.post("/top_papers", response_model=Dict[str, str])
 def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
@@ -164,13 +183,6 @@ def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
 def healthcheck() -> Dict[str, str]:
     """Healthcheck endpoint."""
     return {"status": "ok", "timestamp": str(datetime.now())}
-
-
-@router.get("/news_headlines", response_model=List[Dict[str, Any]])
-async def get_news_headlines_api() -> List[Dict[str, Any]]:
-    """Get the latest news headlines."""
-    headlines = await get_news_headlines()
-    return [h.model_dump() for h in headlines]
 
 
 @router.get("/top_papers", response_model=List[Dict[str, Any]])
@@ -295,6 +307,46 @@ def get_curated_posts(
     except Exception as e:
         logger.error(f"Error retrieving curated posts: {str(e)}")
         raise HTTPException(500, f"Error retrieving curated posts: {str(e)}")
+
+
+@router.get("/news", response_model=List[Post])
+def get_news_posts(
+    offset: int = 0,
+    limit: int = 10,
+    session: Session = Depends(get_session),
+) -> List[Post]:
+    """Get all news posts with pagination."""
+    try:
+        query = (
+            select(Post)
+            .where(Post.ai_metadata["post_type"].as_string() == "news")
+            .order_by(Post.created_at.desc())
+        )
+
+        query = query.offset(offset).limit(limit)
+
+        posts = session.exec(query).all()
+        return posts
+    except Exception as e:
+        logger.error(f"Error retrieving news posts: {str(e)}")
+        raise HTTPException(500, f"Error retrieving news posts: {str(e)}")
+
+
+@router.get("/article_exists", response_model=Dict[str, bool])
+def check_article_exists(
+    url: str, session: Session = Depends(get_session)
+) -> Dict[str, bool]:
+    """Check if a post with this article_url already exists."""
+    try:
+        logger.info(f"Checking if article exists: {url}")
+        query = select(Post).where(
+            Post.ai_metadata["original_article_url"].as_string() == url
+        )
+        existing = session.exec(query).first()
+        return {"exists": existing is not None}
+    except Exception as e:
+        logger.error(f"Error checking article existence: {str(e)}")
+        raise HTTPException(500, "Error checking article existence")
 
 
 @router.get("/{paper_id}/exists", response_model=Dict[str, bool])
