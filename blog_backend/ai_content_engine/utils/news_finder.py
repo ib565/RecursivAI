@@ -198,7 +198,7 @@ def filter_top_articles_llm(all_articles, top_n=10):
             all_articles_text += f"   Source: {item['source']}\n\n"
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash-preview-05-20",
+            model="gemini-2.5-flash",
             contents=[all_articles_text],
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
