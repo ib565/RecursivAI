@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getAllPosts } from "../utils/apiService";
+import { getNewsPosts } from "../utils/apiService";
 import { formatDate } from "../utils/formatters";
 
 const placeholderImages = [
@@ -24,7 +24,7 @@ const NewsPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const data = await getAllPosts({ limit: 9, post_types: "regular" });
+        const data = await getNewsPosts({ limit: 9 });
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);

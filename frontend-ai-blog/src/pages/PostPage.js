@@ -122,6 +122,23 @@ const PostPage = () => {
             </div>
           )}
   
+          {/* News Source Info */}
+          {post.ai_metadata?.post_type === "news" && post.ai_metadata.original_article_url && (
+            <div className="bg-cyber-dark p-4 rounded-lg mb-8">
+              <div className="text-sm text-gray-400">
+                Original Source:
+                <a
+                  href={post.ai_metadata.original_article_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-cyber-neon hover:underline"
+                >
+                  {post.ai_metadata.original_article_source || "Source"}
+                </a>
+              </div>
+            </div>
+          )}
+  
           {/* Post content */}
           <div className="prose prose-invert max-w-none mb-12">
             {post.content && post.content.body ? (

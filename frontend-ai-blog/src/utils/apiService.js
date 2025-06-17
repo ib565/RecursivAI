@@ -122,3 +122,25 @@ export const processPapers = () => {
 export const getNewsHeadlines = (signal) => {
   return fetchFromAPI('/posts/news_headlines', { signal });
 };
+
+/**
+ * Get all news posts with optional filtering
+ * @param {Object} params - Query parameters
+ * @param {number} params.limit - Maximum number of posts to return
+ * @param {number} params.offset - Number of posts to skip
+ * @returns {Promise} - Array of news posts
+ */
+export const getNewsPosts = (params = {}) => {
+  // Build query string from params
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, value);
+    }
+  });
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString ? `/posts/news?${queryString}` : "/posts/news";
+
+  return fetchFromAPI(endpoint);
+};
