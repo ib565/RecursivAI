@@ -35,6 +35,7 @@ RSS_FEEDS = {
     "Anthropic": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_anthropic.xml",
     "Ollama": "https://raw.githubusercontent.com/Olshansk/rss-feeds/main/feeds/feed_ollama.xml",
     "Microsoft": "https://www.microsoft.com/en-us/research/feed/",
+    "Hugging Face": "https://huggingface.co/blog/feed.xml",
     "KnowTechie AI": "https://knowtechie.com/category/ai/feed/",
 }
 
