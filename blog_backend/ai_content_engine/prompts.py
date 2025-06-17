@@ -121,7 +121,7 @@ Give only the properly formatted summary/recap that can be directly inserted int
 
 
 news_filter_prompt = """
-    You are an AI news curator for a focused newsletter. Your task is to analyze the given list of AI news items, and decide on {top_n} items that represent concrete impactful AI news.
+    You are an AI news curator for a focused newsletter. Your task is to analyze the given list of AI news items, and decide on ONLY {top_n} items that represent concrete impactful AI news.
     
     Include: 
     - New models by top labs
@@ -135,7 +135,7 @@ news_filter_prompt = """
     - General discussions about AI ethics, market trends, or speculative futures without concrete news.
     - Articles that are primarily promotional without announcing something new and substantial.
 
-    For each news item, mention its original ID, your reasoning (briefly), and your decision (True or False).
+    For each news item, mention its original ID, your reasoning (briefly), and your decision (True or False). Select the top {top_n} items.
     """
 
 newspaper_headline_prompt = """
@@ -157,10 +157,11 @@ newspaper_headline_prompt = """
        - Be written in a journalistic style
 
     3. Content summary should:
+       - Use markdown formatting
+       - Use concise bullet points
        - Provide a comprehensive overview of the article
        - Explain the significance and broader impact
-       - Highlight key technical details in accessible language
-       - Be 1-2 paragraphs in length
+       - Highlight key technical details in engaging and accessible language
 
     4. Maintain journalistic integrity:
        - Focus on the significance and impact
