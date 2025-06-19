@@ -152,11 +152,17 @@ def api_generate_news_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
     days_ago: int = 7,
+    top_n: int = 12,
 ) -> Dict[str, str]:
-    """Generate news posts from latest headlines in the background."""
+    """Generate news posts from latest headlines in the background.
+    Args:
+        force_regenerate: If True, regenerate news posts even if they already exist.
+        days_ago: Number of days ago to fetch news articles from.
+        top_n: Number of top news articles to fetch.
+    """
     try:
         background_tasks.add_task(
-            generate_news_posts_background, force_regenerate, days_ago
+            generate_news_posts_background, force_regenerate, days_ago, top_n
         )
         return {"detail": "News post generation started in background"}
     except Exception as e:

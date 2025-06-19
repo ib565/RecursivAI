@@ -502,12 +502,12 @@ def process_papers_and_create_posts(
 
 
 async def process_news_headlines_to_posts(
-    force_regenerate: bool = False, days_ago: int = 7
+    force_regenerate: bool = False, days_ago: int = 7, top_n: int = 12
 ) -> bool:
     """Generate news headlines and create posts from them."""
     try:
         headlines = await generate_news_headlines(
-            days_ago=days_ago
+            days_ago=days_ago, top_n=top_n
         )  # This calls generate_news_headlines from generator.py
         if not headlines:
             logger.info("No news headlines generated.")
@@ -566,12 +566,12 @@ async def process_news_headlines_to_posts(
 
 
 def generate_news_posts_background(
-    force_regenerate: bool = False, days_ago: int = 7
+    force_regenerate: bool = False, days_ago: int = 7, top_n: int = 12
 ) -> None:
     """Background task to generate news posts."""
     logger.info("Starting background task to generate news posts.")
     asyncio.run(
         process_news_headlines_to_posts(
-            force_regenerate=force_regenerate, days_ago=days_ago
+            force_regenerate=force_regenerate, days_ago=days_ago, top_n=top_n
         )
     )

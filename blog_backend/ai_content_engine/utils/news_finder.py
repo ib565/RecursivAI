@@ -184,7 +184,7 @@ def is_valid_article(article):
     return True
 
 
-def filter_top_articles_llm(all_articles, top_n=10):
+def filter_top_articles_llm(all_articles, top_n=12):
     try:
         client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -354,9 +354,9 @@ def deduplicate_articles(articles: list[dict]) -> list[dict]:
     return unique_articles
 
 
-def get_top_articles(days_ago: int = 7) -> list[dict]:
+def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     all_articles = fetch_all_articles(days_ago)
     deduplicated_articles = deduplicate_articles(all_articles)
-    top_articles = filter_top_articles_llm(deduplicated_articles)
+    top_articles = filter_top_articles_llm(deduplicated_articles, top_n=top_n)
     scraped_content = scrape_article_content(top_articles)
     return scraped_content
