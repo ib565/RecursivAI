@@ -531,16 +531,23 @@ async def process_news_headlines_to_posts(
             logger.info("No new news articles to process.")
             return False
 
-        tasks = [
-            asyncio.to_thread(create_news_post, headline)
-            for headline in articles_to_process
-        ]
-
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Reverse the list to process least important articles first,
+        # so the most important one gets the latest timestamp and appears first.
+        articles_to_process.reverse()
+        results = []
+        for headline in articles_to_process:
+            try:
+                # Process sequentially to maintain order
+                result = await asyncio.to_thread(create_news_post, headline)
+                results.append(result)
+            except Exception as e:
+                logger.error(f"Error processing headline '{headline.headline}': {e}")
+                results.append(e)  # Keep results count consistent
 
         success_count = 0
         total_count = len(results)
 
+        # Loop through original list and results for logging
         for headline, result in zip(articles_to_process, results):
             article_url = headline.original_article.get("link", "N/A")
             if isinstance(result, Exception):
