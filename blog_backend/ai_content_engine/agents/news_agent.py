@@ -22,7 +22,7 @@ async def _generate_single_headline(article: dict) -> HeadlineArticle:
     article_text = f"Article:\n"
     article_text += f"Title: {article['title']}\n"
     article_text += f"Description: {article['description']}\n"
-    article_text += f"Content: {article['content'][:4000]}\n"
+    article_text += f"Content: {article['content'][:5000]}\n"
     article_text += f"Source: {article['source']}\n"
 
     try:

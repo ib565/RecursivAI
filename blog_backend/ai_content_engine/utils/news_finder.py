@@ -9,6 +9,8 @@ from bs4 import BeautifulSoup
 from google import genai
 from google.genai import types
 from datetime import datetime, timedelta, timezone
+import asyncio
+from playwright.async_api import async_playwright
 
 from ai_content_engine.prompts import news_filter_prompt
 from ai_content_engine.models import NewsItemSelected
@@ -237,23 +239,92 @@ def filter_top_articles_llm(all_articles, top_n=12):
         return all_articles
 
 
+async def _scrape_content_with_playwright(url):
+    """
+    Fetches content using Playwright with JavaScript disabled to prevent
+    anti-bot scripts from breaking the page. It's a fallback for when
+    standard scraping with trafilatura fails.
+    This version collects text from all 'div.prose' blocks
+    within the article tag.
+    """
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+
+        # Create a new browser context with JavaScript disabled
+        context = await browser.new_context(java_script_enabled=False)
+        page = await context.new_page()
+
+        # Set headers to appear as a legitimate browser
+        await page.set_extra_http_headers(
+            {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 "
+                "Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;"
+                "q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.5",
+            }
+        )
+
+        logger.info(f"Visiting {url} with JavaScript DISABLED...")
+        try:
+            # Go to the page. Since JS is off, the Cloudflare challenge won't run.
+            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+
+            # Get the page content, which should be the initial, un-broken HTML
+            page_content = await page.content()
+
+            soup = BeautifulSoup(page_content, "html.parser")
+
+            # Find the article tag
+            article_tag = soup.find("article")
+            if article_tag:
+                # Find ALL 'prose' divs inside the article tag
+                prose_divs = article_tag.find_all("div", class_="prose")
+                if prose_divs:
+                    logger.info(
+                        f"Successfully found {len(prose_divs)} 'div.prose' blocks "
+                        "inside <article> tag."
+                    )
+                    # Collect text from all prose blocks and join them
+                    all_prose_text_parts = []
+                    for div in prose_divs:
+                        all_prose_text_parts.append(
+                            div.get_text(separator="\n\n", strip=True)
+                        )
+                    return "\n\n".join(all_prose_text_parts)
+                else:
+                    logger.warning(
+                        "Warning: No 'div.prose' blocks found. "
+                        "Extracting from entire <article> tag."
+                    )
+                    # Fallback to extracting from the entire article tag
+                    return article_tag.get_text(separator="\n\n", strip=True)
+            else:
+                logger.error("Error: Could not find the main <article> tag.")
+                return None
+
+        except Exception as e:
+            logger.error(f"An error occurred during playwright scraping: {e}")
+            return None
+        finally:
+            await browser.close()
+
+
 def _scrape_and_process_article(article_info):
     """
-    Scrapes a single article using trafilatura. Designed to be run in a thread.
+    Scrapes a single article using trafilatura, with a Playwright fallback.
+    Designed to be run in a thread.
     Unpacks a tuple containing the article and its index.
     """
     article, index, total_articles = article_info
     logger.info(f"({index}/{total_articles}) Scraping: {article['title'][:50]}...")
+    content = None
 
     try:
         downloaded_html = trafilatura.fetch_url(article["link"])
 
-        if downloaded_html is None:
-            logger.warning(
-                f"({index}/{total_articles}) Failed to download article, falling back to description: {article['link']}"
-            )
-            content = article["description"]
-        else:
+        if downloaded_html:
             content = trafilatura.extract(
                 downloaded_html,
                 include_comments=False,
@@ -261,15 +332,33 @@ def _scrape_and_process_article(article_info):
                 no_fallback=True,
             )
 
-        # If trafilatura fails to extract meaningful content, fall back to description
+        # If trafilatura fails or returns little content, try playwright
         if not content or len(content) < 200:
-            content = article["description"]
             logger.info(
-                f"({index}/{total_articles}) Success (fallback): {article['title'][:40]}..."
+                f"({index}/{total_articles}) Trafilatura failed for {article['source']}. "
+                "Trying playwright..."
             )
+            try:
+                content = asyncio.run(_scrape_content_with_playwright(article["link"]))
+            except Exception as e:
+                logger.error(
+                    f"({index}/{total_articles}) Playwright fallback also failed: {e}"
+                )
+                content = None  # Ensure content is None if playwright fails
+
+            # If still no content, fall back to the description
+            if not content or len(content) < 200:
+                content = article["description"]
+                logger.info(
+                    f"({index}/{total_articles}) Success (fallback to description): {article['title'][:40]}..."
+                )
+            else:
+                logger.info(
+                    f"({index}/{total_articles}) Success (scraped with playwright): {article['title'][:40]}..."
+                )
         else:
             logger.info(
-                f"({index}/{total_articles}) Success (scraped): {article['title'][:40]}..."
+                f"({index}/{total_articles}) Success (scraped with trafilatura): {article['title'][:40]}..."
             )
 
         return {
@@ -288,7 +377,7 @@ def _scrape_and_process_article(article_info):
         return {
             "title": article["title"],
             "description": article["description"],
-            "content": article["description"],
+            "content": article["description"],  # Fallback content
             "source": article["source"],
             "link": article["link"],
             "published_date": article.get("published_date"),
