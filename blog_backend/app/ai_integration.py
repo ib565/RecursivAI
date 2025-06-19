@@ -530,7 +530,7 @@ async def process_news_headlines_to_posts(
         if not articles_to_process:
             logger.info("No new news articles to process.")
             return False
-
+        logger.info(f"Processing {len(articles_to_process)} news articles.")
         # Reverse the list to process least important articles first,
         # so the most important one gets the latest timestamp and appears first.
         articles_to_process.reverse()

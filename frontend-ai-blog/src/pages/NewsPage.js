@@ -14,6 +14,8 @@ const getPlaceholderImage = (index) => {
   return placeholderImages[index % placeholderImages.length];
 };
 
+const NUM_POSTS_TO_FETCH = 12;
+
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ const NewsPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const data = await getNewsPosts({ limit: 12 });
+        const data = await getNewsPosts({ limit: NUM_POSTS_TO_FETCH });
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);
@@ -44,7 +46,7 @@ const NewsPage = () => {
   // Separate posts for different sections
   const mainFeature = posts[0];
   const secondaryFeatures = posts.slice(1, 3);
-  const remainingPosts = posts.slice(3, 9);
+  const remainingPosts = posts.slice(3, NUM_POSTS_TO_FETCH);
 
   return (
     <div className="newspaper-page min-h-screen w-full bg-white text-black">

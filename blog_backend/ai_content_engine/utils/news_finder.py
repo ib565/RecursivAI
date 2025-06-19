@@ -310,7 +310,7 @@ def scrape_article_content(articles: list[dict]) -> list[dict]:
     total_articles = len(articles)
 
     # Since these are lightweight network requests, we can use more workers.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
         article_packages = [
             (article, i + 1, total_articles) for i, article in enumerate(articles)
         ]
