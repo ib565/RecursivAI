@@ -24,7 +24,7 @@ const NewsPage = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const data = await getNewsPosts({ limit: 9 });
+        const data = await getNewsPosts({ limit: 12 });
         setPosts(data);
       } catch (err) {
         console.error("Error fetching posts:", err);
