@@ -17,7 +17,6 @@ body {
 /* Newspaper specific styles */
 .newspaper-page {
   font-family: 'Source Serif Pro', 'Times New Roman', serif;
-  background-color: #ffffff;
   color: #000000;
   min-height: 100vh;
   width: 100%;

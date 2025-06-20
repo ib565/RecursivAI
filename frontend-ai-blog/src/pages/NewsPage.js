@@ -39,9 +39,9 @@ const NewsPage = () => {
     fetchPosts();
   }, []);
 
-  if (loading) return <div className="text-center py-10 bg-white text-black">Loading posts...</div>;
+  if (loading) return <div className="text-center py-10 bg-[#FAF9F5] text-black">Loading posts...</div>;
   if (error)
-    return <div className="text-center py-10 bg-white text-red-600">{error}</div>;
+    return <div className="text-center py-10 bg-[#FAF9F5] text-red-600">{error}</div>;
 
   // Separate posts for different sections
   const mainFeature = posts[0];
@@ -49,10 +49,10 @@ const NewsPage = () => {
   const remainingPosts = posts.slice(3, NUM_POSTS_TO_FETCH);
 
   return (
-    <div className="w-full bg-white">
-      <div className="newspaper-page min-h-screen w-full bg-white text-black transform scale-90 origin-top mx-auto">
+    <div className="w-full bg-[#FAF9F5]">
+      <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
         {/* Header/Navigation */}
-        <header className="pt-8 pb-4 bg-white">
+        <header className="pt-8 pb-4 bg-[#FAF9F5]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <div className="text-s tracking-wider font-medium"> 
@@ -83,7 +83,7 @@ const NewsPage = () => {
           </div>
         </header>
 
-        <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black">
+        <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
           {/* Top Stories */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
             {/* Main Feature */}
@@ -190,7 +190,7 @@ const NewsPage = () => {
         </main>
 
         {/* Simple Footer */}
-        <footer className="mt-8 pt-6 border-t border-gray-300 text-sm text-gray-500 bg-white">
+        <footer className="mt-8 pt-6 border-t border-gray-300 text-sm text-gray-500 bg-[#FAF9F5]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-center">
             © {new Date().getFullYear()} RecursivAI Times. All Rights Reserved.
           </div>
