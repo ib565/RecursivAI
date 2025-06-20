@@ -155,12 +155,12 @@ const NewsPage = () => {
           </div>
 
           {/* Remaining Stories Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3">
             {remainingPosts.map((post, index) => (
               <Link
                 key={post.slug}
                 to={`/post/${post.slug}`}
-                className={`pb-4 ${index % 3 !== 2 ? "md:border-r md:pr-6 border-gray-300" : ""}`}
+                className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
               >
                 <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
                   {post.image ? (
