@@ -279,7 +279,7 @@ async def _scrape_content_with_playwright(context, url):
                 # Fallback to extracting from the entire article tag
                 return article_tag.get_text(separator="\n\n", strip=True)
         else:
-            logger.error("Error: Could not find the main <article> tag.")
+            logger.error(f"Error: Could not find the main <article> tag for URL: {url}.")
             return None
 
     except Exception as e:
