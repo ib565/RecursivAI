@@ -502,12 +502,12 @@ def process_papers_and_create_posts(
 
 
 async def process_news_headlines_to_posts(
-    force_regenerate: bool = False, days_ago: int = 7
+    force_regenerate: bool = False, days_ago: int = 7, top_n: int = 12
 ) -> bool:
     """Generate news headlines and create posts from them."""
     try:
         headlines = await generate_news_headlines(
-            days_ago=days_ago
+            days_ago=days_ago, top_n=top_n
         )  # This calls generate_news_headlines from generator.py
         if not headlines:
             logger.info("No news headlines generated.")
@@ -530,17 +530,24 @@ async def process_news_headlines_to_posts(
         if not articles_to_process:
             logger.info("No new news articles to process.")
             return False
-
-        tasks = [
-            asyncio.to_thread(create_news_post, headline)
-            for headline in articles_to_process
-        ]
-
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        logger.info(f"Processing {len(articles_to_process)} news articles.")
+        # Reverse the list to process least important articles first,
+        # so the most important one gets the latest timestamp and appears first.
+        articles_to_process.reverse()
+        results = []
+        for headline in articles_to_process:
+            try:
+                # Process sequentially to maintain order
+                result = await asyncio.to_thread(create_news_post, headline)
+                results.append(result)
+            except Exception as e:
+                logger.error(f"Error processing headline '{headline.headline}': {e}")
+                results.append(e)  # Keep results count consistent
 
         success_count = 0
         total_count = len(results)
 
+        # Loop through original list and results for logging
         for headline, result in zip(articles_to_process, results):
             article_url = headline.original_article.get("link", "N/A")
             if isinstance(result, Exception):
@@ -566,12 +573,12 @@ async def process_news_headlines_to_posts(
 
 
 def generate_news_posts_background(
-    force_regenerate: bool = False, days_ago: int = 7
+    force_regenerate: bool = False, days_ago: int = 7, top_n: int = 12
 ) -> None:
     """Background task to generate news posts."""
     logger.info("Starting background task to generate news posts.")
     asyncio.run(
         process_news_headlines_to_posts(
-            force_regenerate=force_regenerate, days_ago=days_ago
+            force_regenerate=force_regenerate, days_ago=days_ago, top_n=top_n
         )
     )

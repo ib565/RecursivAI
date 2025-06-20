@@ -134,6 +134,7 @@ news_filter_prompt = """
     - Opinion pieces, editorials, or subjective analyses of existing technologies (e.g., articles discussing feelings or impressions about a technology).
     - General discussions about AI ethics, market trends, or speculative futures without concrete news.
     - Articles that are primarily promotional without announcing something new and substantial.
+    - Overlapping articles covering the same news.
 
     For each news item, mention its original ID, your reasoning (briefly), and your decision (True or False). Select and rank the top {top_n} items.
     """
