@@ -2,7 +2,6 @@ import os
 import requests
 import logging
 import feedparser
-import concurrent.futures
 import trafilatura
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -186,7 +185,7 @@ def is_valid_article(article):
     return True
 
 
-def filter_top_articles_llm(all_articles, top_n=12):
+async def filter_top_articles_llm(all_articles, top_n=12):
     try:
         client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -199,7 +198,7 @@ def filter_top_articles_llm(all_articles, top_n=12):
             all_articles_text += f"   Description: {item['description']}\n"
             all_articles_text += f"   Source: {item['source']}\n\n"
 
-        response = client.models.generate_content(
+        response = await client.aio.models.generate_content(
             model="gemini-2.0-flash",
             contents=[all_articles_text],
             config=types.GenerateContentConfig(
@@ -239,82 +238,74 @@ def filter_top_articles_llm(all_articles, top_n=12):
         return all_articles
 
 
-async def _scrape_content_with_playwright(url):
+async def _scrape_content_with_playwright(context, url):
     """
-    Fetches content using Playwright with JavaScript disabled to prevent
-    anti-bot scripts from breaking the page. It's a fallback for when
-    standard scraping with trafilatura fails.
+    Fetches content using a Playwright page from a shared browser context.
     This version collects text from all 'div.prose' blocks
     within the article tag.
     """
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-
-        # Create a new browser context with JavaScript disabled
-        context = await browser.new_context(java_script_enabled=False)
-        page = await context.new_page()
-
-        # Set headers to appear as a legitimate browser
-        await page.set_extra_http_headers(
-            {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 "
-                "Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;"
-                "q=0.9,image/webp,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.5",
-            }
-        )
-
+    page = await context.new_page()
+    try:
         logger.info(f"Visiting {url} with JavaScript DISABLED...")
-        try:
-            # Go to the page. Since JS is off, the Cloudflare challenge won't run.
-            await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        # Go to the page. Since JS is off, the Cloudflare challenge won't run.
+        await page.goto(url, wait_until="domcontentloaded", timeout=60000)
 
-            # Get the page content, which should be the initial, un-broken HTML
-            page_content = await page.content()
+        # Get the page content, which should be the initial, un-broken HTML
+        page_content = await page.content()
 
-            soup = BeautifulSoup(page_content, "html.parser")
-
-            # Find the article tag
-            article_tag = soup.find("article")
-            if article_tag:
-                # Find ALL 'prose' divs inside the article tag
-                prose_divs = article_tag.find_all("div", class_="prose")
-                if prose_divs:
-                    logger.info(
-                        f"Successfully found {len(prose_divs)} 'div.prose' blocks "
-                        "inside <article> tag."
+        soup = BeautifulSoup(page_content, "html.parser")
+        # Find the article tag
+        article_tag = soup.find("article")
+        if article_tag:
+            # Find ALL 'prose' divs inside the article tag
+            prose_divs = article_tag.find_all("div", class_="prose")
+            if prose_divs:
+                logger.info(
+                    f"Successfully found {len(prose_divs)} 'div.prose' blocks "
+                    "inside <article> tag."
+                )
+                # Collect text from all prose blocks and join them
+                all_prose_text_parts = []
+                for div in prose_divs:
+                    all_prose_text_parts.append(
+                        div.get_text(separator="\n\n", strip=True)
                     )
-                    # Collect text from all prose blocks and join them
-                    all_prose_text_parts = []
-                    for div in prose_divs:
-                        all_prose_text_parts.append(
-                            div.get_text(separator="\n\n", strip=True)
-                        )
-                    return "\n\n".join(all_prose_text_parts)
-                else:
-                    logger.warning(
-                        "Warning: No 'div.prose' blocks found. "
-                        "Extracting from entire <article> tag."
-                    )
-                    # Fallback to extracting from the entire article tag
-                    return article_tag.get_text(separator="\n\n", strip=True)
+                return "\n\n".join(all_prose_text_parts)
             else:
-                logger.error("Error: Could not find the main <article> tag.")
-                return None
-
-        except Exception as e:
-            logger.error(f"An error occurred during playwright scraping: {e}")
+                logger.warning(
+                    "Warning: No 'div.prose' blocks found. "
+                    "Extracting from entire <article> tag."
+                )
+                # Fallback to extracting from the entire article tag
+                return article_tag.get_text(separator="\n\n", strip=True)
+        else:
+            logger.error("Error: Could not find the main <article> tag.")
             return None
-        finally:
-            await browser.close()
+
+    except Exception as e:
+        logger.error(f"An error occurred during playwright scraping: {e}")
+        return None
+    finally:
+        await page.close()
 
 
-def _scrape_and_process_article(article_info):
+def _fetch_and_extract_with_trafilatura(link):
+    """Helper to run blocking trafilatura calls in a thread."""
+    downloaded_html = trafilatura.fetch_url(link)
+    if downloaded_html:
+        return trafilatura.extract(
+            downloaded_html,
+            include_comments=False,
+            include_tables=False,
+            no_fallback=True,
+        )
+    return None
+
+
+async def _scrape_and_process_article_async(article_info, browser_context):
     """
     Scrapes a single article using trafilatura, with a Playwright fallback.
-    Designed to be run in a thread.
+    Designed to be run concurrently.
     Unpacks a tuple containing the article and its index.
     """
     article, index, total_articles = article_info
@@ -322,15 +313,9 @@ def _scrape_and_process_article(article_info):
     content = None
 
     try:
-        downloaded_html = trafilatura.fetch_url(article["link"])
-
-        if downloaded_html:
-            content = trafilatura.extract(
-                downloaded_html,
-                include_comments=False,
-                include_tables=False,
-                no_fallback=True,
-            )
+        content = await asyncio.to_thread(
+            _fetch_and_extract_with_trafilatura, article["link"]
+        )
 
         # If trafilatura fails or returns little content, try playwright
         if not content or len(content) < 200:
@@ -339,7 +324,9 @@ def _scrape_and_process_article(article_info):
                 "Trying playwright..."
             )
             try:
-                content = asyncio.run(_scrape_content_with_playwright(article["link"]))
+                content = await _scrape_content_with_playwright(
+                    browser_context, article["link"]
+                )
             except Exception as e:
                 logger.error(
                     f"({index}/{total_articles}) Playwright fallback also failed: {e}"
@@ -371,7 +358,7 @@ def _scrape_and_process_article(article_info):
         }
     except Exception as e:
         logger.error(
-            f"({index}/{total_articles}) Error scraping {article['link']} with trafilatura: {e}"
+            f"({index}/{total_articles}) Error scraping {article['link']}: {e}"
         )
         # Fallback to description on any exception
         return {
@@ -384,35 +371,54 @@ def _scrape_and_process_article(article_info):
         }
 
 
-def scrape_article_content(articles: list[dict]) -> list[dict]:
+async def scrape_article_content_async(articles: list[dict]) -> list[dict]:
     """
-    Scrapes the full content of articles from their URLs in parallel using trafilatura.
+    Scrapes the full content of articles from their URLs in parallel.
     Returns a list of dictionaries containing title, description, content, and source.
     Falls back to description if scraping fails.
     """
     if not articles:
         return []
 
-    logger.info("Starting parallel scraping with trafilatura...")
+    logger.info("Starting parallel scraping with a shared browser instance...")
+
+    total_articles = len(articles)
+    article_packages = [
+        (article, i + 1, total_articles) for i, article in enumerate(articles)
+    ]
 
     scraped_articles = []
-    total_articles = len(articles)
-
-    # Since these are lightweight network requests, we can use more workers.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
-        article_packages = [
-            (article, i + 1, total_articles) for i, article in enumerate(articles)
-        ]
-
-        results = executor.map(_scrape_and_process_article, article_packages)
-        scraped_articles = list(results)
-
-    for article in scraped_articles:
-        logger.info(
-            f"Article content length: {len(article['content'])}: {article['content'][:300]}..."
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        # Create one context for all pages
+        context = await browser.new_context(
+            java_script_enabled=False,
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 "
+            "Safari/537.36",
+        )
+        await context.set_extra_http_headers(
+            {
+                "Accept": "text/html,application/xhtml+xml,application/xml;"
+                "q=0.9,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.5",
+            }
         )
 
-    return scraped_articles
+        tasks = [
+            _scrape_and_process_article_async(pkg, context) for pkg in article_packages
+        ]
+        scraped_articles = await asyncio.gather(*tasks)
+
+        await browser.close()
+
+    for article in scraped_articles:
+        if article and article.get("content"):
+            logger.info(
+                f"Article content length: {len(article['content'])}: {article['content'][:300]}..."
+            )
+
+    return [article for article in scraped_articles if article is not None]
 
 
 def fetch_all_articles(days_ago: int = 7) -> list[dict]:
@@ -443,9 +449,9 @@ def deduplicate_articles(articles: list[dict]) -> list[dict]:
     return unique_articles
 
 
-def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
-    all_articles = fetch_all_articles(days_ago)
+async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
+    all_articles = await asyncio.to_thread(fetch_all_articles, days_ago)
     deduplicated_articles = deduplicate_articles(all_articles)
-    top_articles = filter_top_articles_llm(deduplicated_articles, top_n=top_n)
-    scraped_content = scrape_article_content(top_articles)
+    top_articles = await filter_top_articles_llm(deduplicated_articles, top_n=top_n)
+    scraped_content = await scrape_article_content_async(top_articles)
     return scraped_content
