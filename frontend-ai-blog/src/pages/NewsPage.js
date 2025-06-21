@@ -66,7 +66,7 @@ const NewsPage = () => {
               <h1 className="text-5xl font-serif font-black text-center flex-grow my-4">
                 RecursivAI
               </h1>
-              <div className="text-s invisible">
+              <div className="text-s tracking-wider invisible">
                 {/* Empty div for flex spacing */}
                 {today.toLocaleDateString("en-US", {
                   weekday: "long",
@@ -90,7 +90,7 @@ const NewsPage = () => {
             {mainFeature && (
               <div className="md:col-span-8 border-b pb-6 md:border-b-0 md:border-r md:pr-6 border-gray-300">
                 <Link to={`/post/${mainFeature.slug}`}>
-                  <div className="aspect-w-16 aspect-h-9 mb-4 overflow-hidden">
+                  <div className="aspect-[16/9] mb-4 overflow-hidden">
                     {mainFeature.image ? (
                       <img
                         src={mainFeature.image}
@@ -121,7 +121,7 @@ const NewsPage = () => {
               {secondaryFeatures.map((post, index) => (
                 <Link key={post.slug} to={`/post/${post.slug}`}>
                   <div className={`${index !== 0 ? "border-t pt-4 mt-4 border-gray-300" : ""}`}>
-                    <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
+                    <div className="aspect-[16/9] mb-3 overflow-hidden">
                       {post.image ? (
                         <img
                           src={post.image}
@@ -162,7 +162,7 @@ const NewsPage = () => {
                 to={`/post/${post.slug}`}
                 className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
               >
-                <div className="aspect-w-16 aspect-h-9 mb-3 overflow-hidden">
+                <div className="aspect-[16/9] mb-3 overflow-hidden">
                   {post.image ? (
                     <img
                       src={post.image}

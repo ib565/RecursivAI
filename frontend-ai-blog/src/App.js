@@ -12,7 +12,7 @@ import './index.css';
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-cyber-black">
+      <div className="flex flex-col min-h-screen">
         <Header />
         
         {/* Main content with padding for fixed header */}
