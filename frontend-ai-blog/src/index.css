@@ -17,19 +17,12 @@ body {
 /* Newspaper specific styles */
 .newspaper-page {
   font-family: 'Source Serif Pro', 'Times New Roman', serif;
-  background-color: #ffffff;
   color: #000000;
   min-height: 100vh;
   width: 100%;
 }
 
-.newspaper-container,
-.newspaper-page {
-  font-family: 'Source Serif Pro', 'Times New Roman', serif;
-}
-
-.newspaper-page h1,
-.newspaper-container h1 {
+.newspaper-page h1 {
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -37,33 +30,26 @@ body {
 
 .newspaper-page h2, 
 .newspaper-page h3, 
-.newspaper-page h4,
-.newspaper-container h2, 
-.newspaper-container h3, 
-.newspaper-container h4 {
+.newspaper-page h4 {
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
   letter-spacing: -0.02em;
 }
 
-.newspaper-page p,
-.newspaper-container p {
+.newspaper-page p {
   font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
   line-height: 1.6;
 }
 
-.newspaper-page .leading-tight,
-.newspaper-container .leading-tight {
+.newspaper-page .leading-tight {
   line-height: 1.2;
 }
 
-.newspaper-page img.grayscale,
-.newspaper-container img.grayscale {
+.newspaper-page img.grayscale {
   filter: grayscale(30%);
   transition: filter 0.3s ease;
 }
 
-.newspaper-page img.grayscale:hover,
-.newspaper-container img.grayscale:hover {
+.newspaper-page img.grayscale:hover {
   filter: grayscale(0%);
 }
 
@@ -117,38 +103,6 @@ h1.text-4xl {
 h2.font-serif, h3.font-serif {
   font-weight: 700;
   line-height: 1.2;
-}
-
-.aspect-w-16 {
-  position: relative;
-  width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  overflow: hidden;
-}
-
-.aspect-w-16 img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.aspect-h-9 {
-  position: relative;
-}
-
-.aspect-w-16 > div,
-.aspect-h-9 > div {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Hover effects for story links */
