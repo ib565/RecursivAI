@@ -52,10 +52,10 @@ const NewsPage = () => {
     <div className="w-full bg-[#FAF9F5]">
       <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
         {/* Header/Navigation */}
-        <header className="pt-8 pb-4 bg-[#FAF9F5]">
+        <header className="pt-4 pb-4 bg-[#FAF9F5]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-              <div className="text-s tracking-wider font-medium"> 
+              <div className="text-s tracking-wider font-medium">
                 {today.toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
@@ -63,9 +63,17 @@ const NewsPage = () => {
                   year: "numeric",
                 })}
               </div>
-              <h1 className="text-5xl font-serif font-black text-center flex-grow my-4">
-                RecursivAI
-              </h1>
+              <div className="text-center flex-grow my-4">
+                <nav className="mb-1 font-body">
+                  <Link to="/news" className="text-xs font-bold uppercase tracking-wider text-black mx-3">News</Link>
+                  <Link to="/" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Research</Link>
+                  <Link to="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
+                  <Link to="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
+                </nav>
+                <h1 className="text-5xl font-serif font-black">
+                  RecursivAI
+                </h1>
+              </div>
               <div className="text-s tracking-wider invisible">
                 {/* Empty div for flex spacing */}
                 {today.toLocaleDateString("en-US", {
@@ -88,7 +96,7 @@ const NewsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
             {/* Main Feature */}
             {mainFeature && (
-              <div className="md:col-span-8 border-b pb-6 md:border-b-0 md:border-r md:pr-6 border-gray-300">
+              <div className="md:col-span-7 border-b pb-6 md:border-b-0 md:border-r md:pr-6 border-gray-300">
                 <Link to={`/post/${mainFeature.slug}`}>
                   <div className="aspect-[16/9] mb-4 overflow-hidden">
                     {mainFeature.image ? (
@@ -117,32 +125,40 @@ const NewsPage = () => {
             )}
 
             {/* Secondary Features */}
-            <div className="md:col-span-4">
+            <div className="md:col-span-5">
               {secondaryFeatures.map((post, index) => (
                 <Link key={post.slug} to={`/post/${post.slug}`}>
-                  <div className={`${index !== 0 ? "border-t pt-4 mt-4 border-gray-300" : ""}`}>
-                    <div className="aspect-[16/9] mb-3 overflow-hidden">
-                      {post.image ? (
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={getPlaceholderImage(index + 1)}
-                          alt="Image placeholder"
-                          className="w-full h-full object-cover grayscale"
-                        />
-                      )}
+                  <div
+                    className={`flex items-start gap-4 ${
+                      index !== 0 ? "border-t pt-4 mt-4 border-gray-300" : ""
+                    }`}
+                  >
+                    <div className="w-1/2 flex-shrink-0">
+                      <div className="aspect-[16/11] overflow-hidden">
+                        {post.image ? (
+                          <img
+                            src={post.image}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={getPlaceholderImage(index + 1)}
+                            alt="Image placeholder"
+                            className="w-full h-full object-cover grayscale"
+                          />
+                        )}
+                      </div>
                     </div>
-                    <h3 className="text-xl font-serif font-bold mb-2 leading-tight">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm mb-2 font-serif">{post.summary}</p>
-                    <p className="text-xs text-gray-500 italic">
-                      {formatDate(post.created_at)}
-                    </p>
+                    <div className="w-1/2">
+                      <h3 className="text-xl font-serif font-bold mb-2 leading-tight">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm mb-2 font-serif">{post.summary}</p>
+                      <p className="text-xs text-gray-500 italic">
+                        {formatDate(post.created_at)}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               ))}
