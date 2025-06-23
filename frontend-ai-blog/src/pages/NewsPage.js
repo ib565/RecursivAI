@@ -64,12 +64,12 @@ const NewsPage = () => {
                 })}
               </div>
               <div className="text-center flex-grow my-4">
-                <div className="mb-1 font-body">
+                <nav className="mb-1 font-body">
                   <Link to="/news" className="text-xs font-bold uppercase tracking-wider text-black mx-3">News</Link>
                   <Link to="/" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Research</Link>
                   <Link to="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
                   <Link to="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
-                </div>
+                </nav>
                 <h1 className="text-5xl font-serif font-black">
                   RecursivAI
                 </h1>
