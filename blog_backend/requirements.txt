@@ -67,4 +67,4 @@ websockets==14.1
 yarl==1.18.3
 psycopg2-binary
 trafilatura
-playwright
+curl-cffi
