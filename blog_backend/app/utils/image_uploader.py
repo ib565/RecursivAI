@@ -58,3 +58,56 @@ def upload_base64_image(base64_string: str, file_name: str = None) -> str:
     except Exception as e:
         logger.error(f"Error uploading image to Supabase: {e}", exc_info=True)
         raise
+
+
+async def upload_base64_image_async(base64_string: str, file_name: str = None) -> str:
+    """
+    Async version of upload_base64_image for batch processing.
+
+    :param base64_string: The base64 encoded image.
+    :param file_name: Optional file name for the image. If not provided, a random UUID will be used.
+    :return: The public URL of the uploaded image.
+    """
+    import asyncio
+
+    # Run the synchronous upload function in a thread pool
+    return await asyncio.to_thread(upload_base64_image, base64_string, file_name)
+
+
+async def upload_images_batch(
+    base64_images: list[str], file_names: list[str] = None
+) -> list[str]:
+    """
+    Upload multiple base64 images in parallel.
+
+    :param base64_images: List of base64 encoded images.
+    :param file_names: Optional list of file names. If not provided, UUIDs will be used.
+    :return: List of public URLs of the uploaded images.
+    """
+    import asyncio
+
+    if file_names is None:
+        file_names = [None] * len(base64_images)
+
+    if len(base64_images) != len(file_names):
+        raise ValueError("base64_images and file_names lists must have the same length")
+
+    # Upload all images in parallel
+    tasks = [
+        upload_base64_image_async(img, name)
+        for img, name in zip(base64_images, file_names)
+        if img is not None  # Skip None images
+    ]
+
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Handle any exceptions by converting them to None
+    urls = []
+    for result in results:
+        if isinstance(result, Exception):
+            logger.error(f"Error uploading image: {result}")
+            urls.append(None)
+        else:
+            urls.append(result)
+
+    return urls

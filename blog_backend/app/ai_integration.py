@@ -23,6 +23,10 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from urllib.parse import quote
 import asyncio
+from ai_content_engine.agents.image_gen_agent import (
+    generate_featured_images_with_rate_limiting,
+)
+from .utils.image_uploader import upload_images_batch
 
 load_dotenv()
 
@@ -60,7 +64,9 @@ def _submit_post(post_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         return None
 
 
-def create_news_post(headline_article) -> Optional[Dict[str, Any]]:
+def create_news_post(
+    headline_article, featured_image_url: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
     """Create a blog post from a news headline article."""
     blog_title = headline_article.headline
     blog_summary = headline_article.subheading
@@ -91,6 +97,10 @@ def create_news_post(headline_article) -> Optional[Dict[str, Any]]:
         "ai_metadata": ai_metadata,
         "status": "published",
     }
+
+    # Add featured image URL if provided
+    if featured_image_url:
+        post_data["featured_image_url"] = featured_image_url
 
     # Step 3: Submit to API
     return _submit_post(post_data)
@@ -531,14 +541,74 @@ async def process_news_headlines_to_posts(
             logger.info("No new news articles to process.")
             return False
         logger.info(f"Processing {len(articles_to_process)} news articles.")
+
         # Reverse the list to process least important articles first,
         # so the most important one gets the latest timestamp and appears first.
         articles_to_process.reverse()
+
+        # Step 1: Generate images for all articles in batch
+        logger.info("Generating featured images for all news articles...")
+        try:
+            generated_images = await generate_featured_images_with_rate_limiting(
+                articles_to_process
+            )
+            logger.info(
+                f"Generated {len([img for img in generated_images if img is not None])}/{len(generated_images)} images successfully"
+            )
+        except Exception as e:
+            logger.error(f"Error during batch image generation: {e}")
+            # Fallback to no images
+            generated_images = [None] * len(articles_to_process)
+
+        # Step 2: Upload all generated images in batch
+        logger.info("Uploading generated images...")
+        try:
+            # Filter out None images and create corresponding file names
+            valid_images = []
+            valid_indices = []
+            file_names = []
+
+            for i, img in enumerate(generated_images):
+                if img is not None:
+                    valid_images.append(img)
+                    valid_indices.append(i)
+                    # Create filename based on article title
+                    article_title = articles_to_process[i].headline[:50]  # Limit length
+                    safe_title = "".join(
+                        c for c in article_title if c.isalnum() or c in (" ", "-", "_")
+                    ).strip()
+                    safe_title = safe_title.replace(" ", "_")[
+                        :30
+                    ]  # Further limit and replace spaces
+                    file_names.append(f"news_{safe_title}_{i}.png")
+
+            if valid_images:
+                uploaded_urls = await upload_images_batch(valid_images, file_names)
+                logger.info(
+                    f"Uploaded {len([url for url in uploaded_urls if url is not None])}/{len(uploaded_urls)} images successfully"
+                )
+            else:
+                uploaded_urls = []
+                logger.info("No valid images to upload")
+
+            # Map uploaded URLs back to original article indices
+            image_urls = [None] * len(articles_to_process)
+            for i, valid_idx in enumerate(valid_indices):
+                if i < len(uploaded_urls):
+                    image_urls[valid_idx] = uploaded_urls[i]
+
+        except Exception as e:
+            logger.error(f"Error during batch image upload: {e}")
+            # Fallback to no images
+            image_urls = [None] * len(articles_to_process)
+
+        # Step 3: Create posts with images
+        logger.info("Creating blog posts with featured images...")
         results = []
-        for headline in articles_to_process:
+        for headline, image_url in zip(articles_to_process, image_urls):
             try:
-                # Process sequentially to maintain order
-                result = await asyncio.to_thread(create_news_post, headline)
+                # Process sequentially to maintain order, but now with images
+                result = await asyncio.to_thread(create_news_post, headline, image_url)
                 results.append(result)
             except Exception as e:
                 logger.error(f"Error processing headline '{headline.headline}': {e}")
@@ -548,17 +618,23 @@ async def process_news_headlines_to_posts(
         total_count = len(results)
 
         # Loop through original list and results for logging
-        for headline, result in zip(articles_to_process, results):
+        for headline, result, image_url in zip(
+            articles_to_process, results, image_urls
+        ):
             article_url = headline.original_article.get("link", "N/A")
+            image_status = "with image" if image_url else "without image"
             if isinstance(result, Exception):
                 logger.error(
-                    f"Error processing headline '{headline.headline}' ({article_url}): {result}"
+                    f"Error processing headline '{headline.headline}' ({article_url}) {image_status}: {result}"
                 )
             elif result:
                 success_count += 1
+                logger.info(
+                    f"Successfully created post for '{headline.headline}' {image_status}"
+                )
             else:
                 logger.warning(
-                    f"Failed to create news post for article '{headline.headline}' ({article_url})"
+                    f"Failed to create news post for article '{headline.headline}' ({article_url}) {image_status}"
                 )
 
         logger.info(
@@ -575,8 +651,8 @@ async def process_news_headlines_to_posts(
 def generate_news_posts_background(
     force_regenerate: bool = False, days_ago: int = 7, top_n: int = 12
 ) -> None:
-    """Background task to generate news posts."""
-    logger.info("Starting background task to generate news posts.")
+    """Background task to generate news posts with featured images."""
+    logger.info("Starting background task to generate news posts with featured images.")
     asyncio.run(
         process_news_headlines_to_posts(
             force_regenerate=force_regenerate, days_ago=days_ago, top_n=top_n
