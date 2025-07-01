@@ -99,9 +99,9 @@ const NewsPage = () => {
               <div className="md:col-span-7 border-b pb-6 md:border-b-0 md:border-r md:pr-6 border-gray-300">
                 <Link to={`/post/${mainFeature.slug}`}>
                   <div className="aspect-[16/9] mb-4 overflow-hidden">
-                    {mainFeature.image ? (
+                    {mainFeature.featured_image_url ? (
                       <img
-                        src={mainFeature.image}
+                        src={mainFeature.featured_image_url}
                         alt={mainFeature.title}
                         className="w-full h-full object-cover"
                       />
@@ -135,9 +135,9 @@ const NewsPage = () => {
                   >
                     <div className="w-1/2 flex-shrink-0">
                       <div className="aspect-[16/11] overflow-hidden">
-                        {post.image ? (
+                        {post.featured_image_url ? (
                           <img
-                            src={post.image}
+                            src={post.featured_image_url}
                             alt={post.title}
                             className="w-full h-full object-cover"
                           />
@@ -179,9 +179,9 @@ const NewsPage = () => {
                 className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
               >
                 <div className="aspect-[16/9] mb-3 overflow-hidden">
-                  {post.image ? (
+                  {post.featured_image_url ? (
                     <img
-                      src={post.image}
+                      src={post.featured_image_url}
                       alt={post.title}
                       className="w-full h-full object-cover"
                     />
