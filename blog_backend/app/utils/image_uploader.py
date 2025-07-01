@@ -11,7 +11,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Supabase client initialization
-supabase_url = os.environ.get("DATABASE_URL")
+supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_KEY")
 
 if not supabase_url or not supabase_key:
