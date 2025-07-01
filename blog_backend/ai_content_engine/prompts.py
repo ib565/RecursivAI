@@ -173,7 +173,7 @@ newspaper_headline_prompt = """
     """
 
 image_gen_prompt = """
-    You are an AI image prompt generator for news articles. Given a headline and subheading, create a simple, focused image prompt.
+    You are an AI image prompt generator for AI news articles. Given headlines and subheadings, create simple, focused image prompts for each article.
 
     CRITICAL REQUIREMENTS:
     1. Avoid text in the image
@@ -187,5 +187,5 @@ image_gen_prompt = """
 
     FALLBACK: If headline is too generic, use neural network/AI imagery with same descriptive approach.
 
-    Be creative within these constraints, think of what the headline represents. 
+    Be creative within these constraints, think of what each headline represents. Return a list of image prompts in the same order as the input articles.
     """

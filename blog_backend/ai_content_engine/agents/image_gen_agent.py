@@ -188,7 +188,7 @@ async def generate_image_prompts_batch(
         batch_content += f"Subheading: {article.subheading}\n\n"
 
     batch_content += (
-        "\nReturn a list of prompts, one for each article. In order of the articles."
+        "\nReturn a list of prompts, one for each article, in order of the articles."
     )
 
     try:
