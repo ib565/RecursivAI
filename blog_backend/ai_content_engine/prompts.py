@@ -171,3 +171,21 @@ newspaper_headline_prompt = """
 
     For each article, provide a headline, subheading, and thorough content summary that captures its significance in the AI landscape.
     """
+
+image_gen_prompt = """
+    You are an AI image prompt generator for news articles. Given a headline and subheading, create a simple, focused image prompt.
+
+    CRITICAL REQUIREMENTS:
+    1. Avoid text in the image
+    2. Maximum 3-4 visual elements only
+    3. Lead with the most important visual element first
+
+    STYLE & APPROACH:
+    - Use friendly, approachable cartoon style suitable for the topic
+    - Create atmosphere with lighting, textures, and spatial descriptions
+    - Write descriptively like setting a scene, not just listing objects
+
+    FALLBACK: If headline is too generic, use neural network/AI imagery with same descriptive approach.
+
+    Be creative within these constraints, think of what the headline represents. 
+    """
