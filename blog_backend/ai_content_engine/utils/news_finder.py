@@ -327,9 +327,9 @@ async def filter_top_articles_llm(all_articles, top_n=12):
     except Exception as e:
         elapsed_time = time.time() - start_time
         logger.error(
-            f"LLM_FILTER: Failed during LLM filtering | Error: {e} | Time: {elapsed_time:.2f}s | Returning all articles as fallback"
+            f"LLM_FILTER: Failed during LLM filtering | Error: {e} | Time: {elapsed_time:.2f}s | Returning first {top_n} articles as fallback"
         )
-        return all_articles
+        return all_articles[:top_n]
 
 
 def _fetch_with_curl_cffi(url):
