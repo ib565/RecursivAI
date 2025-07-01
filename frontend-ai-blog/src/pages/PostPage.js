@@ -101,10 +101,24 @@ const PostPage = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold mb-4 text-white">{post.title}</h1>
   
-          <div className="text-gray-400 text-sm mb-8">
+                    <div className="text-gray-400 text-sm mb-8">
             {formatDate(post.created_at)}
           </div>
-  
+
+          {/* Featured Image for News Posts */}
+          {post.ai_metadata?.post_type === "news" && post.featured_image_url && (
+            <div className="mb-8">
+              <img
+                src={post.featured_image_url}
+                alt={post.title}
+                className="w-full max-w-2xl mx-auto rounded-lg shadow-lg border border-cyber-dark/50"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
           {/* Paper Info */}
           {post.ai_metadata?.paper_id && (
             <div className="bg-cyber-dark p-4 rounded-lg mb-8">
