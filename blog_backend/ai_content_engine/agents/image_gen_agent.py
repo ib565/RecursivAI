@@ -19,9 +19,12 @@ FALLBACK_IMAGE_PROMPT = "A generic AI related image with a cartoon style"
 async def _generate_single_image_async(prompt: str) -> Optional[str]:
     """Helper function to generate a single image asynchronously."""
     try:
+        # Automatically append aspect ratio specification
+        enhanced_prompt = f"{prompt}, aspect ratio: 16:9 landscape"
+
         response = await client.aio.models.generate_content(
             model="gemini-2.0-flash-preview-image-generation",
-            contents=prompt,
+            contents=enhanced_prompt,
             config=types.GenerateContentConfig(response_modalities=["TEXT", "IMAGE"]),
         )
 
@@ -93,9 +96,12 @@ def generate_image_from_prompt(image_prompt: str) -> Optional[str]:
     logger.info(f"Generating image from prompt: {image_prompt[:100]}...")
 
     try:
+        # Automatically append aspect ratio specification
+        enhanced_prompt = f"{image_prompt}, aspect ratio: 16:9 landscape"
+
         response = client.models.generate_content(
             model="gemini-2.0-flash-preview-image-generation",
-            contents=image_prompt,
+            contents=enhanced_prompt,
             config=types.GenerateContentConfig(response_modalities=["TEXT", "IMAGE"]),
         )
 
