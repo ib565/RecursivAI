@@ -31,6 +31,8 @@ RSS_FEEDS = {
     "KnowTechie AI": "https://knowtechie.com/category/ai/feed/",
 }
 
+NUM_ARTICLES_TO_FETCH_NEWSAPI = 20
+
 # Log configuration at startup
 logger.info(
     f"NEWS_FINDER: Initialized with {len(RSS_FEEDS)} RSS feeds and NewsAPI {'enabled' if NEWSAPI_KEY and NEWSAPI_KEY != 'YOUR_NEWSAPI_KEY' else 'disabled'}"
@@ -173,7 +175,7 @@ def fetch_from_newsapi(api_key, days_ago):
         "sortBy": "relevancy",  # publishedAt
         "searchIn": "title,description",
         "apiKey": api_key,
-        "pageSize": 20,
+        "pageSize": NUM_ARTICLES_TO_FETCH_NEWSAPI,
     }
 
     try:
@@ -217,7 +219,7 @@ def fetch_from_newsapi(api_key, days_ago):
 
 
 def is_valid_article(article):
-    """Basic article filter with logging"""
+    """Enhanced article filter with URL validation and logging"""
     title = article.get("title", "")
     link = article.get("link", "")
 
@@ -232,6 +234,46 @@ def is_valid_article(article):
             f"ARTICLE_VALIDATION: Rejected article (removed content) | Title: '{title}' | Link: '{link}'"
         )
         return False
+
+    # Check for obviously invalid URLs
+    if not link.startswith(("http://", "https://")):
+        logger.debug(
+            f"ARTICLE_VALIDATION: Rejected article (invalid URL format) | Title: '{title}' | Link: '{link}'"
+        )
+        return False
+
+    # Check for common problematic domains/patterns
+    problematic_patterns = [
+        "removed.com",
+        "deleted.com",
+        "unavailable.com",
+        "localhost",
+        "127.0.0.1",
+        "example.com",
+        "test.com",
+    ]
+
+    for pattern in problematic_patterns:
+        if pattern in link.lower():
+            logger.debug(
+                f"ARTICLE_VALIDATION: Rejected article (problematic domain) | Title: '{title}' | Link: '{link}'"
+            )
+            return False
+
+    # Quick accessibility check with HEAD request (with timeout and error handling)
+    try:
+        response = requests.head(link, timeout=5, allow_redirects=True)
+        if response.status_code in [401, 403, 404, 410, 451, 500, 502, 503, 504]:
+            logger.debug(
+                f"ARTICLE_VALIDATION: Rejected article (HTTP {response.status_code}) | Title: '{title}' | Link: '{link}'"
+            )
+            return False
+    except requests.exceptions.RequestException as e:
+        # Don't reject on network errors, as the issue might be temporary
+        logger.debug(
+            f"ARTICLE_VALIDATION: Warning - could not verify URL accessibility | Title: '{title}' | Link: '{link}' | Error: {e}"
+        )
+        # Still accept the article, but log the warning
 
     logger.debug(
         f"ARTICLE_VALIDATION: Accepted article | Title: '{title[:60]}...' | Source: {article.get('source', 'Unknown')}"
@@ -344,8 +386,19 @@ def _fetch_with_curl_cffi(url):
             f"SCRAPE_FETCH: Successfully fetched {content_length} bytes | URL: {url}"
         )
         return response.content
+    except cffi_requests.exceptions.HTTPError as e:
+        logger.warning(
+            f"SCRAPE_FETCH: HTTP error {e.response.status_code if hasattr(e, 'response') else 'unknown'} | URL: {url} | Error: {e}"
+        )
+        return None
+    except cffi_requests.exceptions.Timeout as e:
+        logger.warning(f"SCRAPE_FETCH: Request timeout | URL: {url} | Error: {e}")
+        return None
+    except cffi_requests.exceptions.ConnectionError as e:
+        logger.warning(f"SCRAPE_FETCH: Connection error | URL: {url} | Error: {e}")
+        return None
     except Exception as e:
-        logger.error(f"SCRAPE_FETCH: Failed to fetch content | URL: {url} | Error: {e}")
+        logger.error(f"SCRAPE_FETCH: Unexpected error | URL: {url} | Error: {e}")
         return None
 
 
@@ -353,31 +406,54 @@ def _extract_with_bs(html_content, url):
     """Extracts content from HTML using BeautifulSoup with custom logic."""
     logger.debug(f"SCRAPE_EXTRACT: Attempting BeautifulSoup extraction | URL: {url}")
 
-    soup = BeautifulSoup(html_content, "html.parser")
-    article_tag = soup.find("article")
+    if not html_content:
+        logger.warning(f"SCRAPE_EXTRACT: No HTML content provided | URL: {url}")
+        return None
 
-    if article_tag:
-        prose_divs = article_tag.find_all("div", class_="prose")
-        if prose_divs:
-            all_prose_text_parts = [
-                div.get_text(separator="\n\n", strip=True) for div in prose_divs
-            ]
-            content = "\n\n".join(all_prose_text_parts)
+    try:
+        soup = BeautifulSoup(html_content, "html.parser")
+        article_tag = soup.find("article")
+
+        if article_tag:
+            prose_divs = article_tag.find_all("div", class_="prose")
+            if prose_divs:
+                all_prose_text_parts = [
+                    div.get_text(separator="\n\n", strip=True)
+                    for div in prose_divs
+                    if div
+                ]
+                content = "\n\n".join(all_prose_text_parts)
+                if content:
+                    logger.debug(
+                        f"SCRAPE_EXTRACT: Extracted {len(content)} chars from prose divs | URL: {url}"
+                    )
+                    return content
+                else:
+                    logger.debug(
+                        f"SCRAPE_EXTRACT: Empty content from prose divs | URL: {url}"
+                    )
+
             logger.debug(
-                f"SCRAPE_EXTRACT: Extracted {len(content)} chars from prose divs | URL: {url}"
-            )
-            return content
-        else:
-            logger.debug(
-                f"SCRAPE_EXTRACT: No prose divs found, extracting from entire article tag | URL: {url}"
+                f"SCRAPE_EXTRACT: No valid prose divs found, extracting from entire article tag | URL: {url}"
             )
             content = article_tag.get_text(separator="\n\n", strip=True)
-            logger.debug(
-                f"SCRAPE_EXTRACT: Extracted {len(content)} chars from article tag | URL: {url}"
-            )
-            return content
-    else:
-        logger.warning(f"SCRAPE_EXTRACT: No article tag found | URL: {url}")
+            if content:
+                logger.debug(
+                    f"SCRAPE_EXTRACT: Extracted {len(content)} chars from article tag | URL: {url}"
+                )
+                return content
+            else:
+                logger.debug(
+                    f"SCRAPE_EXTRACT: Empty content from article tag | URL: {url}"
+                )
+        else:
+            logger.warning(f"SCRAPE_EXTRACT: No article tag found | URL: {url}")
+
+        return None
+    except Exception as e:
+        logger.error(
+            f"SCRAPE_EXTRACT: Error during BeautifulSoup extraction | URL: {url} | Error: {e}"
+        )
         return None
 
 
@@ -418,8 +494,9 @@ async def _scrape_and_process_article_async(article_info):
                     f"SCRAPE ({index:2d}/{total_articles}): ✓ Trafilatura success | Length: {len(content)} chars | Source: {source}"
                 )
             else:
+                content_length = len(content) if content else 0
                 logger.debug(
-                    f"SCRAPE ({index:2d}/{total_articles}): Trafilatura failed/insufficient content | Trying BeautifulSoup"
+                    f"SCRAPE ({index:2d}/{total_articles}): Trafilatura failed/insufficient content (length: {content_length}) | Trying BeautifulSoup"
                 )
 
                 # 4. Try custom BeautifulSoup extraction
@@ -430,8 +507,9 @@ async def _scrape_and_process_article_async(article_info):
                         f"SCRAPE ({index:2d}/{total_articles}): ✓ BeautifulSoup success | Length: {len(content)} chars | Source: {source}"
                     )
                 else:
+                    content_length = len(content) if content else 0
                     logger.warning(
-                        f"SCRAPE ({index:2d}/{total_articles}): BeautifulSoup also failed | Source: {source}"
+                        f"SCRAPE ({index:2d}/{total_articles}): BeautifulSoup also failed (length: {content_length}) | Source: {source}"
                     )
         else:
             logger.warning(
@@ -444,11 +522,19 @@ async def _scrape_and_process_article_async(article_info):
         )
 
     # 5. Final fallback to description
-    if not content or len(content) < 200:
-        content = article["description"]
+    content_length = len(content) if content else 0
+    if not content or content_length < 200:
+        content = article["description"] or ""  # Ensure content is never None
         extraction_method = "description_fallback"
         logger.info(
             f"SCRAPE ({index:2d}/{total_articles}): ⚠ Using description fallback | Length: {len(content)} chars | Source: {source}"
+        )
+
+    # Ensure content is never None or empty
+    if not content:
+        content = f"Content not available for: {article['title']}"
+        logger.warning(
+            f"SCRAPE ({index:2d}/{total_articles}): No content available, using placeholder | Source: {source}"
         )
 
     logger.debug(
@@ -614,6 +700,30 @@ def deduplicate_articles(articles: list[dict]) -> list[dict]:
     return unique_articles
 
 
+def validate_articles(articles: list[dict]) -> list[dict]:
+    """Validates articles using the enhanced is_valid_article function."""
+    start_time = time.time()
+    logger.info(
+        f"VALIDATION: Starting article validation | Input articles: {len(articles)}"
+    )
+
+    valid_articles = []
+    invalid_count = 0
+
+    for article in articles:
+        if is_valid_article(article):
+            valid_articles.append(article)
+        else:
+            invalid_count += 1
+
+    elapsed_time = time.time() - start_time
+    logger.info(
+        f"VALIDATION: Completed | Valid articles: {len(valid_articles)} | Invalid articles: {invalid_count} | Time: {elapsed_time:.2f}s"
+    )
+
+    return valid_articles
+
+
 async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     """Main function to fetch, filter, and scrape top articles with comprehensive logging."""
     overall_start_time = time.time()
@@ -627,13 +737,16 @@ async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     # Step 1: Fetch all articles
     all_articles = await asyncio.to_thread(fetch_all_articles, days_ago)
 
-    # Step 2: Deduplicate articles
-    deduplicated_articles = deduplicate_articles(all_articles)
+    # Step 2: Validate articles (check URL accessibility and format)
+    validated_articles = await asyncio.to_thread(validate_articles, all_articles)
 
-    # Step 3: Filter top articles using LLM
+    # Step 3: Deduplicate articles
+    deduplicated_articles = deduplicate_articles(validated_articles)
+
+    # Step 4: Filter top articles using LLM
     top_articles = await filter_top_articles_llm(deduplicated_articles, top_n=top_n)
 
-    # Step 4: Scrape article content
+    # Step 5: Scrape article content
     scraped_content = await scrape_article_content_async(top_articles)
 
     # Final summary
@@ -643,6 +756,7 @@ async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     logger.info("NEWS_PIPELINE: FINAL PIPELINE RESULTS")
     logger.info("=" * 80)
     logger.info(f"Initial articles fetched: {len(all_articles)}")
+    logger.info(f"After validation: {len(validated_articles)}")
     logger.info(f"After deduplication: {len(deduplicated_articles)}")
     logger.info(f"After LLM filtering: {len(top_articles)}")
     logger.info(f"Final scraped articles: {len(scraped_content)}")
