@@ -155,7 +155,12 @@ def create_blog_post(
 
 
 def is_article_processed(article_url: str) -> bool:
-    """Check if an article has already been processed by making a GET request to the API."""
+    """Check if an article has already been processed by making a GET request to the API.
+
+    Note: This function is primarily for legacy/manual use cases.
+    The news processing pipeline now handles duplicate checking automatically
+    via the enhanced news_finder.get_top_articles() function.
+    """
     try:
         if not article_url:
             return False
@@ -516,24 +521,21 @@ async def process_news_headlines_to_posts(
 ) -> bool:
     """Generate news headlines and create posts from them."""
     try:
+        # Note: force_regenerate is now handled in the news_finder pipeline
+        # This eliminates duplicate checks and improves efficiency
         headlines = await generate_news_headlines(
-            days_ago=days_ago, top_n=top_n
+            days_ago=days_ago, top_n=top_n, force_regenerate=force_regenerate
         )  # This calls generate_news_headlines from generator.py
         if not headlines:
             logger.info("No news headlines generated.")
             return False
 
+        # All articles returned are already filtered for processed status
         articles_to_process = []
         for headline in headlines:
             article_url = headline.original_article.get("link")
             if not article_url:
                 logger.warning(f"Headline missing article URL: {headline.headline}")
-                continue
-
-            if not force_regenerate and await asyncio.to_thread(
-                is_article_processed, article_url
-            ):
-                logger.info(f"Skipping already processed article: {article_url}")
                 continue
             articles_to_process.append(headline)
 

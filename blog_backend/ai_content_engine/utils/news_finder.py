@@ -11,6 +11,7 @@ from google.genai import types
 from datetime import datetime, timedelta, timezone
 import asyncio
 import time
+from urllib.parse import quote
 
 from ai_content_engine.prompts import news_filter_prompt
 from ai_content_engine.models import NewsItemSelected
@@ -20,6 +21,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 NEWSAPI_KEY = os.getenv("NEWSAPI_KEY")
+API_BASE_URL = os.getenv("BLOG_API_BASE_URL", "http://localhost:8000")
 RSS_FEEDS = {
     "OpenAI": "https://openai.com/news/rss.xml",
     # "TechCrunch": "https://techcrunch.com/feed/",
@@ -724,7 +726,69 @@ def validate_articles(articles: list[dict]) -> list[dict]:
     return valid_articles
 
 
-async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
+def check_article_processed(article_url: str) -> bool:
+    """Check if an article has already been processed."""
+    try:
+        if not article_url:
+            return False
+        # The URL needs to be encoded to be safely passed as a query parameter
+        encoded_url = quote(article_url, safe="")
+        url = f"{API_BASE_URL}/posts/article_exists?url={encoded_url}"
+        response = requests.get(url, timeout=10)
+
+        if response.status_code == 200:
+            return response.json().get("exists", False)
+        return False
+    except Exception as e:
+        logger.warning(f"Error checking if article exists: {e}")
+        return False
+
+
+def filter_unprocessed_articles(
+    articles: list[dict], force_regenerate: bool = False
+) -> list[dict]:
+    """Filter out articles that have already been processed (unless force_regenerate is True)."""
+    if force_regenerate:
+        logger.info(
+            f"PROCESSED_CHECK: force_regenerate=True, skipping processed article check | Articles: {len(articles)}"
+        )
+        return articles
+
+    start_time = time.time()
+    logger.info(
+        f"PROCESSED_CHECK: Starting processed article filter | Input articles: {len(articles)}"
+    )
+
+    unprocessed_articles = []
+    already_processed_count = 0
+
+    for article in articles:
+        article_url = article.get("link")
+        title = article.get("title", "")[:50]
+        source = article.get("source", "Unknown")
+
+        if check_article_processed(article_url):
+            already_processed_count += 1
+            logger.debug(
+                f"PROCESSED_CHECK: Skipping already processed article | Source: {source} | Title: '{title}...' | URL: {article_url}"
+            )
+        else:
+            unprocessed_articles.append(article)
+            logger.debug(
+                f"PROCESSED_CHECK: Article not processed, keeping | Source: {source} | Title: '{title}...'"
+            )
+
+    elapsed_time = time.time() - start_time
+    logger.info(
+        f"PROCESSED_CHECK: Completed | Unprocessed articles: {len(unprocessed_articles)} | Already processed: {already_processed_count} | Time: {elapsed_time:.2f}s"
+    )
+
+    return unprocessed_articles
+
+
+async def get_top_articles(
+    days_ago: int = 7, top_n: int = 12, force_regenerate: bool = False
+) -> list[dict]:
     """Main function to fetch, filter, and scrape top articles with comprehensive logging."""
     overall_start_time = time.time()
     logger.info("=" * 80)
@@ -743,10 +807,15 @@ async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     # Step 3: Deduplicate articles
     deduplicated_articles = deduplicate_articles(validated_articles)
 
-    # Step 4: Filter top articles using LLM
-    top_articles = await filter_top_articles_llm(deduplicated_articles, top_n=top_n)
+    # Step 4: Filter out already processed articles (unless force_regenerate=True)
+    unprocessed_articles = await asyncio.to_thread(
+        filter_unprocessed_articles, deduplicated_articles, force_regenerate
+    )
 
-    # Step 5: Scrape article content
+    # Step 5: Filter top articles using LLM (only on unprocessed articles)
+    top_articles = await filter_top_articles_llm(unprocessed_articles, top_n=top_n)
+
+    # Step 6: Scrape article content
     scraped_content = await scrape_article_content_async(top_articles)
 
     # Final summary
@@ -758,6 +827,7 @@ async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
     logger.info(f"Initial articles fetched: {len(all_articles)}")
     logger.info(f"After validation: {len(validated_articles)}")
     logger.info(f"After deduplication: {len(deduplicated_articles)}")
+    logger.info(f"After processed filter: {len(unprocessed_articles)}")
     logger.info(f"After LLM filtering: {len(top_articles)}")
     logger.info(f"Final scraped articles: {len(scraped_content)}")
     logger.info(f"Total pipeline time: {overall_elapsed:.2f}s")
@@ -766,6 +836,18 @@ async def get_top_articles(days_ago: int = 7, top_n: int = 12) -> list[dict]:
         if scraped_content
         else "N/A"
     )
+
+    # Log efficiency gains
+    if not force_regenerate:
+        skipped_articles = len(deduplicated_articles) - len(unprocessed_articles)
+        if skipped_articles > 0:
+            logger.info(
+                f"Efficiency gain: Skipped {skipped_articles} already-processed articles before expensive operations"
+            )
+    else:
+        logger.info(
+            "force_regenerate=True: Processed all articles regardless of previous processing"
+        )
 
     # Log final source distribution
     final_source_counts = {}
