@@ -22,9 +22,13 @@ def generate_weekly_summary(paper_summaries_dict: list[dict]):
     return weekly_summary
 
 
-async def generate_news_headlines(days_ago: int = 7, top_n: int = 12):
+async def generate_news_headlines(
+    days_ago: int = 7, top_n: int = 12, force_regenerate: bool = False
+):
     logger.info("Generating news headlines...")
-    top_articles = await get_top_articles(days_ago=days_ago, top_n=top_n)
+    top_articles = await get_top_articles(
+        days_ago=days_ago, top_n=top_n, force_regenerate=force_regenerate
+    )
     if not top_articles:
         logger.info("No top articles found, returning empty list.")
         return []
