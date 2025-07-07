@@ -48,7 +48,9 @@ def upload_base64_image(base64_string: str, file_name: str = None) -> str:
         )
 
         supabase.storage.from_(BUCKET_NAME).upload(
-            path=file_name, file=image_data, file_options={"content-type": "image/png"}
+            path=file_name,
+            file=image_data,
+            file_options={"content-type": "image/png", "upsert": "true"},
         )
 
         public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(file_name)
