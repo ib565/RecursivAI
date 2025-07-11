@@ -4,6 +4,8 @@ import logging
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import uuid
+import time
+import random
 
 # Load environment variables from .env file
 load_dotenv()
@@ -23,12 +25,17 @@ BUCKET_NAME = "images"
 
 def upload_base64_image(base64_string: str, file_name: str = None) -> str:
     """
-    Uploads a base64 encoded image to the Supabase storage bucket.
+    Uploads a base64 encoded image to the Supabase storage bucket with exponential backoff retry.
 
     :param base64_string: The base64 encoded image.
     :param file_name: Optional file name for the image. If not provided, a random UUID will be used.
     :return: The public URL of the uploaded image.
     """
+    max_retries = 3
+    base_delay = 1.0  # Start with 1 second delay
+    backoff_factor = 2.0  # Double the delay each time
+
+    # Prepare data once before retries
     try:
         # The base64 string might have a prefix e.g. 'data:image/png;base64,'. We need to remove it.
         if "," in base64_string:
@@ -38,28 +45,57 @@ def upload_base64_image(base64_string: str, file_name: str = None) -> str:
 
         if not file_name:
             file_name = f"posts/{uuid.uuid4()}.png"
-
-        # It's good practice to organize files in folders within the bucket
         elif not file_name.startswith("posts/"):
             file_name = f"posts/{file_name}"
 
-        logger.info(
-            f"Uploading image to Supabase bucket '{BUCKET_NAME}' with path: {file_name}"
-        )
-
-        supabase.storage.from_(BUCKET_NAME).upload(
-            path=file_name,
-            file=image_data,
-            file_options={"content-type": "image/png", "upsert": "true"},
-        )
-
-        public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(file_name)
-        logger.info(f"Successfully uploaded image: {file_name}")
-        return public_url
-
     except Exception as e:
-        logger.error(f"Error uploading image to Supabase: {e}", exc_info=True)
+        logger.error(f"Error preparing image data for upload: {e}")
         raise
+
+    # Retry loop with exponential backoff
+    for attempt in range(max_retries + 1):  # 0, 1, 2, 3 (4 total attempts)
+        try:
+            logger.info(
+                f"Uploading image to Supabase bucket '{BUCKET_NAME}' with path: {file_name}"
+                + (f" (attempt {attempt + 1}/{max_retries + 1})" if attempt > 0 else "")
+            )
+
+            supabase.storage.from_(BUCKET_NAME).upload(
+                path=file_name,
+                file=image_data,
+                file_options={"content-type": "image/png", "upsert": "true"},
+            )
+
+            public_url = supabase.storage.from_(BUCKET_NAME).get_public_url(file_name)
+
+            if attempt > 0:
+                logger.info(
+                    f"Successfully uploaded image: {file_name} after {attempt + 1} attempts"
+                )
+            else:
+                logger.info(f"Successfully uploaded image: {file_name}")
+
+            return public_url
+
+        except Exception as e:
+            if attempt == max_retries:
+                # Final attempt failed, raise the error
+                logger.error(
+                    f"Failed to upload image {file_name} after {max_retries + 1} attempts: {e}",
+                    exc_info=True,
+                )
+                raise
+            else:
+                # Calculate delay with jitter to avoid thundering herd
+                delay = base_delay * (backoff_factor**attempt)
+                jitter = random.uniform(0.1, 0.3) * delay  # 10-30% jitter
+                total_delay = delay + jitter
+
+                logger.warning(
+                    f"Upload attempt {attempt + 1} failed for {file_name}: {e}. "
+                    f"Retrying in {total_delay:.2f} seconds..."
+                )
+                time.sleep(total_delay)
 
 
 async def upload_base64_image_async(base64_string: str, file_name: str = None) -> str:
