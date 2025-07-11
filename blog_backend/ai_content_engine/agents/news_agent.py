@@ -17,7 +17,7 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 async def _process_single_article(article: dict) -> ProcessedArticle:
     """Helper function to process a single article into a newspaper-style summary with headline, subheading, and content."""
     system_prompt = newspaper_headline_prompt
-    logger.info(f"Generating headline for: {article['title'][:50]}...")
+    logger.info(f"Generating summary, headline, and subheading for: {article['title'][:50]}...")
 
     article_text = f"Article:\n"
     article_text += f"Title: {article['title']}\n"
