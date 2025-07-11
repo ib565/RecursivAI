@@ -5,6 +5,46 @@ import { getPostBySlug } from "../utils/apiService";
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import SEO from "../components/SEO";
 
+// Style constants
+const GEORGIA_FONT = { fontFamily: 'Georgia, "Times New Roman", serif' };
+
+// Theme configurations
+const getTheme = (isNewsPost) => {
+  if (isNewsPost) {
+    return {
+      pageClass: "newspaper-page bg-[#FAF9F5] min-h-screen",
+      containerClass: "text-black",
+      titleClass: "text-black font-serif",
+      dateClass: "text-gray-600 font-serif",
+      cardClass: "bg-gray-100 p-4 rounded-lg mb-8 border border-gray-300",
+      textClass: "text-gray-700 font-serif",
+      linkClass: "text-blue-600",
+      contentClass: "prose prose-lg max-w-none mb-12 text-black prose-headings:text-black prose-p:text-black prose-li:text-black prose-strong:text-black prose-a:text-blue-600 prose-headings:font-serif",
+      buttonClass: "px-6 py-3 bg-gray-800 text-white hover:bg-gray-700 transition-colors font-serif rounded mb-8",
+      errorContainer: "bg-white p-6 rounded-lg border border-gray-300 text-black",
+      errorTitle: "text-black text-xl mb-4 font-serif",
+      errorText: "text-gray-700 mb-6 font-serif",
+      errorButton: "px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 transition-colors font-serif"
+    };
+  }
+  
+  return {
+    pageClass: "",
+    containerClass: "",
+    titleClass: "text-white",
+    dateClass: "text-gray-400",
+    cardClass: "bg-cyber-dark p-4 rounded-lg mb-8",
+    textClass: "text-gray-400",
+    linkClass: "text-cyber-neon",
+    contentClass: "prose prose-invert max-w-none mb-12",
+    buttonClass: "cyber-btn-pink mb-8",
+    errorContainer: "bg-cyber-dark p-6 rounded-lg border border-cyber-pink",
+    errorTitle: "text-cyber-pink text-xl mb-4",
+    errorText: "text-gray-300 mb-6",
+    errorButton: "cyber-btn-pink mb-8"
+  };
+};
+
 const PostPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -38,9 +78,6 @@ const PostPage = () => {
     navigate(-1);
   };
 
-  // Check if this is a news post
-  const isNewsPost = post?.ai_metadata?.post_type === "news";
-
   if (loading) {
     return (
       <>
@@ -48,8 +85,8 @@ const PostPage = () => {
           title="Loading... | RecursivAI"
           description="An AI-powered blog exploring cutting-edge research papers in tech and machine learning"
         />
-        <div className={`min-h-screen pt-24 flex items-center justify-center ${isNewsPost ? 'bg-[#FAF9F5]' : ''}`}>
-          <div className={isNewsPost ? "text-black animate-pulse" : "text-cyber-neon animate-pulse"}>
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <div className="text-cyber-neon animate-pulse">
             Loading analysis...
           </div>
         </div>
@@ -64,28 +101,16 @@ const PostPage = () => {
           title="Post Not Found | RecursivAI"
           description="The requested AI analysis could not be found"
         />
-        <div className={`container mx-auto px-4 py-24 ${isNewsPost ? 'bg-[#FAF9F5] min-h-screen' : ''}`}>
+        <div className="container mx-auto px-4 py-24">
           <div className="max-w-3xl mx-auto">
-            <div className={isNewsPost 
-              ? "bg-white p-6 rounded-lg border border-gray-300 text-black" 
-              : "bg-cyber-dark p-6 rounded-lg border border-cyber-pink"
-            }>
-              <h2 className={isNewsPost 
-                ? "text-black text-xl mb-4 font-serif" 
-                : "text-cyber-pink text-xl mb-4"
-              }>
+            <div className="bg-cyber-dark p-6 rounded-lg border border-cyber-pink">
+              <h2 className="text-cyber-pink text-xl mb-4">
                 Error Loading Post
               </h2>
-              <p className={isNewsPost 
-                ? "text-gray-700 mb-6 font-serif" 
-                : "text-gray-300 mb-6"
-              }>
+              <p className="text-gray-300 mb-6">
                 {error?.message || "The requested post could not be found."}
               </p>
-              <button onClick={goBack} className={isNewsPost 
-                ? "px-4 py-2 bg-gray-800 text-white hover:bg-gray-700 transition-colors font-serif" 
-                : "cyber-btn-pink mb-8"
-              }>
+              <button onClick={goBack} className="cyber-btn-pink mb-8">
                 ← Back
               </button>
             </div>
@@ -94,6 +119,10 @@ const PostPage = () => {
       </>
     );
   }
+
+  // Now we can safely check post type after confirming post exists
+  const isNewsPost = post.ai_metadata?.post_type === "news";
+  const theme = getTheme(isNewsPost);
 
   return (
     <>
@@ -112,14 +141,14 @@ const PostPage = () => {
       <meta name="twitter:description" content={post.summary} />
       <meta name="twitter:image" content={post.image} />
   
-      <div className={isNewsPost ? "newspaper-page bg-[#FAF9F5] min-h-screen" : ""}>
-        <div className={`container mx-auto px-4 py-16 ${isNewsPost ? 'text-black' : ''}`}>
+      <div className={theme.pageClass}>
+        <div className={`container mx-auto px-4 py-16 ${theme.containerClass}`}>
           <div className="max-w-4xl mx-auto">
-            <h1 className={`text-3xl font-bold mb-4 ${isNewsPost ? 'text-black font-serif' : 'text-white'}`}>
+            <h1 className={`text-3xl font-bold mb-4 ${theme.titleClass}`}>
               {post.title}
             </h1>
     
-            <div className={`text-sm mb-8 ${isNewsPost ? 'text-gray-600 font-serif' : 'text-gray-400'}`}>
+            <div className={`text-sm mb-8 ${theme.dateClass}`}>
               {formatDate(post.created_at)}
             </div>
 
@@ -139,17 +168,14 @@ const PostPage = () => {
 
             {/* Paper Info */}
             {post.ai_metadata?.paper_id && (
-              <div className={isNewsPost 
-                ? "bg-gray-100 p-4 rounded-lg mb-8 border border-gray-300" 
-                : "bg-cyber-dark p-4 rounded-lg mb-8"
-              }>
-                <div className={`text-sm ${isNewsPost ? 'text-gray-700 font-serif' : 'text-gray-400'}`}>
+              <div className={theme.cardClass}>
+                <div className={`text-sm ${theme.textClass}`}>
                   Based on paper:
                   <a
                     href={`https://arxiv.org/abs/${post.ai_metadata.paper_id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`ml-2 hover:underline ${isNewsPost ? 'text-blue-600' : 'text-cyber-neon'}`}
+                    className={`ml-2 hover:underline ${theme.linkClass}`}
                   >
                     {post.ai_metadata.paper_id}
                   </a>
@@ -159,14 +185,14 @@ const PostPage = () => {
     
             {/* News Source Info */}
             {isNewsPost && post.ai_metadata.original_article_url && (
-              <div className="bg-gray-100 p-4 rounded-lg mb-8 border border-gray-300">
-                <div className="text-sm text-gray-700 font-serif">
+              <div className={theme.cardClass}>
+                <div className={`text-sm ${theme.textClass}`}>
                   Original Source:
                   <a
                     href={post.ai_metadata.original_article_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-2 text-blue-600 hover:underline"
+                    className={`ml-2 hover:underline ${theme.linkClass}`}
                   >
                     {post.ai_metadata.original_article_source || "Source"}
                   </a>
@@ -175,30 +201,26 @@ const PostPage = () => {
             )}
     
             {/* Post content */}
-            <div className={isNewsPost 
-              ? "prose prose-lg max-w-none mb-12 text-black prose-headings:text-black prose-p:text-black prose-li:text-black prose-strong:text-black prose-a:text-blue-600 prose-headings:font-serif" 
-              : "prose prose-invert max-w-none mb-12"
-            } style={isNewsPost ? { fontFamily: 'Georgia, "Times New Roman", serif' } : {}}>
+            <div 
+              className={theme.contentClass}
+              style={isNewsPost ? GEORGIA_FONT : {}}
+            >
               {post.content && post.content.body ? (
                 <MarkdownRenderer>
                   {post.content.body}
                 </MarkdownRenderer>
               ) : (
-                <p className={isNewsPost ? "text-gray-700 text-lg" : "text-gray-400"} 
-                   style={isNewsPost ? { fontFamily: 'Georgia, "Times New Roman", serif' } : {}}>
+                <p 
+                  className={isNewsPost ? "text-gray-700 text-lg" : "text-gray-400"}
+                  style={isNewsPost ? GEORGIA_FONT : {}}
+                >
                   No content available for this post.
                 </p>
               )}
             </div>
     
             {/* Back button */}
-            <button 
-              onClick={goBack} 
-              className={isNewsPost 
-                ? "px-6 py-3 bg-gray-800 text-white hover:bg-gray-700 transition-colors font-serif rounded mb-8" 
-                : "cyber-btn-pink mb-8"
-              }
-            >
+            <button onClick={goBack} className={theme.buttonClass}>
               ← Back
             </button>
           </div>
