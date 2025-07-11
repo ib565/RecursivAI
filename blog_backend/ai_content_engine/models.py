@@ -32,13 +32,13 @@ class NewsItemSelected(BaseModel):
     )
 
 
-class HeadlineResponse(BaseModel):
+class ArticleSummaryResponse(BaseModel):
     headline: str = Field(description="The main headline in newspaper style")
     subheading: str = Field(description="A brief subheading that provides context")
     content: str = Field(description="A complete summary of the article")
 
 
-class HeadlineArticle(BaseModel):
+class ProcessedArticle(BaseModel):
     original_article: dict
     headline: str
     subheading: str
