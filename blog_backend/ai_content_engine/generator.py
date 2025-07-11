@@ -5,7 +5,7 @@ from ai_content_engine.agents.summary_agent import (
     generate_weekly_summary_from_summaries,
 )
 from ai_content_engine.utils.news_finder import get_top_articles
-from ai_content_engine.agents.news_agent import generate_newspaper_headlines
+from ai_content_engine.agents.news_agent import process_articles_for_news
 import asyncio
 import os
 import logging
@@ -32,7 +32,7 @@ async def generate_news_headlines(
     if not top_articles:
         logger.info("No top articles found, returning empty list.")
         return []
-    headlines = await generate_newspaper_headlines(top_articles)
+    headlines = await process_articles_for_news(top_articles)
     return headlines
 
 

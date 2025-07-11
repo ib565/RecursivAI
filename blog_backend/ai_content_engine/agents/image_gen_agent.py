@@ -5,7 +5,7 @@ import asyncio
 from typing import Optional, List
 from google import genai
 from google.genai import types
-from ai_content_engine.models import HeadlineArticle
+from ai_content_engine.models import ProcessedArticle
 from ai_content_engine.prompts import image_gen_prompt
 
 
@@ -47,7 +47,7 @@ async def _generate_single_image_async(prompt: str) -> Optional[str]:
         return None
 
 
-def generate_featured_image(headline_article: HeadlineArticle) -> Optional[str]:
+def generate_featured_image(headline_article: ProcessedArticle) -> Optional[str]:
     """
     Generate a featured image for a headline article.
 
@@ -133,7 +133,7 @@ def generate_image_from_prompt(image_prompt: str) -> Optional[str]:
         return None
 
 
-def generate_image_prompt(headline_article: HeadlineArticle) -> Optional[str]:
+def generate_image_prompt(headline_article: ProcessedArticle) -> Optional[str]:
     """
     Generate an image prompt for a single headline article.
 
@@ -168,7 +168,7 @@ def generate_image_prompt(headline_article: HeadlineArticle) -> Optional[str]:
 
 
 async def generate_image_prompts_batch(
-    headline_articles: List[HeadlineArticle],
+    headline_articles: List[ProcessedArticle],
 ) -> List[str]:
     """
     Generate image prompts for multiple articles in a single API call.
@@ -255,7 +255,7 @@ async def generate_images_from_prompts_batch(
 
 
 async def generate_featured_images_with_rate_limiting(
-    headline_articles: List[HeadlineArticle],
+    headline_articles: List[ProcessedArticle],
 ) -> List[Optional[str]]:
     """
     Generate featured images for multiple articles with rate limiting.
