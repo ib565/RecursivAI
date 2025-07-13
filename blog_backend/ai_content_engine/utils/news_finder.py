@@ -298,9 +298,21 @@ async def filter_top_articles_llm(all_articles, top_n=12):
     logger.info(f"LLM_FILTER: Input source distribution: {dict(source_counts)}")
 
     try:
-        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        # Step 1: Initialize client
+        logger.debug("LLM_FILTER: Initializing Gemini client")
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is not set")
+
+        client = genai.Client(api_key=api_key)
+        logger.debug("LLM_FILTER: Client initialized successfully")
+
+        # Step 2: Prepare prompt
+        logger.debug("LLM_FILTER: Preparing system prompt")
         system_prompt = news_filter_prompt.format(top_n=top_n)
 
+        # Step 3: Build article text
+        logger.debug("LLM_FILTER: Building article text for LLM")
         all_articles_text = ""
         for i, item in enumerate(all_articles):
             all_articles_text += f"News item {i+1}:\n"
@@ -312,6 +324,8 @@ async def filter_top_articles_llm(all_articles, top_n=12):
             f"LLM_FILTER: Sending {len(all_articles_text)} characters to LLM for analysis"
         )
 
+        # Step 4: Call LLM
+        logger.debug("LLM_FILTER: Calling Gemini API")
         response = await client.aio.models.generate_content(
             model="gemini-2.5-flash",
             contents=[all_articles_text],
@@ -322,7 +336,29 @@ async def filter_top_articles_llm(all_articles, top_n=12):
                 max_output_tokens=8192,
             ),
         )
+
+        # Step 5: Validate response
+        logger.debug("LLM_FILTER: Validating API response")
+        if response is None:
+            raise ValueError("LLM API returned None response")
+
+        if not hasattr(response, "parsed"):
+            raise ValueError("LLM response does not have 'parsed' attribute")
+
+        if response.parsed is None:
+            logger.error("LLM_FILTER: response.parsed is None")
+            logger.error(f"LLM_FILTER: Full response object: {response}")
+            if hasattr(response, "text"):
+                logger.error(f"LLM_FILTER: Response text: {response.text}")
+            if hasattr(response, "candidates"):
+                logger.error(f"LLM_FILTER: Response candidates: {response.candidates}")
+            raise ValueError("LLM response.parsed is None - check response structure")
+
         results: list[NewsItemSelected] = response.parsed
+        logger.debug(f"LLM_FILTER: Successfully parsed {len(results)} results")
+
+        # Step 6: Process results
+        logger.debug("LLM_FILTER: Processing LLM results")
         filtered_articles = []
 
         logger.info(f"LLM_FILTER: LLM returned {len(results)} decisions")
@@ -368,10 +404,16 @@ async def filter_top_articles_llm(all_articles, top_n=12):
         logger.info(f"LLM_FILTER: LLM filtering completed | Time: {elapsed_time:.2f}s")
         return filtered_articles
 
+    except ValueError as e:
+        elapsed_time = time.time() - start_time
+        logger.error(
+            f"LLM_FILTER: Configuration/validation error | Error: {e} | Time: {elapsed_time:.2f}s | Returning first {top_n} articles as fallback"
+        )
+        return all_articles[:top_n]
     except Exception as e:
         elapsed_time = time.time() - start_time
         logger.error(
-            f"LLM_FILTER: Failed during LLM filtering | Error: {e} | Time: {elapsed_time:.2f}s | Returning first {top_n} articles as fallback"
+            f"LLM_FILTER: Unexpected error during LLM filtering | Error: {e} | Error type: {type(e).__name__} | Time: {elapsed_time:.2f}s | Returning first {top_n} articles as fallback"
         )
         return all_articles[:top_n]
 
