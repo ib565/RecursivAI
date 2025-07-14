@@ -32,6 +32,8 @@ RSS_FEEDS = {
     "Microsoft": "https://www.microsoft.com/en-us/research/feed/",
     "Hugging Face": "https://huggingface.co/blog/feed.xml",
     "KnowTechie AI": "https://knowtechie.com/category/ai/feed/",
+    "VentureBeat": "https://venturebeat.com/category/ai/feed/",
+    "The Decoder": "https://the-decoder.com/feed/",
 }
 
 NUM_ARTICLES_TO_FETCH_NEWSAPI = 20
