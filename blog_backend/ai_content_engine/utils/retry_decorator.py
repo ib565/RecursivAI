@@ -94,7 +94,7 @@ def exponential_backoff_retry(
                     result = await func(*args, **kwargs)
                     if attempt > 0:
                         logger.info(
-                            f"Retry successful for {func.__name__} after {attempt} attempts"
+                            f"Retry successful for {func.__name__} on attempt {attempt + 1}"
                         )
                     return result
 
@@ -103,7 +103,7 @@ def exponential_backoff_retry(
 
                     if attempt == max_retries:
                         logger.error(
-                            f"Final retry failed for {func.__name__} after {max_retries} attempts: {e}"
+                            f"Final retry failed for {func.__name__} on attempt {attempt + 1}: {e}"
                         )
                         raise
 
