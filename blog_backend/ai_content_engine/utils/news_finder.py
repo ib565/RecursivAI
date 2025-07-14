@@ -15,6 +15,7 @@ from urllib.parse import quote
 
 from ai_content_engine.prompts import news_filter_prompt
 from ai_content_engine.models import NewsItemSelected
+from ai_content_engine.utils.retry_decorator import exponential_backoff_retry
 
 load_dotenv()
 
@@ -283,6 +284,23 @@ def is_valid_article(article):
     return True
 
 
+@exponential_backoff_retry()
+async def _call_gemini_api(client, all_articles_text, system_prompt):
+    """Make the actual API call to Gemini with retry logic for transient failures."""
+    logger.debug("LLM_FILTER: Calling Gemini API")
+    response = await client.aio.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[all_articles_text],
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            response_mime_type="application/json",
+            response_schema=list[NewsItemSelected],
+            max_output_tokens=8192,
+        ),
+    )
+    return response
+
+
 async def filter_top_articles_llm(all_articles, top_n=12):
     start_time = time.time()
     logger.info(
@@ -324,18 +342,8 @@ async def filter_top_articles_llm(all_articles, top_n=12):
             f"LLM_FILTER: Sending {len(all_articles_text)} characters to LLM for analysis"
         )
 
-        # Step 4: Call LLM
-        logger.debug("LLM_FILTER: Calling Gemini API")
-        response = await client.aio.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[all_articles_text],
-            config=types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                response_mime_type="application/json",
-                response_schema=list[NewsItemSelected],
-                max_output_tokens=8192,
-            ),
-        )
+        # Step 4: Call LLM with retry logic
+        response = await _call_gemini_api(client, all_articles_text, system_prompt)
 
         # Step 5: Validate response
         logger.debug("LLM_FILTER: Validating API response")
@@ -418,32 +426,18 @@ async def filter_top_articles_llm(all_articles, top_n=12):
         return all_articles[:top_n]
 
 
+@exponential_backoff_retry()
 def _fetch_with_curl_cffi(url):
     """Scrapes the URL using curl_cffi to impersonate a browser's TLS fingerprint."""
     logger.debug(f"SCRAPE_FETCH: Fetching with curl_cffi | URL: {url}")
 
-    try:
-        response = cffi_requests.get(url, impersonate="chrome120", timeout=15)
-        response.raise_for_status()
-        content_length = len(response.content)
-        logger.debug(
-            f"SCRAPE_FETCH: Successfully fetched {content_length} bytes | URL: {url}"
-        )
-        return response.content
-    except cffi_requests.exceptions.HTTPError as e:
-        logger.warning(
-            f"SCRAPE_FETCH: HTTP error {e.response.status_code if hasattr(e, 'response') else 'unknown'} | URL: {url} | Error: {e}"
-        )
-        return None
-    except cffi_requests.exceptions.Timeout as e:
-        logger.warning(f"SCRAPE_FETCH: Request timeout | URL: {url} | Error: {e}")
-        return None
-    except cffi_requests.exceptions.ConnectionError as e:
-        logger.warning(f"SCRAPE_FETCH: Connection error | URL: {url} | Error: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"SCRAPE_FETCH: Unexpected error | URL: {url} | Error: {e}")
-        return None
+    response = cffi_requests.get(url, impersonate="chrome120", timeout=15)
+    response.raise_for_status()
+    content_length = len(response.content)
+    logger.debug(
+        f"SCRAPE_FETCH: Successfully fetched {content_length} bytes | URL: {url}"
+    )
+    return response.content
 
 
 def _extract_with_bs(html_content, url):
