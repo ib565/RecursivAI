@@ -300,6 +300,23 @@ async def _call_gemini_api(client, all_articles_text, system_prompt):
             max_output_tokens=8192,
         ),
     )
+
+    # Validate response structure - these failures should trigger retries
+    if response is None:
+        raise ValueError("LLM API returned None response")
+
+    if not hasattr(response, "parsed"):
+        raise ValueError("LLM response does not have 'parsed' attribute")
+
+    if response.parsed is None:
+        logger.error("LLM_FILTER: response.parsed is None")
+        logger.error(f"LLM_FILTER: Full response object: {response}")
+        if hasattr(response, "text"):
+            logger.error(f"LLM_FILTER: Response text: {response.text}")
+        if hasattr(response, "candidates"):
+            logger.error(f"LLM_FILTER: Response candidates: {response.candidates}")
+        raise ValueError("LLM response.parsed is None - check response structure")
+
     return response
 
 
@@ -347,23 +364,8 @@ async def filter_top_articles_llm(all_articles, top_n=12):
         # Step 4: Call LLM with retry logic
         response = await _call_gemini_api(client, all_articles_text, system_prompt)
 
-        # Step 5: Validate response
-        logger.debug("LLM_FILTER: Validating API response")
-        if response is None:
-            raise ValueError("LLM API returned None response")
-
-        if not hasattr(response, "parsed"):
-            raise ValueError("LLM response does not have 'parsed' attribute")
-
-        if response.parsed is None:
-            logger.error("LLM_FILTER: response.parsed is None")
-            logger.error(f"LLM_FILTER: Full response object: {response}")
-            if hasattr(response, "text"):
-                logger.error(f"LLM_FILTER: Response text: {response.text}")
-            if hasattr(response, "candidates"):
-                logger.error(f"LLM_FILTER: Response candidates: {response.candidates}")
-            raise ValueError("LLM response.parsed is None - check response structure")
-
+        # Step 5: Process results (validation is now handled in _call_gemini_api)
+        logger.debug("LLM_FILTER: Processing API response")
         results: list[NewsItemSelected] = response.parsed
         logger.debug(f"LLM_FILTER: Successfully parsed {len(results)} results")
 
