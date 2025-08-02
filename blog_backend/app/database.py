@@ -1,6 +1,10 @@
 # blog_backend/app/database.py
-import os
 from sqlmodel import create_engine, SQLModel, Session
+import os
+import dotenv
+
+dotenv.load_dotenv()
+
 
 # Use environment variable or default to SQLite for development
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./blog.db")
