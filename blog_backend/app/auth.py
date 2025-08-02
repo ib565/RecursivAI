@@ -30,7 +30,7 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 # API key authentication function
-def verify_api_key(x_api_key: Optional[str] = Header(None)):
+def verify_api_key(x_api_key: Optional[str] = Header(None, alias="X-API-Key")):
     if not API_KEY:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -16,6 +16,6 @@ jobs:
         run: |
           curl -X POST \
           -H "Content-Type: application/json" \
-          -H "x-api-key: $API_KEY" \
+          -H "X-API-Key: $API_KEY" \
           -d '{"days_ago": 4}' \
           "https://recursivai.onrender.com/posts/generate_news"
