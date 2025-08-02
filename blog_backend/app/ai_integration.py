@@ -54,8 +54,20 @@ def generate_slug(title: str) -> str:
 def _submit_post(post_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Submit post data to the blog API."""
     title = post_data.get("title", "No Title")
+
+    # Get API key from environment
+    api_key = os.getenv("API_KEY")
+    if not api_key:
+        logger.error(f"API_KEY not configured - cannot submit post '{title}'")
+        return None
+
+    # Prepare headers with API key
+    headers = {"Content-Type": "application/json", "X-API-Key": api_key}
+
     try:
-        response = requests.post(f"{API_BASE_URL}/posts/", json=post_data)
+        response = requests.post(
+            f"{API_BASE_URL}/posts/", json=post_data, headers=headers
+        )
         response.raise_for_status()
         logger.info(f"Successfully submitted post: {title}")
         return response.json()

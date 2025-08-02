@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
 from ..database import get_session
+from ..auth import verify_api_key
 from typing import List, Dict, Any
 from datetime import datetime
 import logging
@@ -39,7 +40,11 @@ def get_unique_slug(session: Session, original_slug: str) -> str:
 
 
 @router.post("", response_model=Post)
-def create_post(post: Post, session: Session = Depends(get_session)) -> Post:
+def create_post(
+    post: Post,
+    session: Session = Depends(get_session),
+    api_key: bool = Depends(verify_api_key),
+) -> Post:
     try:
         post.slug = get_unique_slug(session, post.slug)
         session.add(post)
@@ -58,6 +63,7 @@ def api_process_curated_papers_background(
     notes: Dict[str, str] = None,
     background_tasks: BackgroundTasks = None,
     force_regenerate: bool = False,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Create blog posts from manually curated arXiv papers in the background."""
     try:
@@ -83,6 +89,7 @@ def api_discover_and_generate_posts(
     find_new_papers: bool = False,
     days: int = 7,
     num_papers: int = 10,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """
     Discovers new top papers from arXiv, saves them to the database,
@@ -107,7 +114,10 @@ def api_discover_and_generate_posts(
 
 @router.post("/find_top_papers")
 def api_find_top_papers(
-    background_tasks: BackgroundTasks, days: int = 7, num_papers: int = 10
+    background_tasks: BackgroundTasks,
+    days: int = 7,
+    num_papers: int = 10,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Find top papers and save to DB."""
     try:
@@ -122,6 +132,7 @@ def api_find_top_papers(
 def api_generate_posts(
     background_tasks: BackgroundTasks,
     force_regenerate: bool = False,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Generate posts from the latest papers file."""
     try:
@@ -135,6 +146,7 @@ def api_generate_posts(
 @router.post("/generate_weekly_summary")
 def api_generate_weekly_summary(
     background_tasks: BackgroundTasks,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Generate a weekly summary post from recent posts."""
     try:
@@ -153,6 +165,7 @@ def api_generate_news_posts(
     force_regenerate: bool = False,
     days_ago: int = 7,
     top_n: int = 12,
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Generate news posts from latest headlines in the background.
     Args:
@@ -173,7 +186,9 @@ def api_generate_news_posts(
 
 
 @router.post("/top_papers", response_model=Dict[str, str])
-def update_papers(papers_data: List[Dict[str, Any]]) -> Dict[str, str]:
+def update_papers(
+    papers_data: List[Dict[str, Any]], api_key: bool = Depends(verify_api_key)
+) -> Dict[str, str]:
     """Update the latest top papers data with edited data."""
     try:
         now = datetime.now()
@@ -387,7 +402,10 @@ def get_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 
 @router.patch("/{post_id}", response_model=Post)
 def update_post(
-    post_id: int, post_update: PostUpdate, session: Session = Depends(get_session)
+    post_id: int,
+    post_update: PostUpdate,
+    session: Session = Depends(get_session),
+    api_key: bool = Depends(verify_api_key),
 ) -> Post:
     """Update a post."""
     try:
@@ -408,7 +426,11 @@ def update_post(
 
 
 @router.patch("/{post_id}/publish", response_model=Post)
-def publish_post(post_id: int, session: Session = Depends(get_session)) -> Post:
+def publish_post(
+    post_id: int,
+    session: Session = Depends(get_session),
+    api_key: bool = Depends(verify_api_key),
+) -> Post:
     """Change post status from draft to published."""
     try:
         post = session.get(Post, post_id)
@@ -430,7 +452,9 @@ def publish_post(post_id: int, session: Session = Depends(get_session)) -> Post:
 
 @router.delete("/{post_id}")
 def delete_post(
-    post_id: int, session: Session = Depends(get_session)
+    post_id: int,
+    session: Session = Depends(get_session),
+    api_key: bool = Depends(verify_api_key),
 ) -> Dict[str, str]:
     """Delete a post."""
     try:
