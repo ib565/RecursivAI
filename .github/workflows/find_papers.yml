@@ -11,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Find top papers
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
         run: |
-          curl -X POST "https://recursivai.onrender.com/posts/find_top_papers?num_papers=6"
+          curl -X POST -H "X-API-Key: $API_KEY" "https://recursivai.onrender.com/posts/find_top_papers?num_papers=6"

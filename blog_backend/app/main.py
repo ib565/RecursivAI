@@ -5,6 +5,7 @@ from .database import create_db_and_tables
 from .api.posts_api import router as posts_router
 from .auth import verify_admin
 import logging
+import os
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from starlette.responses import HTMLResponse, JSONResponse
@@ -44,11 +45,26 @@ async def get_openapi_route(admin: bool = Depends(verify_admin)):
     )
 
 
+# Configure CORS with allowed domains from environment
+FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:3000")
+allowed_origins = [FRONTEND_DOMAIN]
+
+# For local development, also allow localhost
+if "localhost" not in FRONTEND_DOMAIN:
+    allowed_origins.extend(
+        [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:8000",
+            "http://127.0.0.1:8000",
+        ]
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
 )
 

@@ -11,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate weekly summary
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
         run: |
-          curl -X POST "https://recursivai.onrender.com/posts/generate_weekly_summary"
+          curl -X POST -H "X-API-Key: $API_KEY" "https://recursivai.onrender.com/posts/generate_weekly_summary"
