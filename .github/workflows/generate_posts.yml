@@ -11,5 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate posts
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
         run: |
-          curl -X POST "https://recursivai.onrender.com/posts/generate_posts"
+          curl -X POST -H "x-api-key: $API_KEY" "https://recursivai.onrender.com/posts/generate_posts"
