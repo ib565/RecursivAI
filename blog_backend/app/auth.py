@@ -7,8 +7,8 @@ import os
 security = HTTPBasic()
 
 # Get admin credentials from environment variables
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 
 # Admin authentication function
