@@ -121,16 +121,45 @@ a:hover h2, a:hover h3 {
   }
 }
 
-.markdown-content > svg[id^="mermaid-"] {
-  max-width: 1300px !important; /* Or whatever maximum you want */
-  max-height: 900px !important;
-  width: 100vw !important; /* Take full viewport width */
+/* Mermaid diagram styles - allow horizontal extension beyond text limits */
+.markdown-content .mermaid-diagram {
+  width: 70vw !important;
   position: relative !important;
   left: 50% !important;
   right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  transform: translateX(calc(50vw - 50%)) !important;
+  margin-left: -35vw !important;
+  margin-right: -35vw !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  overflow-x: auto !important;
+}
+
+.markdown-content .mermaid-diagram svg {
+  max-width: none !important;
+  height: auto !important;
+  min-width: 100% !important;
+  background-color: transparent !important;
+}
+
+/* Clean mermaid diagrams - no boxes or shadows */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .markdown-content .mermaid-diagram {
+    width: 90vw !important;
+    margin-left: -45vw !important;
+    margin-right: -45vw !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-content .mermaid-diagram {
+    width: 95vw !important;
+    margin-left: -47.5vw !important;
+    margin-right: -47.5vw !important;
+  }
 }
 
 

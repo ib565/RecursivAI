@@ -68,9 +68,31 @@ function MarkdownRenderer({ children }) {
         if (!mermaidLoaded) {
           mermaid.initialize({
             startOnLoad: false,
-            theme: 'dark',
+            theme: 'base',
             securityLevel: 'loose',
-            fontFamily: 'monospace'
+            fontFamily: 'monospace',
+            themeVariables: {
+              primaryColor: '#7c3aed',
+              primaryTextColor: '#ffffff',
+              primaryBorderColor: '#a855f7',
+              lineColor: '#00ffff',
+              secondaryColor: '#1e1b4b',
+              tertiaryColor: '#312e81',
+              background: '#0f0f12',
+              mainBkg: '#1e1b4b',
+              secondBkg: '#312e81',
+              tertiaryBkg: '#4c1d95',
+              // Fix light blue boxes specifically
+              nodeBkg: '#1e40af',
+              nodeTextColor: '#ffffff',
+              clusterBkg: '#1e3a8a',
+              edgeLabelBackground: '#1e40af',
+              c0: '#7c3aed',
+              c1: '#1e40af',
+              c2: '#059669',
+              c3: '#dc2626',
+              c4: '#ea580c'
+            }
           });
           setMermaidLoaded(true);
         }
@@ -88,6 +110,7 @@ function MarkdownRenderer({ children }) {
             // Create a div to hold the SVG
             const wrapper = document.createElement('div');
             wrapper.className = 'mermaid-diagram';
+            wrapper.setAttribute('data-type', 'mermaid');
             wrapper.innerHTML = svg;
             
             // Replace the code block with the rendered diagram
