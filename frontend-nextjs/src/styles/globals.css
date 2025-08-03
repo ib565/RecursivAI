@@ -1,0 +1,368 @@
+/* Fonts are now loaded via next/font in _app.js */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+body {
+  background-color: #0f0f12;
+  color: #f0f0f0;
+  font-family: var(--font-chakra-petch), sans-serif;
+  position: relative;
+}
+
+/* Newspaper specific styles */
+.newspaper-page {
+  font-family: var(--font-source-serif-4), 'Times New Roman', serif;
+  color: #000000;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.newspaper-page h1 {
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.newspaper-page h2, 
+.newspaper-page h3, 
+.newspaper-page h4 {
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.02em;
+}
+
+.newspaper-page p {
+  font-family: var(--font-merriweather), Georgia, 'Times New Roman', serif;
+  line-height: 1.6;
+}
+
+/* Specific class for news page text content to ensure Merriweather is used */
+.news-content {
+  font-family: var(--font-merriweather), Georgia, 'Times New Roman', serif !important;
+}
+
+.newspaper-page .leading-tight {
+  line-height: 1.2;
+}
+
+.newspaper-page img.grayscale {
+  filter: grayscale(30%);
+  transition: filter 0.3s ease;
+}
+
+.newspaper-page img.grayscale:hover {
+  filter: grayscale(0%);
+}
+
+/* Dropcap for first paragraph in main articles */
+.dropcap:first-letter {
+  float: left;
+  font-family: var(--font-playfair-display), serif;
+  font-size: 3.5rem;
+  line-height: 0.8;
+  padding-right: 8px;
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+/* Scanline effect overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 100;
+  opacity: 0.3;
+}
+
+/* Remove scanline effect for newspaper page */
+.newspaper-page::after {
+  display: none;
+}
+
+.font-serif {
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
+}
+
+/* For the main title - even more dramatic */
+h1.text-4xl {
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+/* For article titles */
+h2.font-serif, h3.font-serif {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Hover effects for story links */
+a:hover h2, a:hover h3 {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  h1.text-4xl {
+    font-size: 2rem;
+  }
+  
+  h2.text-3xl {
+    font-size: 1.75rem;
+  }
+}
+
+/* Mermaid diagram styles - allow horizontal extension beyond text limits */
+.markdown-content .mermaid-diagram {
+  width: 80vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -40vw !important;
+  margin-right: -40vw !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+.markdown-content .mermaid-diagram svg {
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 600px !important;
+  background-color: transparent !important;
+}
+
+/* About page specific constraints - work within container bounds */
+.backdrop-blur-sm .markdown-content .mermaid-diagram {
+  width: 100% !important;
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+}
+
+.backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 500px !important;
+  background-color: transparent !important;
+}
+
+/* Clean mermaid diagrams - no boxes or shadows */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .markdown-content .mermaid-diagram {
+    width: 95vw !important;
+    margin-left: -47.5vw !important;
+    margin-right: -47.5vw !important;
+  }
+  
+  .markdown-content .mermaid-diagram svg {
+    min-width: 500px !important;
+  }
+  
+  /* About page responsive constraints */
+  .backdrop-blur-sm .markdown-content .mermaid-diagram {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+    min-width: 400px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .markdown-content .mermaid-diagram {
+    width: 98vw !important;
+    margin-left: -49vw !important;
+    margin-right: -49vw !important;
+  }
+  
+  .markdown-content .mermaid-diagram svg {
+    min-width: 400px !important;
+  }
+  
+  /* About page responsive constraints */
+  .backdrop-blur-sm .markdown-content .mermaid-diagram {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+    min-width: 300px !important;
+  }
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-share-tech-mono), monospace;
+}
+
+/* Override font family for newspaper page */
+.newspaper-page h1, 
+.newspaper-page h2, 
+.newspaper-page h3, 
+.newspaper-page h4, 
+.newspaper-page h5, 
+.newspaper-page h6 {
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
+}
+
+/* Neon text effect */
+.neon-text {
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.neon-text-pink {
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.7), 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+/* Custom component classes */
+.cyber-card {
+  @apply bg-cyber-dark p-6 rounded-lg border-cyber-neon transition-all duration-300 relative overflow-hidden;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.15);
+}
+
+.cyber-card:hover {
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.cyber-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: #00ffff;
+  opacity: 0.8;
+  box-shadow: 0 0 15px 3px rgba(0, 255, 255, 0.5);
+}
+
+.cyber-card-pink::before {
+  background-color: #ff00ff;
+  box-shadow: 0 0 15px 3px rgba(255, 0, 255, 0.5);
+}
+
+.cyber-btn {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-neon text-cyber-neon font-cyber transition-all duration-300 relative;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+}
+
+.cyber-btn:hover {
+  @apply bg-cyber-neon text-cyber-black;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+.cyber-btn-pink {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-pink text-cyber-pink font-cyber transition-all duration-300 relative;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+  box-shadow: 0 0 8px rgba(255, 0, 255, 0.2);
+}
+
+.cyber-btn-pink:hover {
+  @apply bg-cyber-pink text-cyber-black;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+}
+
+/* Loading animation */
+.loading-pulse {
+  animation: pulse 1.5s infinite;
+  position: relative;
+}
+
+.loading-pulse::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  animation: scanning 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes scanning {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Digital glitch effect for hover */
+.glitch-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.glitch-hover:hover::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #00ffff;
+  overflow: hidden;
+  clip: rect(0, 900px, 0, 0);
+  animation: glitch-animation 1s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-animation {
+  0% {
+    clip: rect(44px, 9999px, 56px, 0);
+  }
+  5% {
+    clip: rect(20px, 9999px, 59px, 0);
+  }
+  10% {
+    clip: rect(67px, 9999px, 92px, 0);
+  }
+  15% {
+    clip: rect(0, 9999px, 0, 0);
+  }
+  20% {
+    clip: rect(28px, 9999px, 16px, 0);
+  }
+  25% {
+    clip: rect(13px, 9999px, 80px, 0);
+  }
+  100% {
+    clip: rect(0, 0, 0, 0);
+  }
+}
