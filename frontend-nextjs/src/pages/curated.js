@@ -126,7 +126,7 @@ export default function CuratedPage({ initialPosts }) {
       <div className="scanlines"></div>
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-24 px-4">
+      <section className="relative overflow-hidden py-20 pb-8 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             {/* Animated title with amber theme */}
@@ -143,24 +143,16 @@ export default function CuratedPage({ initialPosts }) {
             
             {/* Subtitle */}
             <p className="text-xl md:text-2xl text-gray-300 mb-8 font-body max-w-4xl mx-auto leading-relaxed">
-              Carefully curated papers that shaped the foundation of modern AI. 
+              Curated papers that shaped the foundation of Generative AI. 
               These are the breakthroughs that defined artificial intelligence as we know it today.
             </p>
             
-            {/* Description */}
-            <div className="max-w-3xl mx-auto mb-8">
-              <p className="text-lg text-gray-400 font-body leading-relaxed">
-                From neural networks to transformers, from computer vision to natural language processing — 
-                explore the seminal works that built the AI revolution. Each post includes comprehensive analysis, 
-                key insights, and practical implications.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
       {/* Posts Grid Section */}
-      <section className="py-16 px-4">
+      <section className="pt-4 pb-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-cyber text-amber-400 mb-4">
