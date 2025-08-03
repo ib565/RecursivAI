@@ -4,7 +4,7 @@ import { getAllPosts } from "../utils/apiService";
 import SEO from "../components/SEO";
 import { useRouter } from "next/router";
 
-export default function HomePage({ initialPosts }) {
+export default function CuratedPage({ initialPosts }) {
   const router = useRouter();
   const [posts, setPosts] = useState(initialPosts || []);
   const [loading, setLoading] = useState(false); // Changed from true since we have initial data
@@ -12,7 +12,7 @@ export default function HomePage({ initialPosts }) {
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const POSTS_PER_PAGE = 21; // Changed from 20 to 21 as requested
+  const POSTS_PER_PAGE = 21;
 
   const fetchPosts = async (isInitialLoad = true, currentOffset = offset) => {
     try {
@@ -22,9 +22,10 @@ export default function HomePage({ initialPosts }) {
         setLoadingMore(true);
       }
 
-      // Fetch posts with the provided offset
+      // CRITICAL: Preserve the specific filtering logic for curated posts
       const data = await getAllPosts({
-        // status: 'published',
+        post_types: "curated", // IMPORTANT: This filters for curated posts only
+        sort_by: "published_date",
         limit: POSTS_PER_PAGE,
         offset: isInitialLoad ? 0 : currentOffset,
       });
@@ -41,7 +42,7 @@ export default function HomePage({ initialPosts }) {
 
       setError(null);
     } catch (err) {
-      console.error("Failed to fetch posts:", err);
+      console.error("Failed to fetch curated posts:", err);
       setError(err);
     } finally {
       if (isInitialLoad) {
@@ -70,12 +71,8 @@ export default function HomePage({ initialPosts }) {
     fetchPosts(false, nextOffset);
   };
 
-  const handleCTAClick = (type) => {
-    if (type === 'about') {
-      router.push("/about");
-    } else if (type === 'curated') {
-      router.push("/curated");
-    }
+  const goBack = () => {
+    router.back();
   };
 
   if (loading) {
@@ -84,8 +81,8 @@ export default function HomePage({ initialPosts }) {
         <div className="container mx-auto px-4 py-24">
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyber-neon mx-auto mb-4"></div>
-              <p className="text-cyber-neon font-cyber">Loading amazing content...</p>
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400 mx-auto mb-4"></div>
+              <p className="text-amber-400 font-cyber">Loading curated research...</p>
             </div>
           </div>
         </div>
@@ -97,17 +94,17 @@ export default function HomePage({ initialPosts }) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-cyber-black via-cyber-dark to-cyber-gray">
         <div className="container mx-auto px-4 py-24">
-          <div className="max-w-3xl mx-auto bg-cyber-dark p-6 rounded-lg border border-cyber-pink relative">
-            <div className="absolute inset-0 bg-cyber-pink opacity-5 animate-pulse"></div>
-            <h2 className="text-cyber-pink text-xl mb-4 font-cyber neon-text-pink">
-              Connection Error
+          <div className="max-w-3xl mx-auto bg-cyber-dark p-6 rounded-lg border border-amber-400 relative">
+            <div className="absolute inset-0 bg-amber-400 opacity-5 animate-pulse"></div>
+            <h2 className="text-amber-400 text-xl mb-4 font-cyber">
+              Error Loading Curated Posts
             </h2>
             <p className="text-gray-300 mb-4">
-              Unable to load content. Please check your connection and try again.
+              Unable to load curated research content. Please check your connection and try again.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="cyber-btn-pink"
+              className="px-6 py-3 bg-amber-400 text-cyber-black hover:bg-amber-300 transition-colors font-cyber rounded"
             >
               Retry
             </button>
@@ -120,8 +117,9 @@ export default function HomePage({ initialPosts }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyber-black via-cyber-dark to-cyber-gray">
       <SEO 
-        title="RecursivAI - AI Research & Deep Learning Insights"
-        description="Explore cutting-edge AI research, deep learning breakthroughs, and technology insights. Stay updated with the latest in artificial intelligence and machine learning."
+        title="Foundational AI Research | RecursivAI"
+        description="Explore carefully curated foundational AI research papers and breakthroughs. Deep dive into the most important developments in artificial intelligence and machine learning."
+        keywords="AI research, machine learning papers, foundational AI, research papers, artificial intelligence, deep learning, curated research"
       />
       
       {/* Cyberpunk scanlines effect */}
@@ -131,32 +129,31 @@ export default function HomePage({ initialPosts }) {
       <section className="relative overflow-hidden py-24 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            {/* Animated logo/title */}
-            <h1 className="text-6xl md:text-8xl font-cyber text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-cyber-pink to-cyber-purple animate-pulse mb-6">
-              RecursivAI
+            {/* Animated title with amber theme */}
+            <h1 className="text-5xl md:text-7xl font-cyber text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 animate-pulse mb-6">
+              Foundational AI Research
             </h1>
             
-            {/* Glowing subtitle */}
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 font-body max-w-3xl mx-auto leading-relaxed">
-              Diving deep into the frontier of artificial intelligence, 
-              exploring research breakthroughs, and decoding the future of technology.
+            {/* Glowing amber divider */}
+            <div className="flex justify-center mb-8">
+              <div className="w-32 h-1 bg-amber-400 relative">
+                <div className="absolute top-0 left-0 w-full h-full opacity-70" style={{ boxShadow: "0 0 15px 3px #FFC107" }}></div>
+              </div>
+            </div>
+            
+            {/* Subtitle */}
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 font-body max-w-4xl mx-auto leading-relaxed">
+              Carefully curated papers that shaped the foundation of modern AI. 
+              These are the breakthroughs that defined artificial intelligence as we know it today.
             </p>
             
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button 
-                onClick={() => handleCTAClick('curated')}
-                className="cyber-btn-neon group px-8 py-3 transition-all duration-300"
-              >
-                <span className="relative z-10">Explore Curated Research</span>
-              </button>
-              
-              <button 
-                onClick={() => handleCTAClick('about')}
-                className="cyber-btn-pink group px-8 py-3 transition-all duration-300"
-              >
-                <span className="relative z-10">About the Mission</span>
-              </button>
+            {/* Description */}
+            <div className="max-w-3xl mx-auto mb-8">
+              <p className="text-lg text-gray-400 font-body leading-relaxed">
+                From neural networks to transformers, from computer vision to natural language processing — 
+                explore the seminal works that built the AI revolution. Each post includes comprehensive analysis, 
+                key insights, and practical implications.
+              </p>
             </div>
           </div>
         </div>
@@ -166,11 +163,11 @@ export default function HomePage({ initialPosts }) {
       <section className="py-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-cyber text-cyber-neon mb-4 neon-text-cyan">
-              Latest Insights
+            <h2 className="text-3xl md:text-4xl font-cyber text-amber-400 mb-4">
+              Landmark Papers
             </h2>
             <p className="text-gray-400 text-lg font-body">
-              Fresh perspectives on AI research, technology trends, and innovation
+              The research that transformed artificial intelligence
             </p>
           </div>
           
@@ -184,17 +181,17 @@ export default function HomePage({ initialPosts }) {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className={`cyber-btn-outline px-8 py-3 font-cyber ${
+                    className={`px-8 py-3 bg-amber-400 text-cyber-black hover:bg-amber-300 transition-all duration-300 font-cyber rounded ${
                       loadingMore ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'
-                    } transition-all duration-300`}
+                    }`}
                   >
                     {loadingMore ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyber-neon inline-block mr-2"></div>
-                        Loading...
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyber-black inline-block mr-2"></div>
+                        Loading More...
                       </>
                     ) : (
-                      'Load More Posts'
+                      'Load More Research'
                     )}
                   </button>
                 </div>
@@ -202,16 +199,28 @@ export default function HomePage({ initialPosts }) {
             </>
           ) : (
             <div className="text-center py-16">
-              <div className="max-w-md mx-auto bg-cyber-dark p-8 rounded-lg border border-cyber-purple">
-                <h3 className="text-cyber-purple text-xl mb-4 font-cyber">
-                  No Posts Available
+              <div className="max-w-md mx-auto bg-cyber-dark p-8 rounded-lg border border-amber-400">
+                <h3 className="text-amber-400 text-xl mb-4 font-cyber">
+                  No Curated Posts Available
                 </h3>
                 <p className="text-gray-400">
-                  Check back soon for fresh content about AI and technology.
+                  We're working on curating more foundational research papers. Check back soon!
                 </p>
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Back Navigation */}
+      <section className="py-8">
+        <div className="container mx-auto px-4 text-center">
+          <button 
+            onClick={goBack}
+            className="cyber-btn-outline px-8 py-3 font-cyber transition-all duration-300"
+          >
+            ← Back to Main Feed
+          </button>
         </div>
       </section>
     </div>
@@ -221,13 +230,16 @@ export default function HomePage({ initialPosts }) {
 export async function getServerSideProps() {
   try {
     const POSTS_PER_PAGE = 21;
-    const initialPosts = await getAllPosts({
+    // CRITICAL: Preserve the specific filtering logic for curated posts
+    const posts = await getAllPosts({
+      post_types: "curated", // IMPORTANT: This filters for curated posts only
+      sort_by: "published_date",
       limit: POSTS_PER_PAGE,
       offset: 0,
     });
-    return { props: { initialPosts } };
+    return { props: { initialPosts: posts } };
   } catch (error) {
-    console.error('Failed to fetch initial posts:', error);
-    return { props: { initialPosts: [] } };
+    console.error('Failed to fetch initial curated posts:', error);
+    return { props: { initialPosts: [], error: 'Failed to load curated posts' } };
   }
 }
