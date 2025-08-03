@@ -101,8 +101,8 @@ const AboutPage = () => {
           <div className="max-w-5xl mx-auto">
             {/* Header Section */}
             <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-6xl font-cyber text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-cyber-pink to-cyber-purple mb-6">
-                About RecursivAI
+              <h1 className="text-4xl md:text-5xl font-cyber text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-cyber-pink to-cyber-purple mb-6">
+                About the project
               </h1>
               <div className="flex justify-center mb-8">
                 <div className="w-32 h-1 bg-cyber-neon relative">
