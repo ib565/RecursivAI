@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { formatDate } from "../../utils/formatters";
 import { getPostBySlug } from "../../utils/apiService";
@@ -126,15 +127,19 @@ export default function PostPage({ post, error }) {
 
             {/* Featured Image for News Posts */}
             {isNewsPost && post.featured_image_url && (
-              <div className="mb-8">
-                <img
-                  src={post.featured_image_url}
-                  alt={post.title}
-                  className="w-full max-w-2xl mx-auto rounded-lg shadow-lg border border-gray-300"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+              <div className="mb-8 flex justify-center">
+                <div className="relative w-full max-w-2xl">
+                  <Image
+                    src={post.featured_image_url}
+                    alt={post.title}
+                    width={800}
+                    height={450}
+                    className="w-full h-auto rounded-lg shadow-lg border border-gray-300"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
               </div>
             )}
 

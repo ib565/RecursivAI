@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getNewsPosts } from "../utils/apiService";
 import { formatDate } from "../utils/formatters";
 import SEO from "../components/SEO";
@@ -112,18 +113,20 @@ export default function NewsPage({ initialPosts, error }) {
               {mainFeature && (
                 <div className="md:col-span-7 border-r border-gray-300 pr-6">
                   <Link href={`/post/${mainFeature.slug}`}>
-                    <div className="aspect-[16/9] mb-4 overflow-hidden">
+                    <div className="aspect-[16/9] mb-4 overflow-hidden relative">
                       {mainFeature.featured_image_url ? (
-                        <img
+                        <Image
                           src={mainFeature.featured_image_url}
                           alt={mainFeature.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
                       ) : (
-                        <img
+                        <Image
                           src={getPlaceholderImage(0)}
                           alt="Featured image placeholder"
-                          className="w-full h-full object-cover grayscale"
+                          fill
+                          className="object-cover grayscale"
                         />
                       )}
                     </div>
@@ -148,18 +151,20 @@ export default function NewsPage({ initialPosts, error }) {
                       }`}
                     >
                       <div className="w-1/2 flex-shrink-0">
-                        <div className="aspect-[16/11] overflow-hidden">
+                        <div className="aspect-[16/11] overflow-hidden relative">
                           {post.featured_image_url ? (
-                            <img
+                            <Image
                               src={post.featured_image_url}
                               alt={post.title}
-                              className="w-full h-full object-cover"
+                              fill
+                              className="object-cover"
                             />
                           ) : (
-                            <img
+                            <Image
                               src={getPlaceholderImage(index + 1)}
                               alt="Image placeholder"
-                              className="w-full h-full object-cover grayscale"
+                              fill
+                              className="object-cover grayscale"
                             />
                           )}
                         </div>
@@ -192,18 +197,20 @@ export default function NewsPage({ initialPosts, error }) {
                   href={`/post/${post.slug}`}
                   className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
                 >
-                  <div className="aspect-[16/9] mb-3 overflow-hidden">
+                  <div className="aspect-[16/9] mb-3 overflow-hidden relative">
                     {post.featured_image_url ? (
-                      <img
+                      <Image
                         src={post.featured_image_url}
                         alt={post.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
-                      <img
+                      <Image
                         src={getPlaceholderImage(index + 3)}
                         alt="Image placeholder"
-                        className="w-full h-full object-cover grayscale"
+                        fill
+                        className="object-cover grayscale"
                       />
                     )}
                   </div>

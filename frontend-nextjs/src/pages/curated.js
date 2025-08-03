@@ -196,7 +196,7 @@ export default function CuratedPage({ initialPosts }) {
                   No Curated Posts Available
                 </h3>
                 <p className="text-gray-400">
-                  We're working on curating more foundational research papers. Check back soon!
+                  We&apos;re working on curating more foundational research papers. Check back soon!
                 </p>
               </div>
             </div>

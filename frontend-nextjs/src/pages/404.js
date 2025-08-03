@@ -47,11 +47,11 @@ export default function Custom404() {
                   Neural Network Error
                 </h2>
                 <p className="text-gray-300 text-lg mb-6 font-body">
-                  The AI couldn't locate the requested resource in the knowledge base. 
-                  The page you're looking for might have been moved, deleted, or never existed.
+                  The AI couldn&apos;t locate the requested resource in the knowledge base. 
+                  The page you&apos;re looking for might have been moved, deleted, or never existed.
                 </p>
                 <p className="text-gray-400 mb-8 font-body">
-                  But don't worry - there's plenty of fascinating AI research and insights to explore!
+                  But don&apos;t worry - there&apos;s plenty of fascinating AI research and insights to explore!
                 </p>
               </div>
             </div>
