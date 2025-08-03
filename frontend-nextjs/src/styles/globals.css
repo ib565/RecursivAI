@@ -269,7 +269,27 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 15px 3px rgba(255, 0, 255, 0.5);
 }
 
+.cyber-btn {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-neon text-cyber-neon font-cyber transition-all duration-300 relative;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+}
 
+.cyber-btn:hover {
+  @apply bg-cyber-neon text-cyber-black;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+.cyber-btn-pink {
+  @apply px-4 py-2 bg-cyber-dark border border-cyber-pink text-cyber-pink font-cyber transition-all duration-300 relative;
+  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+  box-shadow: 0 0 8px rgba(255, 0, 255, 0.2);
+}
+
+.cyber-btn-pink:hover {
+  @apply bg-cyber-pink text-cyber-black;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+}
 
 /* Loading animation */
 .loading-pulse {
@@ -297,109 +317,6 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 0.5;
   }
 }
-
-/* Breathing title animation */
-@keyframes breathe {
-  0%, 100% {
-    text-shadow: 
-      0 0 5px rgba(0, 255, 255, 0.8),
-      0 0 10px rgba(0, 255, 255, 0.6),
-      0 0 15px rgba(0, 255, 255, 0.4);
-    transform: scale(1);
-  }
-  50% {
-    text-shadow: 
-      0 0 10px rgba(0, 255, 255, 1),
-      0 0 20px rgba(0, 255, 255, 0.8),
-      0 0 30px rgba(0, 255, 255, 0.6);
-    transform: scale(1.02);
-  }
-}
-
-.breathing-title {
-  animation: breathe 3s ease-in-out infinite;
-}
-
-
-
-
-
-/* Enhanced button hover effects */
-.cyber-btn {
-  @apply px-4 py-2 bg-cyber-dark border border-cyber-neon text-cyber-neon font-cyber transition-all duration-300 relative overflow-hidden;
-  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
-}
-
-.cyber-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.cyber-btn:hover::before {
-  left: 100%;
-}
-
-.cyber-btn:hover {
-  @apply bg-cyber-neon text-cyber-black;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
-  transform: translateY(-2px);
-}
-
-.cyber-btn-pink {
-  @apply px-4 py-2 bg-cyber-dark border border-cyber-pink text-cyber-pink font-cyber transition-all duration-300 relative overflow-hidden;
-  text-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
-  box-shadow: 0 0 8px rgba(255, 0, 255, 0.2);
-}
-
-.cyber-btn-pink::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.3), transparent);
-  transition: left 0.5s;
-}
-
-.cyber-btn-pink:hover::before {
-  left: 100%;
-}
-
-.cyber-btn-pink:hover {
-  @apply bg-cyber-pink text-cyber-black;
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
-  transform: translateY(-2px);
-}
-
-
-
-/* Flowing gradient animation */
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.flowing-gradient {
-  background-size: 200% 200%;
-  animation: gradientFlow 4s ease infinite;
-}
-
-
 
 @keyframes scanning {
   100% {

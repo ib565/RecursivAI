@@ -62,8 +62,6 @@ export default function HomePage({ initialPosts }) {
     }
   }, [initialPosts]);
 
-
-
   const handleLoadMore = () => {
     if (!hasMore || loadingMore) return;
     
@@ -158,7 +156,7 @@ export default function HomePage({ initialPosts }) {
                 data-text="RecursivAI"
               >
                 <span className="text-white">Recursiv</span>
-                <span className="text-cyber-neon neon-text breathing-title">AI</span>
+                <span className="text-cyber-neon neon-text">AI</span>
               </h1>
 
               {/* Dual-color divider for balanced accent */}
@@ -223,8 +221,8 @@ export default function HomePage({ initialPosts }) {
             </div>
           </div>
 
-          {/* Decorative elements - flowing dual color gradient */}
-          <div className="absolute bottom-0 right-0 w-1/3 h-24 opacity-20 flowing-gradient bg-gradient-to-r from-transparent via-cyber-neon to-cyber-pink"></div>
+          {/* Decorative elements - dual color gradient */}
+          <div className="absolute bottom-0 right-0 w-1/3 h-24 opacity-20 bg-gradient-to-r from-transparent via-cyber-neon to-cyber-pink"></div>
         </div>
 
         {/* Posts Section */}
