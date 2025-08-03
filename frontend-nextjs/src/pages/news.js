@@ -86,8 +86,12 @@ export default function NewsPage({ initialPosts, error }) {
                   <h1 className="text-5xl font-serif font-black">
                     RecursivAI
                   </h1>
-                </div>
-                <div className="text-s tracking-wider invisible">
+                  {/* Tagline */}
+                  <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
+                    Who better to keep up with AI than AI itself?
+                  </p>
+              </div>
+              <div className="text-s tracking-wider invisible">
                   {/* Empty div for flex spacing */}
                   {today.toLocaleDateString("en-US", {
                     weekday: "long",
@@ -101,14 +105,7 @@ export default function NewsPage({ initialPosts, error }) {
           </header>
 
           {/* Main Content */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-            {/* Subheader */}
-            <div className="text-center mb-8 border-b border-gray-300 pb-4">
-              <h2 className="text-lg font-serif italic text-gray-700">
-              Who better to keep up with AI than AI itself?
-              </h2>
-            </div>
-
+          <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
             {/* Featured Stories Section */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
               {/* Main Feature */}
@@ -133,7 +130,7 @@ export default function NewsPage({ initialPosts, error }) {
                     <h2 className="text-3xl font-serif font-bold mb-3 leading-tight">
                       {mainFeature.title}
                     </h2>
-                    <p className="text-base mb-2 font-serif dropcap">{mainFeature.summary}</p>
+                    <p className="text-base mb-2 news-content dropcap">{mainFeature.summary}</p>
                     <p className="text-xs text-gray-500 italic">
                       {formatDate(mainFeature.created_at)}
                     </p>
@@ -171,7 +168,7 @@ export default function NewsPage({ initialPosts, error }) {
                         <h3 className="text-xl font-serif font-bold mb-2 leading-tight">
                           {post.title}
                         </h3>
-                        <p className="text-sm mb-2 font-serif">{post.summary}</p>
+                        <p className="text-sm mb-2 news-content">{post.summary}</p>
                         <p className="text-xs text-gray-500 italic">
                           {formatDate(post.created_at)}
                         </p>
@@ -195,46 +192,40 @@ export default function NewsPage({ initialPosts, error }) {
                   href={`/post/${post.slug}`}
                   className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
                 >
-                  <div className="space-y-2">
-                    <div className="aspect-[16/10] overflow-hidden">
-                      {post.featured_image_url ? (
-                        <img
-                          src={post.featured_image_url}
-                          alt={post.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={getPlaceholderImage(index + 3)}
-                          alt="Image placeholder"
-                          className="w-full h-full object-cover grayscale"
-                        />
-                      )}
-                    </div>
-                    <h3 className="text-lg font-serif font-bold leading-tight">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm font-serif text-gray-700 leading-relaxed">
-                      {post.summary}
-                    </p>
-                    <p className="text-xs text-gray-500 italic">
-                      {formatDate(post.created_at)}
-                    </p>
+                  <div className="aspect-[16/9] mb-3 overflow-hidden">
+                    {post.featured_image_url ? (
+                      <img
+                        src={post.featured_image_url}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={getPlaceholderImage(index + 3)}
+                        alt="Image placeholder"
+                        className="w-full h-full object-cover grayscale"
+                      />
+                    )}
                   </div>
+                  <h3 className="text-lg font-serif font-bold mb-2 leading-tight">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm mb-2 news-content">{post.summary}</p>
+                  <p className="text-xs text-gray-500 italic">
+                    {formatDate(post.created_at)}
+                  </p>
                 </Link>
               ))}
             </div>
 
-            {/* Footer */}
-            <div className="mt-12 pt-6 border-t border-gray-300">
-              <div className="text-center">
-                <p className="text-xs text-gray-500 font-serif">
-                  All news content analyzed and summarized by artificial intelligence • 
-                  <Link href="/about" className="hover:text-black ml-1">Learn More</Link>
-                </p>
-              </div>
-            </div>
           </main>
+
+          {/* Simple Footer */}
+          <footer className="mt-8 pt-6 border-t border-gray-300 text-sm text-gray-500 bg-[#FAF9F5]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-center">
+              © {new Date().getFullYear()} RecursivAI Times. All Rights Reserved.
+            </div>
+          </footer>
         </div>
       </div>
     </>

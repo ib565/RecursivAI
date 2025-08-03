@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Chakra+Petch:wght@300;400;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&display=swap');
+/* Fonts are now loaded via next/font in _app.js */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,20 +7,20 @@
 body {
   background-color: #0f0f12;
   color: #f0f0f0;
-  font-family: 'Chakra Petch', sans-serif;
+  font-family: var(--font-chakra-petch), sans-serif;
   position: relative;
 }
 
 /* Newspaper specific styles */
 .newspaper-page {
-  font-family: 'Source Serif Pro', 'Times New Roman', serif;
+  font-family: var(--font-source-serif-4), 'Times New Roman', serif;
   color: #000000;
   min-height: 100vh;
   width: 100%;
 }
 
 .newspaper-page h1 {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
   font-weight: 900;
   letter-spacing: -0.03em;
 }
@@ -31,13 +28,18 @@ body {
 .newspaper-page h2, 
 .newspaper-page h3, 
 .newspaper-page h4 {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
   letter-spacing: -0.02em;
 }
 
 .newspaper-page p {
-  font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-merriweather), Georgia, 'Times New Roman', serif;
   line-height: 1.6;
+}
+
+/* Specific class for news page text content to ensure Merriweather is used */
+.news-content {
+  font-family: var(--font-merriweather), Georgia, 'Times New Roman', serif !important;
 }
 
 .newspaper-page .leading-tight {
@@ -56,7 +58,7 @@ body {
 /* Dropcap for first paragraph in main articles */
 .dropcap:first-letter {
   float: left;
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-playfair-display), serif;
   font-size: 3.5rem;
   line-height: 0.8;
   padding-right: 8px;
@@ -90,7 +92,7 @@ body::after {
 }
 
 .font-serif {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
 }
 
 /* For the main title - even more dramatic */
@@ -220,7 +222,7 @@ a:hover h2, a:hover h3 {
 
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Share Tech Mono', monospace;
+  font-family: var(--font-share-tech-mono), monospace;
 }
 
 /* Override font family for newspaper page */
@@ -230,7 +232,7 @@ h1, h2, h3, h4, h5, h6 {
 .newspaper-page h4, 
 .newspaper-page h5, 
 .newspaper-page h6 {
-  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-family: var(--font-playfair-display), Georgia, 'Times New Roman', serif;
 }
 
 /* Neon text effect */

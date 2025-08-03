@@ -18,8 +18,11 @@ module.exports = {
         },
       },
       fontFamily: {
-        'cyber': ['"Share Tech Mono"', 'monospace'],
-        'body': ['"Chakra Petch"', 'sans-serif'],
+        'cyber': ['var(--font-share-tech-mono)', 'monospace'],
+        'body': ['var(--font-chakra-petch)', 'sans-serif'],
+        'serif': ['var(--font-playfair-display)', 'Georgia', 'Times New Roman', 'serif'],
+        'merriweather': ['var(--font-merriweather)', 'Georgia', 'Times New Roman', 'serif'],
+        'source-serif': ['var(--font-source-serif-4)', 'Times New Roman', 'serif'],
       },
     },
     plugins: [
