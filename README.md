@@ -8,7 +8,7 @@ This project has two main components: a research pipeline and a news engine.
 
 The research pipeline is designed to go deep into the latest AI research papers and make them accessible to everyone.
 
-![Research Pipeline](recursivAI_research_pipeline.png)
+![Research Pipeline](research_engine.png)
 
 Here's a simplified overview of how it works:
 
@@ -21,6 +21,8 @@ Here's a simplified overview of how it works:
 ## News Engine
 
 The news engine is designed for breadth and speed, capturing the daily pulse of the AI world.
+
+![News Engine](news_engine.png)
 
 1.  **Collection:** A scheduled job scrapes a curated list of RSS feeds, APIs, and news sources, and performs general web searches to find relevant articles from the last 24 hours.
 2.  **Filtering & Ranking:** The collected articles are passed to an LLM which acts as a filter, removing noise and irrelevant content. It then ranks the remaining articles by significance (e.g., model releases, acquisitions, major breakthroughs).
