@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import SEO from "../components/SEO";
 
 export default function Custom404() {
+  const router = useRouter();
+  const [currentPath, setCurrentPath] = useState('');
+  const [timestamp, setTimestamp] = useState('');
+
+  useEffect(() => {
+    setCurrentPath(window.location.pathname);
+    setTimestamp(new Date().toISOString());
+  }, []);
   return (
     <>
       <SEO
@@ -31,10 +40,10 @@ export default function Custom404() {
             {/* Error Content */}
             <div className="bg-cyber-dark/80 backdrop-blur-sm p-8 rounded-lg border border-cyber-pink/30 relative overflow-hidden mb-8">
               {/* Background glow effect */}
-              <div className="absolute inset-0 bg-cyber-pink opacity-5 animate-pulse"></div>
+              <div className="absolute inset-0 bg-cyber-pink opacity-5"></div>
               
               <div className="relative z-10">
-                <h2 className="text-cyber-pink text-2xl md:text-3xl mb-4 font-cyber neon-text-pink">
+                <h2 className="text-cyber-pink text-2xl md:text-3xl mb-4 font-cyber">
                   Neural Network Error
                 </h2>
                 <p className="text-gray-300 text-lg mb-6 font-body">
@@ -100,8 +109,12 @@ export default function Custom404() {
               <div className="text-cyber-neon mb-2">Error Details:</div>
               <div className="text-gray-400">
                 Status: 404 - Resource Not Found<br/>
-                Location: {typeof window !== 'undefined' ? window.location.pathname : 'Unknown'}<br/>
-                Timestamp: {new Date().toISOString()}<br/>
+                {currentPath && (
+                  <>Location: {currentPath}<br/></>
+                )}
+                {timestamp && (
+                  <>Timestamp: {timestamp}<br/></>
+                )}
                 Suggestion: Navigate to valid endpoints
               </div>
             </div>
