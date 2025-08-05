@@ -75,6 +75,8 @@ export default function HomePage({ initialPosts }) {
       router.push("/about");
     } else if (type === 'curated') {
       router.push("/curated");
+    } else if (type === 'news') {
+      router.push("/news");
     }
   };
 
@@ -203,19 +205,25 @@ export default function HomePage({ initialPosts }) {
                 </button>
                 <button
                   onClick={() => handleCTAClick('curated')}
-                  className="mb-8"
-                  style={{
-                    padding: "0.5rem 1rem",
-                    backgroundColor: "#0f0f12",
-                    color: "#FFC107",
-                    border: "1px solid #FFC107",
-                    textShadow: "0 0 5px rgba(255, 193, 7, 0.5)",
-                    boxShadow: "0 0 8px rgba(255, 193, 7, 0.2)",
-                    transition: "all 0.3s",
-                    fontFamily: "'Share Tech Mono', monospace",
-                  }}
+                  className="cyber-btn-gold mb-8"
+                  // style={{
+                  //   padding: "0.5rem 1rem",
+                  //   backgroundColor: "#0f0f12",
+                  //   color: "#FFC107",
+                  //   border: "1px solid #FFC107",
+                  //   textShadow: "0 0 5px rgba(255, 193, 7, 0.5)",
+                  //   boxShadow: "0 0 8px rgba(255, 193, 7, 0.2)",
+                  //   transition: "all 0.3s",
+                  //   fontFamily: "'Share Tech Mono', monospace",
+                  // }}
                 >
                   Foundational AI Research
+                </button>
+                <button
+                  onClick={() => handleCTAClick('news')}
+                  className="cyber-btn mb-8"
+                >
+                  Latest News
                 </button>
               </div>
             </div>

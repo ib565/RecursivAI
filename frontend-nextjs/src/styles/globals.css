@@ -293,6 +293,18 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
 }
 
+.cyber-btn-gold {
+  @apply px-4 py-2 bg-cyber-dark border border-amber-400 text-amber-400 font-cyber transition-all duration-300 relative;
+  text-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.2);
+}
+
+.cyber-btn-gold:hover {
+  @apply bg-amber-400 text-cyber-black;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+}
+
+
 /* Loading animation */
 .loading-pulse {
   animation: pulse 1.5s infinite;

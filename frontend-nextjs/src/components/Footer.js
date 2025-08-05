@@ -38,6 +38,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/news" className="hover:text-cyber-neon">
+                  News
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://www.linkedin.com/in/ishaan-bhartiya/"
                   target="_blank"
