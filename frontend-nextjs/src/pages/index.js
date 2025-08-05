@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 export default function HomePage({ initialPosts }) {
   const router = useRouter();
   const [posts, setPosts] = useState(initialPosts || []);
-  const [loading, setLoading] = useState(false); // Changed from true since we have initial data
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -16,11 +15,7 @@ export default function HomePage({ initialPosts }) {
 
   const fetchPosts = async (isInitialLoad = true, currentOffset = offset) => {
     try {
-      if (isInitialLoad) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
+      setLoadingMore(true);
 
       // Fetch posts with the provided offset
       const data = await getAllPosts({
@@ -44,11 +39,7 @@ export default function HomePage({ initialPosts }) {
       console.error("Failed to fetch posts:", err);
       setError(err);
     } finally {
-      if (isInitialLoad) {
-        setLoading(false);
-      } else {
-        setLoadingMore(false);
-      }
+      setLoadingMore(false);
     }
   };
 
@@ -80,20 +71,7 @@ export default function HomePage({ initialPosts }) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-cyber-black via-cyber-dark to-cyber-gray">
-        <div className="container mx-auto px-4 py-24">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyber-neon mx-auto mb-4"></div>
-              <p className="text-cyber-neon font-cyber">Loading amazing content...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -331,14 +309,17 @@ export default function HomePage({ initialPosts }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const POSTS_PER_PAGE = 21;
     const initialPosts = await getAllPosts({
       limit: POSTS_PER_PAGE,
       offset: 0,
     });
-    return { props: { initialPosts } };
+    return { 
+      props: { initialPosts },
+      revalidate: 300 // Re-generate the page every 5 minutes
+    };
   } catch (error) {
     console.error('Failed to fetch initial posts:', error);
     return { props: { initialPosts: [] } };
