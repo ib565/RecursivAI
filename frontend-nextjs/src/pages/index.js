@@ -233,6 +233,55 @@ export default function HomePage({ initialPosts }) {
           <div className="absolute bottom-0 right-0 w-1/3 h-24 opacity-20 bg-gradient-to-r from-transparent via-cyber-neon to-cyber-pink"></div>
         </div>
 
+        {/* Service Notice Banner */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto bg-gradient-to-r from-cyber-dark to-cyber-black p-6 rounded-lg border border-cyber-pink relative overflow-hidden">
+            {/* Background effect */}
+            <div className="absolute inset-0 bg-cyber-pink opacity-5"></div>
+            
+            <div className="relative z-10 text-center">
+              <div className="flex justify-center items-center mb-4">
+                <div className="w-8 h-8 bg-cyber-pink rounded-full flex items-center justify-center mr-3">
+                  <span className="text-cyber-black font-bold">!</span>
+                </div>
+                <h3 className="text-cyber-pink text-xl font-cyber neon-text-pink">
+                  Service Update
+                </h3>
+              </div>
+              
+              <p className="text-gray-300 mb-4 font-body leading-relaxed">
+                Paper fetching has been paused due to Papers with Code being shut down (RIP 📄). 
+                Please check back later while I figure out alternative sources!
+              </p>
+              
+              <p className="text-cyber-neon mb-6 font-body">
+                Till then, you can check out:
+              </p>
+              
+              <div className="flex flex-wrap justify-center gap-4">
+                <button
+                  onClick={() => handleCTAClick('news')}
+                  className="cyber-btn-pink"
+                >
+                  Latest AI News
+                </button>
+                <button
+                  onClick={() => handleCTAClick('curated')}
+                  className="cyber-btn-gold"
+                >
+                  Curated Papers
+                </button>
+                <button
+                  onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+                  className="cyber-btn"
+                >
+                  Previous Articles
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Posts Section */}
         <div className="container mx-auto px-4 py-16">
           <div className="mb-12">
