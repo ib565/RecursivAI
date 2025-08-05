@@ -239,10 +239,13 @@ export default function NewsPage({ initialPosts, error }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const posts = await getNewsPosts({ limit: NUM_POSTS_TO_FETCH });
-    return { props: { initialPosts: posts } };
+    return { 
+      props: { initialPosts: posts },
+      revalidate: 300 // Re-generate the page every 5 minutes
+    };
   } catch (error) {
     console.error('Failed to fetch initial news posts:', error);
     return { props: { initialPosts: [], error: 'Failed to load news posts' } };

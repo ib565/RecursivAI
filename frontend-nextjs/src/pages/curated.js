@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 export default function CuratedPage({ initialPosts }) {
   const router = useRouter();
   const [posts, setPosts] = useState(initialPosts || []);
-  const [loading, setLoading] = useState(false); // Changed from true since we have initial data
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [offset, setOffset] = useState(0);
@@ -16,11 +15,7 @@ export default function CuratedPage({ initialPosts }) {
 
   const fetchPosts = async (isInitialLoad = true, currentOffset = offset) => {
     try {
-      if (isInitialLoad) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true);
-      }
+      setLoadingMore(true);
 
       // CRITICAL: Preserve the specific filtering logic for curated posts
       const data = await getAllPosts({
@@ -45,11 +40,7 @@ export default function CuratedPage({ initialPosts }) {
       console.error("Failed to fetch curated posts:", err);
       setError(err);
     } finally {
-      if (isInitialLoad) {
-        setLoading(false);
-      } else {
-        setLoadingMore(false);
-      }
+      setLoadingMore(false);
     }
   };
 
@@ -75,20 +66,7 @@ export default function CuratedPage({ initialPosts }) {
     router.back();
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-cyber-black via-cyber-dark to-cyber-gray">
-        <div className="container mx-auto px-4 py-24">
-          <div className="flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-400 mx-auto mb-4"></div>
-              <p className="text-amber-400 font-cyber">Loading curated research...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   if (error) {
     return (
@@ -165,7 +143,7 @@ export default function CuratedPage({ initialPosts }) {
           
           {posts.length > 0 ? (
             <>
-              <PostGrid posts={posts} />
+              <PostGrid posts={posts} error={error} />
               
               {/* Load More Button */}
               {hasMore && (
@@ -219,7 +197,7 @@ export default function CuratedPage({ initialPosts }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const POSTS_PER_PAGE = 21;
     // CRITICAL: Preserve the specific filtering logic for curated posts
@@ -229,7 +207,10 @@ export async function getServerSideProps() {
       limit: POSTS_PER_PAGE,
       offset: 0,
     });
-    return { props: { initialPosts: posts } };
+    return { 
+      props: { initialPosts: posts },
+      revalidate: 300 // Re-generate the page every 5 minutes
+    };
   } catch (error) {
     console.error('Failed to fetch initial curated posts:', error);
     return { props: { initialPosts: [], error: 'Failed to load curated posts' } };
