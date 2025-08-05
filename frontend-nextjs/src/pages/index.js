@@ -280,10 +280,10 @@ export default function HomePage({ initialPosts }) {
             </div>
           </div>
 
-          <PostGrid posts={posts} loading={loading} error={error} />
+          <PostGrid posts={posts} error={error} />
 
           {/* Load More Button */}
-          {!loading && !error && hasMore && (
+          {!error && hasMore && (
             <div className="flex justify-center mt-12">
               <button
                 onClick={handleLoadMore}
