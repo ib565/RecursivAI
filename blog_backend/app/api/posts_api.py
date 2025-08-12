@@ -16,6 +16,7 @@ from ..ai_integration import (
     save_papers_to_db,
     process_curated_papers_background,
     generate_news_posts_background,
+    create_ai101_post,
 )
 
 logger = logging.getLogger(__name__)
@@ -351,6 +352,52 @@ def get_news_posts(
     except Exception as e:
         logger.error(f"Error retrieving news posts: {str(e)}")
         raise HTTPException(500, f"Error retrieving news posts: {str(e)}")
+
+
+@router.get("/ai101", response_model=List[Post])
+def get_ai101_posts(
+    offset: int = 0,
+    limit: int = 1,
+    session: Session = Depends(get_session),
+) -> List[Post]:
+    """Get the latest AI101 posts with pagination (default limit = 1)."""
+    try:
+        query = (
+            select(Post)
+            .where(Post.ai_metadata["post_type"].as_string() == "ai101")
+            .order_by(Post.created_at.desc())
+        )
+
+        query = query.offset(offset).limit(limit)
+
+        posts = session.exec(query).all()
+        return posts
+    except Exception as e:
+        logger.error(f"Error retrieving AI101 posts: {str(e)}")
+        raise HTTPException(500, f"Error retrieving AI101 posts: {str(e)}")
+
+
+@router.post("/generate_ai101", response_model=Dict[str, str])
+def api_generate_ai101(
+    background_tasks: BackgroundTasks,
+    term: str | None = None,
+    api_key: bool = Depends(verify_api_key),
+) -> Dict[str, str]:
+    """Generate an AI 101 explainer post in the background.
+    If term is not provided, selects the next unused term from the seed list.
+    """
+    try:
+
+        def _task():
+            create_ai101_post(term=term)
+
+        background_tasks.add_task(_task)
+        return {"detail": "AI 101 generation started in background"}
+    except Exception as e:
+        logger.error(f"Failed to start AI101 generation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to start AI 101 post generation"
+        )
 
 
 @router.get("/article_exists", response_model=Dict[str, bool])

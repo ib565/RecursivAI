@@ -27,6 +27,10 @@ from ai_content_engine.agents.image_gen_agent import (
     generate_featured_images_with_rate_limiting,
 )
 from .utils.image_uploader import upload_images_batch
+from ai_content_engine.agents.ai101_agent import (
+    select_ai101_term,
+    generate_ai101_explainer,
+)
 
 load_dotenv()
 
@@ -116,6 +120,80 @@ def create_news_post(
 
     # Step 3: Submit to API
     return _submit_post(post_data)
+
+
+def _fetch_existing_ai101_terms(max_posts: int = 1000) -> set[str]:
+    """Fetch existing AI 101 posts and return a set of used term names (lowercased),
+    including aliases from ai_metadata if present.
+    """
+    try:
+        url = f"{API_BASE_URL}/posts?limit={max_posts}&post_types=ai101"
+        response = requests.get(url)
+        response.raise_for_status()
+        posts = response.json()
+        used: set[str] = set()
+        for post in posts:
+            ai_metadata = post.get("ai_metadata", {}) or {}
+            term = ai_metadata.get("term")
+            if term:
+                used.add(str(term).lower())
+            aliases = ai_metadata.get("aliases") or []
+            for a in aliases:
+                used.add(str(a).lower())
+        return used
+    except Exception as e:
+        logger.error(f"Error fetching existing AI101 terms: {e}")
+        return set()
+
+
+def create_ai101_post(term: str | None = None) -> Optional[Dict[str, Any]]:
+    """Create a short AI 101 explainer post. Follows news_agent output shape.
+
+    - Selects the term from a static list if not provided, skipping used terms.
+    - Uses ArticleSummaryResponse format for generation (headline, subheading, content).
+    - Saves as Post with ai_metadata: { post_type: "ai101", term, aliases }.
+    """
+    try:
+        used_terms = _fetch_existing_ai101_terms()
+        selected_aliases: list[str] = []
+        selected_term = term
+
+        if not selected_term:
+            picked = select_ai101_term(used_terms)
+            if not picked:
+                logger.info("AI101: no new term available; aborting generation")
+                return None
+            selected_term, selected_aliases = picked
+
+        # Generate content
+        result = generate_ai101_explainer(selected_term)
+
+        blog_title = result.headline or f"AI 101: {selected_term}"
+        blog_summary = result.subheading
+        blog_post = result.content
+
+        # Prepare data
+        slug = generate_slug(blog_title)
+        content_json = {"body": blog_post, "images": [], "codeSnippets": []}
+        ai_metadata = {
+            "post_type": "ai101",
+            "term": selected_term,
+            "aliases": selected_aliases,
+        }
+
+        post_data = {
+            "title": blog_title,
+            "slug": slug,
+            "summary": blog_summary,
+            "content": content_json,
+            "ai_metadata": ai_metadata,
+            "status": "published",
+        }
+
+        return _submit_post(post_data)
+    except Exception as e:
+        logger.error(f"Error creating AI101 post: {e}", exc_info=True)
+        return None
 
 
 def create_blog_post(

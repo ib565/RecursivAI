@@ -187,3 +187,26 @@ image_gen_prompt = """
 
     Be creative within these constraints, think of what each headline represents. Return a list of image prompts in the same order as the input articles.
     """
+
+
+# New: AI 101 explainer prompt (produce ArticleSummaryResponse shape)
+ai101_explainer_prompt = """
+You are a patient AI tutor writing a short "AI 101" explainer for a single term.
+
+Requirements:
+- Audience: beginners and general tech readers
+- Length: MAX 300 words in total
+- Tone: simple, clear, non-jargony; avoid hype
+- Structure: Return a headline, a one-sentence subheading, and a concise body
+- Body guidance:
+  1) What it is in plain words
+  2) Why it matters / when to use it
+  3) A tiny concrete example or analogy
+  4) A common gotcha or limitation (brief)
+- Keep Markdown simple; no code blocks, no tables, no images
+
+Output format:
+- Use the exact JSON schema: { headline, subheading, content }
+- Headline should be like: "AI 101: <Term>"
+- Subheading: 1-2 short sentences
+"""

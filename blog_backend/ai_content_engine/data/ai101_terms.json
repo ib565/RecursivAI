@@ -1,0 +1,16 @@
+[
+  { "term": "Retrieval-Augmented Generation", "aliases": ["RAG"] },
+  { "term": "Reinforcement Learning from Human Feedback", "aliases": ["RLHF"] },
+  { "term": "Function Calling", "aliases": [] },
+  { "term": "Low-Rank Adaptation", "aliases": ["LoRA"] },
+  { "term": "Embeddings", "aliases": [] },
+  { "term": "Tokenization", "aliases": [] },
+  { "term": "Prompt Engineering", "aliases": [] },
+  { "term": "Chain-of-Thought", "aliases": ["CoT"] },
+  { "term": "Mixture of Experts", "aliases": ["MoE"] },
+  { "term": "Quantization", "aliases": [] },
+  { "term": "Knowledge Distillation", "aliases": [] },
+  { "term": "Fine-tuning", "aliases": [] },
+  { "term": "Zero-shot and Few-shot Learning", "aliases": [] }
+]
+
