@@ -306,13 +306,14 @@ export default function NewsPage({ initialPosts, error }) {
                   Who better to keep up with AI than AI itself?
                 </p>
               </div>
-              <div className="invisible text-xs tracking-wider">
-                {today.toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+              <div className="flex items-center">
+                <Image
+                  src="/images/Rex.png"
+                  alt="Rex - RecursivAI Mascot"
+                  width={100}
+                  height={100}
+                  className="rounded-full border-2 border-stone-300 hover:border-stone-400 transition-colors duration-200"
+                />
               </div>
             </div>
           </div>
