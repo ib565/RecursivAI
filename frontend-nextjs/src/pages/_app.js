@@ -8,6 +8,7 @@ import {
   Source_Serif_4 
 } from 'next/font/google';
 import Script from 'next/script';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -71,6 +72,10 @@ function MyApp({ Component, pageProps }) {
   }, [router.events]);
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      
       {/* Google Analytics */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GA_TRACKING_ID}`}

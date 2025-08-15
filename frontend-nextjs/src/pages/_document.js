@@ -4,8 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Viewport and basic meta tags */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Basic meta tags */}
         <meta name="keywords" content="AI, artificial intelligence, deep learning, machine learning, neural networks, research, blog, tech, technology, innovation, breakthroughs, insights, news, updates, LLMs, GenAI" />
         
         {/* PWA and favicon */}
