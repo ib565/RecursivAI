@@ -167,7 +167,7 @@ const LandingPage = () => {
                 </div>
                 <div className="text-center mb-4">
                   {/* <div className="text-8xl mb-4">🦕</div> */}
-                  <img src="images/rex.png" alt="Rex the AI Curator" width={150} height={150} className="mx-auto mb-4" />
+                  <img src="images/rex.png" alt="Rex the AI Curator" width={300} height={300} className="mx-auto mb-4" />
                   <h3 className="text-2xl font-serif font-bold mb-2">Rex the AI Curator</h3>
                   <p className="text-sm font-serif italic text-gray-600 mb-4">
                     "The most evolved dinosaur in tech"
