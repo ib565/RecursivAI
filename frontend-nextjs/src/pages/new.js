@@ -342,6 +342,32 @@ const LandingPage = () => {
                     </p>
                   </div>
                 </div>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-serif font-bold mb-3">
+                    Google Hires Wind Surf Founders
+                  </h2>
+                  <div className="aspect-[16/9] mb-4 bg-yellow-200 border border-gray-400 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-6xl mb-2">🏄‍♂️</div>
+                      <div className="text-sm font-serif text-gray-600">Rex Approved</div>
+                    </div>
+                  </div>
+                  <p className="text-sm font-serif mb-3 leading-relaxed">
+                    In a surprise move that has Rex wagging his tail, Google has acquired the entire founding team of Wind Surf, 
+                    the AI-powered development platform that revolutionized code generation. The acquisition signals Google's 
+                    commitment to advancing AI-assisted programming tools and competing with GitHub Copilot.
+                  </p>
+                  <p className="text-sm font-serif leading-relaxed">
+                    Rex's analysis suggests this move could accelerate Google's developer ecosystem significantly, 
+                    bringing Wind Surf's innovative approach to mainstream Google Cloud services. The financial terms 
+                    remain undisclosed, but industry insiders estimate the deal at $400M+.
+                  </p>
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200">
+                    <p className="text-xs font-serif italic">
+                      🦕 <strong>Rex's Take:</strong> "This is huge for developers! Wind Surf's tech + Google's scale = game changer!"
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Right Column - Multiple Sections */}
