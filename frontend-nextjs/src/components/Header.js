@@ -1,33 +1,44 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 const Header = () => {
+  const today = new Date();
+  
   return (
-    <header className="bg-cyber-dark py-4 hidden">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2">
-          <Image src="/logo.png" alt="RecursivAI Logo" width={32} height={32} className="h-8 w-auto" />
-          <div className="text-xl font-bold">
-            <span className="text-white">Recursiv</span>
-            <span className="text-cyber-neon">AI</span>
+    <header className="pt-4 pb-4 bg-[#FAF9F5] text-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          <div className="text-s tracking-wider font-medium">
+            {today.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
           </div>
-        </Link>
-
-        <nav className="hidden md:flex space-x-6">
-          <Link href="/" className="text-white hover:text-cyber-neon">
-            Home
-          </Link>
-          <Link href="/curated" className="text-white hover:text-amber-400">
-            Curated
-          </Link>
-          <Link href="/about" className="text-white hover:text-cyber-pink">
-            About
-          </Link>
-          <Link href="/news" className="text-white hover:text-cyber-neon">
-            News
-          </Link>
-        </nav>
+          <div className="text-center flex-grow my-4">
+            <nav className="mb-1 font-body">
+              <Link href="/news" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">News</Link>
+              <Link href="/" className="text-xs font-bold uppercase tracking-wider text-black mx-3">Research</Link>
+              <Link href="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
+              <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
+            </nav>
+            <h1 className="text-7xl font-serif font-black">
+              RecursivAI
+            </h1>
+            <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
+              Who better to keep up with AI than AI itself?
+            </p>
+          </div>
+          <div className="text-s tracking-wider invisible">
+            {today.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </div>
+        </div>
       </div>
     </header>
   );

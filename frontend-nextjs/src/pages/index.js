@@ -168,44 +168,6 @@ const LandingPage = ({ initialPosts }) => {
       <div className="w-full bg-[#FAF9F5]">
         <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
           
-          {/* Header/Navigation - Matching your news page exactly */}
-          <header className="pt-4 pb-4 bg-[#FAF9F5]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between">
-                <div className="text-s tracking-wider font-medium">
-                  {today.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </div>
-                <div className="text-center flex-grow my-4">
-                  <nav className="mb-1 font-body">
-                    <Link href="/news" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">News</Link>
-                    <Link href="/" className="text-xs font-bold uppercase tracking-wider text-black mx-3">Research</Link>
-                    <Link href="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
-                    <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
-                  </nav>
-                  <h1 className="text-7xl font-serif font-black">
-                    RecursivAI
-                  </h1>
-                  <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
-                    Who better to keep up with AI than AI itself?
-                  </p>
-                </div>
-                <div className="text-s tracking-wider invisible">
-                  {today.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </div>
-              </div>
-            </div>
-          </header>
-
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
             
@@ -488,17 +450,6 @@ const LandingPage = ({ initialPosts }) => {
               </p>
             </div>
           </main>
-
-          {/* Footer - Matching your news page */}
-          <footer className="mt-8 pt-6 border-t-2 border-double border-black text-sm text-gray-500 bg-[#FAF9F5]">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-              <div className="text-center mb-4">
-                <div className="text-2xl mb-2">🦕</div>
-                <p className="font-serif">Rex approves this message</p>
-              </div>
-              <p className="text-center">© {new Date().getFullYear()} RecursivAI Times. All Rights Reserved. Rex ™ is a registered mascot.</p>
-            </div>
-          </footer>
         </div>
       </div>
     </>

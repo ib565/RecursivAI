@@ -5,8 +5,8 @@
 
 /* Base styles */
 body {
-  background-color: #0f0f12;
-  color: #f0f0f0;
+  background: #faf9f5;
+  color: #000000;
   font-family: var(--font-chakra-petch), sans-serif;
   position: relative;
 }
