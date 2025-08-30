@@ -139,13 +139,15 @@ a:hover h2, a:hover h3 {
   overflow-y: visible !important;
 }
 
-.markdown-content .mermaid-diagram svg {
-  max-width: none !important;
-  width: auto !important;
-  height: auto !important;
-  min-width: 600px !important;
-  background-color: transparent !important;
-}
+ .markdown-content .mermaid-diagram svg {
+   max-width: 100% !important;
+   width: auto !important;
+   height: auto !important;
+   min-width: 400px !important;
+   background-color: transparent !important;
+   transform: scale(0.8) !important;
+   transform-origin: center center !important;
+ }
 
 /* About page specific constraints - work within container bounds */
 .backdrop-blur-sm .markdown-content .mermaid-diagram {
@@ -163,13 +165,15 @@ a:hover h2, a:hover h3 {
   overflow-y: visible !important;
 }
 
-.backdrop-blur-sm .markdown-content .mermaid-diagram svg {
-  max-width: 100% !important;
-  width: auto !important;
-  height: auto !important;
-  min-width: 500px !important;
-  background-color: transparent !important;
-}
+ .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+   max-width: 100% !important;
+   width: auto !important;
+   height: auto !important;
+   min-width: 300px !important;
+   background-color: transparent !important;
+   transform: scale(0.7) !important;
+   transform-origin: center center !important;
+ }
 
 /* Clean mermaid diagrams - no boxes or shadows */
 
@@ -181,9 +185,10 @@ a:hover h2, a:hover h3 {
     margin-right: -47.5vw !important;
   }
   
-  .markdown-content .mermaid-diagram svg {
-    min-width: 500px !important;
-  }
+     .markdown-content .mermaid-diagram svg {
+     min-width: 300px !important;
+     transform: scale(0.6) !important;
+   }
   
   /* About page responsive constraints */
   .backdrop-blur-sm .markdown-content .mermaid-diagram {
@@ -192,9 +197,10 @@ a:hover h2, a:hover h3 {
     margin-right: 0 !important;
   }
   
-  .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
-    min-width: 400px !important;
-  }
+     .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+     min-width: 250px !important;
+     transform: scale(0.5) !important;
+   }
 }
 
 @media (max-width: 480px) {
@@ -204,9 +210,10 @@ a:hover h2, a:hover h3 {
     margin-right: -49vw !important;
   }
   
-  .markdown-content .mermaid-diagram svg {
-    min-width: 400px !important;
-  }
+     .markdown-content .mermaid-diagram svg {
+     min-width: 250px !important;
+     transform: scale(0.5) !important;
+   }
   
   /* About page responsive constraints */
   .backdrop-blur-sm .markdown-content .mermaid-diagram {
@@ -215,9 +222,10 @@ a:hover h2, a:hover h3 {
     margin-right: 0 !important;
   }
   
-  .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
-    min-width: 300px !important;
-  }
+     .backdrop-blur-sm .markdown-content .mermaid-diagram svg {
+     min-width: 200px !important;
+     transform: scale(0.4) !important;
+   }
 }
 
 
