@@ -3,6 +3,8 @@ import PostGrid from "../components/PostGrid";
 import { getAllPosts } from "../utils/apiService";
 import SEO from "../components/SEO";
 import { useRouter } from "next/router";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function CuratedPage({ initialPosts }) {
   const router = useRouter();
@@ -67,14 +69,15 @@ export default function CuratedPage({ initialPosts }) {
   };
 
   if (error) {
-    return (
-      <>
-        <SEO
-          title="Foundational AI Research | RecursivAI"
-          description="Explore carefully curated foundational AI research papers and breakthroughs. Deep dive into the most important developments in artificial intelligence and machine learning."
-        />
-        <div className="w-full bg-[#FAF9F5]">
-          <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
+      return (
+    <>
+      <SEO
+        title="Foundational AI Research | RecursivAI"
+        description="Explore carefully curated foundational AI research papers and breakthroughs. Deep dive into the most important developments in artificial intelligence and machine learning."
+      />
+      <div className="w-full bg-[#FAF9F5]">
+        <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
+          <Header />
             
             {/* Error Content */}
             <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
@@ -140,8 +143,6 @@ export default function CuratedPage({ initialPosts }) {
       
       <div className="w-full bg-[#FAF9F5]">
         <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
-          
-          <Header />
 
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
@@ -226,7 +227,6 @@ export default function CuratedPage({ initialPosts }) {
               </div>
             </section>
           </main>
-
           <Footer />
         </div>
       </div>

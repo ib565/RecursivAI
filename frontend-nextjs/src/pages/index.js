@@ -180,11 +180,11 @@ const LandingPage = ({ initialPosts }) => {
                     🦕 Get Smarter About AI Every Day with Rex
                   </h2>
                   <p className="text-lg mb-4 news-content dropcap font-serif">
-                    Meet Rex, your friendly neighborhood AI curator! This tech-savvy dinosaur has evolved beyond extinction to become the ultimate AI news hunter. Rex scans thousands of research papers, industry reports, and breakthrough announcements daily, so you don't have to.
+                    Meet Rex, your friendly neighborhood AI curator! This tech-savvy dinosaur has evolved beyond extinction to become the ultimate AI news hunter. Rex scans thousands of research papers, industry reports, and breakthrough announcements daily, so you don&apos;t have to.
                   </p>
                   <div className="mb-6">
                     <p className="text-base font-serif mb-4">
-                      <strong>Join 220+ professionals</strong> who wake up to Rex's carefully curated AI insights. From groundbreaking research to industry shake-ups, Rex delivers only what matters most to your inbox.
+                      <strong>Join 220+ professionals</strong> who wake up to Rex&apos;s carefully curated AI insights. From groundbreaking research to industry shake-ups, Rex delivers only what matters most to your inbox.
                     </p>
                   </div>
                   
@@ -192,7 +192,7 @@ const LandingPage = ({ initialPosts }) => {
                   <div className="border-2 border-gray-400 p-6 bg-white shadow-lg">
                     <div className="flex items-center mb-3">
                       <span className="text-3xl mr-3">🦕</span>
-                      <h3 className="text-xl font-serif font-bold">Subscribe to Rex's Daily AI Digest</h3>
+                      <h3 className="text-xl font-serif font-bold">Subscribe to Rex&apos;s Daily AI Digest</h3>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 mb-3">
                       <input
@@ -207,7 +207,7 @@ const LandingPage = ({ initialPosts }) => {
                         onClick={handleSubmit}
                         className="px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
                       >
-                        Join Rex's Pack!
+                        Join Rex&apos;s Pack!
                       </button>
                     </div>
                     {isSubscribed && (
@@ -223,7 +223,7 @@ const LandingPage = ({ initialPosts }) => {
 
                 {/* How Rex Works - Comic Strip Style */}
                 <div className="border-t border-gray-300 pt-6 mb-8">
-                  <h3 className="text-2xl font-serif font-bold mb-2 text-center">📚 Rex's Daily Routine: Behind the Scenes</h3>
+                  <h3 className="text-2xl font-serif font-bold mb-2 text-center">📚 Rex&apos;s Daily Routine: Behind the Scenes</h3>
                   <p className="text-center text-sm font-serif italic text-gray-600 mb-6">A day in the life of your AI curator</p>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="text-center border border-gray-300 p-4 bg-white">
@@ -240,7 +240,7 @@ const LandingPage = ({ initialPosts }) => {
                         <div className="text-xs font-serif text-gray-500">6:00 AM</div>
                       </div>
                       <h4 className="text-base font-serif font-bold mb-2">Analysis & Ranking</h4>
-                      <p className="text-xs font-serif text-gray-700">Rex's AI brain processes everything and ranks by importance and impact</p>
+                      <p className="text-xs font-serif text-gray-700">Rex&apos;s AI brain processes everything and ranks by importance and impact</p>
                     </div>
                     <div className="text-center border border-gray-300 p-4 bg-white">
                       <div className="border-b border-gray-200 pb-3 mb-3">
@@ -272,7 +272,7 @@ const LandingPage = ({ initialPosts }) => {
                     <img src="/images/rex.png" alt="Rex the AI Curator" width={300} height={300} className="mx-auto mb-4" />
                     <h3 className="text-2xl font-serif font-bold mb-2">Rex the AI Curator</h3>
                     <p className="text-sm font-serif italic text-gray-600 mb-4">
-                      "The most evolved dinosaur in tech"
+                      &quot;The most evolved dinosaur in tech&quot;
                     </p>
                   </div>
                   <div className="text-left space-y-3 text-sm font-serif">
@@ -291,7 +291,7 @@ const LandingPage = ({ initialPosts }) => {
                 
                 {/* Quick Stats Box */}
                 <div className="">
-                  <h4 className="text-lg font-serif font-bold mb-3 text-center border-b pb-2">Rex's Daily Stats</h4>
+                  <h4 className="text-lg font-serif font-bold mb-3 text-center border-b pb-2">Rex&apos;s Daily Stats</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm font-serif">
                     <div className="text-center">
                       <div className="text-2xl font-bold">1,247</div>
@@ -316,7 +316,7 @@ const LandingPage = ({ initialPosts }) => {
 
             {/* Section Divider */}
             <div className="border-t-2 border-double border-gray-400 mb-6 pt-1">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">🔥 What's Hot in AI Today</h4>
+              <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">🔥 What&apos;s Hot in AI Today</h4>
             </div>
 
             {/* Sample Articles Grid */}
@@ -347,7 +347,7 @@ const LandingPage = ({ initialPosts }) => {
 
             {/* Rex's AI Stock Market Parody */}
             <div className="border-t border-gray-300 pt-6 mb-8">
-              <h3 className="text-2xl font-serif font-bold mb-6 text-center">🎯 Rex's Hype-o-Meter</h3>
+              <h3 className="text-2xl font-serif font-bold mb-6 text-center">🎯 Rex&apos;s Hype-o-Meter</h3>
               <p className="text-center font-serif text-gray-600 mb-6 italic">
                 Rex has a special talent for separating genuine breakthroughs from marketing fluff
               </p>
@@ -358,10 +358,10 @@ const LandingPage = ({ initialPosts }) => {
                     <h4 className="text-xl font-serif font-bold text-red-700">Hype Alert</h4>
                   </div>
                   <ul className="space-y-2 text-sm font-serif">
-                    <li>• "AGI is here!" announcements (weekly 🙄)</li>
-                    <li>• Another "ChatGPT killer" with 0.1% improvement</li>
+                    <li>• &quot;AGI is here!&quot; announcements (weekly 🙄)</li>
+                    <li>• Another &quot;ChatGPT killer&quot; with 0.1% improvement</li>
                     <li>• AI will replace all jobs by next Tuesday</li>
-                    <li>• Breakthrough that's just a minor parameter tweak</li>
+                    <li>• Breakthrough that&apos;s just a minor parameter tweak</li>
                   </ul>
                   <p className="text-xs font-serif italic mt-3 text-center text-red-600">
                     Rex rolls his eyes at these daily 🦕👀
@@ -379,7 +379,7 @@ const LandingPage = ({ initialPosts }) => {
                     <li>• Strategic industry moves that matter</li>
                   </ul>
                   <p className="text-xs font-serif italic mt-3 text-center text-green-600">
-                    This gets Rex's prehistoric heart pumping! 🦕❤️
+                    This gets Rex&apos;s prehistoric heart pumping! 🦕❤️
                   </p>
                 </div>
               </div>
@@ -387,7 +387,7 @@ const LandingPage = ({ initialPosts }) => {
 
             {/* Reader Testimonials - Newspaper Style */}
             <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
-              <h3 className="text-2xl font-serif font-bold mb-6 text-center">📰 What Rex's Readers Are Saying</h3>
+              <h3 className="text-2xl font-serif font-bold mb-6 text-center">📰 What Rex&apos;s Readers Are Saying</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {rexTestimonials.map((testimonial, index) => (
                   <div key={index} className="border border-gray-400 p-4 bg-white">
@@ -395,7 +395,7 @@ const LandingPage = ({ initialPosts }) => {
                       <span className="text-3xl">{testimonial.rex}</span>
                     </div>
                     <blockquote className="text-sm font-serif italic mb-3 text-center">
-                      "{testimonial.quote}"
+                      &quot;{testimonial.quote}&quot;
                     </blockquote>
                     <div className="text-center">
                       <div className="font-serif font-bold text-sm">{testimonial.author}</div>
@@ -411,14 +411,14 @@ const LandingPage = ({ initialPosts }) => {
               <div className="border-b-2 border-gray-300 pb-4 mb-6">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Limited Time Offer</h3>
                 <h2 className="text-3xl font-serif font-black mb-2">FREE LIFETIME SUBSCRIPTION</h2>
-                <p className="text-lg font-serif">To Rex's Daily AI Intelligence Report</p>
+                <p className="text-lg font-serif">To Rex&apos;s Daily AI Intelligence Report</p>
               </div>
               
               <div className="flex justify-center items-center mb-6">
                 <div className="text-6xl mr-4">🦕</div>
                 <div className="text-left">
-                  <h3 className="text-xl font-serif font-bold">Join Rex's Growing Pack!</h3>
-                  <p className="font-serif">220+ AI professionals can't be wrong</p>
+                  <h3 className="text-xl font-serif font-bold">Join Rex&apos;s Growing Pack!</h3>
+                  <p className="font-serif">220+ AI professionals can&apos;t be wrong</p>
                 </div>
               </div>
               
@@ -446,7 +446,7 @@ const LandingPage = ({ initialPosts }) => {
               </div>
               
               <p className="text-sm font-serif italic mt-4 text-gray-700">
-                "Don't let AI evolution leave you behind like it did my fellow dinosaurs!" - Rex 🦕
+                &quot;Don&apos;t let AI evolution leave you behind like it did my fellow dinosaurs!&quot; - Rex 🦕
               </p>
             </div>
           </main>
