@@ -24,7 +24,9 @@ const Header = () => {
               <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
             </nav>
             <h1 className="text-7xl font-serif font-black">
-              RecursivAI
+              <Link href="/">
+                RecursivAI
+              </Link>
             </h1>
             <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
               Who better to keep up with AI than AI itself?

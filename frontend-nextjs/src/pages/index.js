@@ -166,7 +166,7 @@ const LandingPage = ({ initialPosts }) => {
       />
       
       <div className="w-full bg-[#FAF9F5]">
-        <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
+        <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
           
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">

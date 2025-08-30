@@ -128,7 +128,7 @@ const NewsPage = ({ initialPosts, error }) => {
           description="Latest AI and technology news analyzed by artificial intelligence"
         />
         <div className="w-full bg-[#FAF9F5]">
-          <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
+          <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
             
             <Header />
 
@@ -229,7 +229,7 @@ const NewsPage = ({ initialPosts, error }) => {
           description="Latest AI and technology news analyzed by artificial intelligence"
         />
         <div className="w-full bg-[#FAF9F5]">
-          <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
+          <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
             
             <Header />
 
@@ -331,7 +331,7 @@ const NewsPage = ({ initialPosts, error }) => {
       />
       
       <div className="w-full bg-[#FAF9F5]">
-        <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black transform scale-90 origin-top mx-auto">
+        <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
           
           <Header />
 
