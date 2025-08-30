@@ -33,6 +33,25 @@ const LandingPage = () => {
       summary: "AI model trained on 1.2 billion images and can detect various tasks with little adaptation.",
       date: "August 19, 2025",
       slug: "meta-dinox-image-analysis"
+    },
+    // Add more articles as needed
+    {
+      title: "OpenAI's GPT-5: What to Expect from the Next Big Thing",
+      summary: "Speculations and insights on the features and capabilities of the upcoming GPT-5",
+      date: "August 18, 2025",
+      slug: "openai-gpt5-expectations"
+    },
+    {
+      title: "Anthropic's Claude 3: A Leap Towards Safer AI",
+      summary: "Exploring the advancements in safety and reliability in Anthropic's latest AI model release.",
+      date: "August 17, 2025",
+      slug: "anthropic-claude3-safety"  
+    },
+    {
+      title: "AI in Healthcare: Transforming Patient Care with Machine Learning",
+      summary: "How AI is revolutionizing diagnostics, treatment plans, and patient monitoring in modern healthcare.",
+      date: "August 16, 2025",
+      slug: "ai-healthcare-transformation"
     }
   ];
 
@@ -75,18 +94,18 @@ const LandingPage = () => {
                 })}
               </div>
               <div className="text-center flex-grow my-4">
-                <nav className="mb-1 font-body">
+                {/* <nav className="mb-1 font-body">
                   <Link href="/news" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">News</Link>
                   <Link href="/" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Research</Link>
                   <Link href="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
                   <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
-                </nav>
-                <h1 className="text-5xl font-serif font-black">
+                </nav> */}
+                <h1 className="text-7xl font-serif font-black">
                   RecursivAI
                 </h1>
-                <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
+                {/* <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
                   Who better to keep up with AI than AI itself?
-                </p>
+                </p> */}
               </div>
               <div className="text-s tracking-wider invisible">
                 {today.toLocaleDateString("en-US", {
@@ -114,11 +133,11 @@ const LandingPage = () => {
                 <p className="text-lg mb-4 news-content dropcap font-serif">
                   Meet Rex, your friendly neighborhood AI curator! This tech-savvy dinosaur has evolved beyond extinction to become the ultimate AI news hunter. Rex scans thousands of research papers, industry reports, and breakthrough announcements daily, so you don't have to.
                 </p>
-                <div className="mb-6 border-l-4 border-gray-400 pl-4 bg-gray-50 p-4">
+                {/* <div className="mb-6 border-l-4 border-gray-400 pl-4 bg-gray-50 p-4">
                   <p className="text-base font-serif italic">
                     "I may be a dinosaur, but I'm definitely not extinct when it comes to AI! Let me be your guide through the rapidly evolving world of artificial intelligence." <strong>- Rex 🦕</strong>
                   </p>
-                </div>
+                </div> */}
                 <div className="mb-6">
                   <p className="text-base font-serif mb-4">
                     <strong>Join 220+ professionals</strong> who wake up to Rex's carefully curated AI insights. From groundbreaking research to industry shake-ups, Rex delivers only what matters most to your inbox.
@@ -157,11 +176,54 @@ const LandingPage = () => {
                   </p>
                 </div>
               </div>
+
+
+          {/* How Rex Works - Comic Strip Style */}
+          <div className="border-t border-gray-300 pt-6 mb-8">
+            <h3 className="text-2xl font-serif font-bold mb-2 text-center">📚 Rex's Daily Routine: Behind the Scenes</h3>
+            <p className="text-center text-sm font-serif italic text-gray-600 mb-6">A day in the life of your AI curator</p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="text-center border border-gray-300 p-4 bg-white">
+                <div className="border-b border-gray-200 pb-3 mb-3">
+                  <div className="text-4xl mb-2">🌅</div>
+                  <div className="text-xs font-serif text-gray-500">5:00 AM</div>
+                </div>
+                <h4 className="text-base font-serif font-bold mb-2">Early Bird Gets the Papers</h4>
+                <p className="text-xs font-serif text-gray-700">Rex starts scanning ArXiv, Google Scholar, and industry blogs while you sleep</p>
+              </div>
+              <div className="text-center border border-gray-300 p-4 bg-white">
+                <div className="border-b border-gray-200 pb-3 mb-3">
+                  <div className="text-4xl mb-2">🧠</div>
+                  <div className="text-xs font-serif text-gray-500">6:00 AM</div>
+                </div>
+                <h4 className="text-base font-serif font-bold mb-2">Analysis & Ranking</h4>
+                <p className="text-xs font-serif text-gray-700">Rex's AI brain processes everything and ranks by importance and impact</p>
+              </div>
+              <div className="text-center border border-gray-300 p-4 bg-white">
+                <div className="border-b border-gray-200 pb-3 mb-3">
+                  <div className="text-4xl mb-2">✍️</div>
+                  <div className="text-xs font-serif text-gray-500">6:30 AM</div>
+                </div>
+                <h4 className="text-base font-serif font-bold mb-2">Translation Magic</h4>
+                <p className="text-xs font-serif text-gray-700">Complex jargon becomes simple, digestible insights for busy humans</p>
+              </div>
+              <div className="text-center border border-gray-300 p-4 bg-white">
+                <div className="border-b border-gray-200 pb-3 mb-3">
+                  <div className="text-4xl mb-2">📧</div>
+                  <div className="text-xs font-serif text-gray-500">7:00 AM</div>
+                </div>
+                <h4 className="text-base font-serif font-bold mb-2">Perfect Timing</h4>
+                <p className="text-xs font-serif text-gray-700">Your curated AI digest arrives exactly when you need your morning intelligence</p>
+              </div>
+            </div>
+          </div>
+
+
             </div>
 
             {/* Rex Character Spotlight */}
             <div className="md:col-span-5">
-              <div className="border-2 border-gray-400 p-6 bg-white mb-6">
+              <div className=" mb-6">
                 <div class="text-center mb-4">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">Character Spotlight</h3>
                 </div>
@@ -188,7 +250,7 @@ const LandingPage = () => {
               </div>
               
               {/* Quick Stats Box */}
-              <div className="border border-gray-400 p-4 bg-white">
+              <div className="">
                 <h4 className="text-lg font-serif font-bold mb-3 text-center border-b pb-2">Rex's Daily Stats</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm font-serif">
                   <div className="text-center">
@@ -241,241 +303,6 @@ const LandingPage = () => {
                 </p>
               </div>
             ))}
-          </div>
-
-   
-          {/* How Rex Works - Comic Strip Style */}
-          <div className="border-t border-gray-300 pt-6 mb-8">
-            <h3 className="text-2xl font-serif font-bold mb-2 text-center">📚 Rex's Daily Routine: Behind the Scenes</h3>
-            <p className="text-center text-sm font-serif italic text-gray-600 mb-6">A day in the life of your AI curator</p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="text-center border border-gray-300 p-4 bg-white">
-                <div className="border-b border-gray-200 pb-3 mb-3">
-                  <div className="text-4xl mb-2">🌅</div>
-                  <div className="text-xs font-serif text-gray-500">5:00 AM</div>
-                </div>
-                <h4 className="text-base font-serif font-bold mb-2">Early Bird Gets the Papers</h4>
-                <p className="text-sm font-serif text-gray-700">Rex starts scanning ArXiv, Google Scholar, and industry blogs while you sleep</p>
-              </div>
-              <div className="text-center border border-gray-300 p-4 bg-white">
-                <div className="border-b border-gray-200 pb-3 mb-3">
-                  <div className="text-4xl mb-2">🧠</div>
-                  <div className="text-xs font-serif text-gray-500">6:00 AM</div>
-                </div>
-                <h4 className="text-base font-serif font-bold mb-2">Analysis & Ranking</h4>
-                <p className="text-sm font-serif text-gray-700">Rex's AI brain processes everything and ranks by importance and impact</p>
-              </div>
-              <div className="text-center border border-gray-300 p-4 bg-white">
-                <div className="border-b border-gray-200 pb-3 mb-3">
-                  <div className="text-4xl mb-2">✍️</div>
-                  <div className="text-xs font-serif text-gray-500">6:30 AM</div>
-                </div>
-                <h4 className="text-base font-serif font-bold mb-2">Translation Magic</h4>
-                <p className="text-sm font-serif text-gray-700">Complex jargon becomes simple, digestible insights for busy humans</p>
-              </div>
-              <div className="text-center border border-gray-300 p-4 bg-white">
-                <div className="border-b border-gray-200 pb-3 mb-3">
-                  <div className="text-4xl mb-2">📧</div>
-                  <div className="text-xs font-serif text-gray-500">7:00 AM</div>
-                </div>
-                <h4 className="text-base font-serif font-bold mb-2">Perfect Timing</h4>
-                <p className="text-sm font-serif text-gray-700">Your curated AI digest arrives exactly when you need your morning intelligence</p>
-              </div>
-            </div>
-          </div>
-
-        
-          {/* Wireframe-inspired News Grid */}
-          <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              
-              {/* Left Column - Latest News List */}
-              <div className="lg:col-span-3 border-r border-gray-300 pr-4">
-                <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
-                <div className="space-y-3">
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">1.</span> OpenAI Releases GPT-5: The Next Generation
-                  </div>
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">2.</span> Meta's New Multimodal AI Breaks Records
-                  </div>
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">3.</span> Google DeepMind Solves Protein Folding 2.0
-                  </div>
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">4.</span> Microsoft Copilot Gets Major Upgrade
-                  </div>
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">5.</span> Tesla's FSD Beta Achieves Human Parity
-                  </div>
-                  <div className="text-sm font-serif">
-                    <span className="font-bold">6.</span> Anthropic Announces Constitutional AI 3.0
-                  </div>
-                </div>
-              </div>
-
-              {/* Center Column - Main Story */}
-              <div className="lg:col-span-6 border-r border-gray-300 pr-4">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-serif font-bold mb-3">
-                    Google Hires Wind Surf Founders
-                  </h2>
-                  <div className="aspect-[16/9] mb-4 bg-yellow-200 border border-gray-400 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-6xl mb-2">🏄‍♂️</div>
-                      <div className="text-sm font-serif text-gray-600">Rex Approved</div>
-                    </div>
-                  </div>
-                  <p className="text-sm font-serif mb-3 leading-relaxed">
-                    In a surprise move that has Rex wagging his tail, Google has acquired the entire founding team of Wind Surf, 
-                    the AI-powered development platform that revolutionized code generation. The acquisition signals Google's 
-                    commitment to advancing AI-assisted programming tools and competing with GitHub Copilot.
-                  </p>
-                  <p className="text-sm font-serif leading-relaxed">
-                    Rex's analysis suggests this move could accelerate Google's developer ecosystem significantly, 
-                    bringing Wind Surf's innovative approach to mainstream Google Cloud services. The financial terms 
-                    remain undisclosed, but industry insiders estimate the deal at $400M+.
-                  </p>
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200">
-                    <p className="text-xs font-serif italic">
-                      🦕 <strong>Rex's Take:</strong> "This is huge for developers! Wind Surf's tech + Google's scale = game changer!"
-                    </p>
-                  </div>
-                </div>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-serif font-bold mb-3">
-                    Google Hires Wind Surf Founders
-                  </h2>
-                  <div className="aspect-[16/9] mb-4 bg-yellow-200 border border-gray-400 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-6xl mb-2">🏄‍♂️</div>
-                      <div className="text-sm font-serif text-gray-600">Rex Approved</div>
-                    </div>
-                  </div>
-                  <p className="text-sm font-serif mb-3 leading-relaxed">
-                    In a surprise move that has Rex wagging his tail, Google has acquired the entire founding team of Wind Surf, 
-                    the AI-powered development platform that revolutionized code generation. The acquisition signals Google's 
-                    commitment to advancing AI-assisted programming tools and competing with GitHub Copilot.
-                  </p>
-                  <p className="text-sm font-serif leading-relaxed">
-                    Rex's analysis suggests this move could accelerate Google's developer ecosystem significantly, 
-                    bringing Wind Surf's innovative approach to mainstream Google Cloud services. The financial terms 
-                    remain undisclosed, but industry insiders estimate the deal at $400M+.
-                  </p>
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200">
-                    <p className="text-xs font-serif italic">
-                      🦕 <strong>Rex's Take:</strong> "This is huge for developers! Wind Surf's tech + Google's scale = game changer!"
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Multiple Sections */}
-              <div className="lg:col-span-3 space-y-6">
-                
-                {/* AI 101 Section */}
-                <div className="border border-gray-400 p-4 bg-white">
-                  <h3 className="text-lg font-serif font-bold mb-3 text-center border-b border-gray-300 pb-2">
-                    AI 101: RAG
-                  </h3>
-                  <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">📚</div>
-                      <div className="text-xs font-serif">Rex Explains</div>
-                    </div>
-                  </div>
-                  <p className="text-sm font-serif mb-2">
-                    <strong>RAG = AI + Library Pass + Brain.</strong>
-                  </p>
-                  <p className="text-xs font-serif text-gray-700 leading-relaxed">
-                    It retrieves real info (the "R") and then generates a smart answer (the "G") - kind of like a 
-                    kid writing a book report with Wikipedia open in another tab.
-                  </p>
-                </div>
-
-                {/* Rexommendation */}
-                <div className="border border-gray-400 p-4 bg-white">
-                  <h3 className="text-lg font-serif font-bold mb-3">Rexommendation</h3>
-                  <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-3xl mb-1">🦕</div>
-                      <div className="text-xs font-serif">Rex Picks</div>
-                    </div>
-                  </div>
-                  <p className="text-sm font-serif font-bold mb-1">Try Windsurf!</p>
-                  <p className="text-xs font-serif text-blue-600 underline mb-2">Link ↗</p>
-                  <p className="text-xs font-serif text-gray-700">
-                    The new AI coding tool that caught Google's attention
-                  </p>
-                  <div className="mt-2 text-center">
-                    <span className="text-xs font-serif font-bold">Rex Score: 9/10</span>
-                  </div>
-                </div>
-
-                {/* Corporate Cringe */}
-                <div className="border border-gray-400 p-4 bg-white">
-                  <h3 className="text-base font-serif font-bold mb-3">Corporate Cringe of the Week</h3>
-                  <div className="flex items-start gap-3">
-                    <div className="w-16 h-16 bg-yellow-200 border border-gray-300 flex items-center justify-center flex-shrink-0">
-                      <div className="text-center">
-                        <div className="text-lg">🦕</div>
-                        <div className="text-xs font-serif">Yikes</div>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2">
-                        "Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic 
-                        value propositions while leveraging blockchain-enabled quantum machine learning..."
-                      </p>
-                      <p className="text-xs font-serif italic text-gray-600">
-                        🦕 Rex says: "Just tell me what it actually does!"
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          {/* Rex's Weekly Forecast */}
-          <div className="border-t border-gray-300 pt-6 mb-8">
-            <h3 className="text-xl font-serif font-bold mb-4 text-center">🔮 Rex's AI Weather Forecast</h3>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="text-center border border-gray-300 p-3 bg-white">
-                <div className="text-2xl mb-1">☀️</div>
-                <div className="text-xs font-serif font-bold">Monday</div>
-                <div className="text-xs font-serif">Clear Breakthroughs</div>
-                <div className="text-xs text-gray-600">High: 3 papers</div>
-              </div>
-              <div className="text-center border border-gray-300 p-3 bg-white">
-                <div className="text-2xl mb-1">⛅</div>
-                <div className="text-xs font-serif font-bold">Tuesday</div>
-                <div className="text-xs font-serif">Partly Hyped</div>
-                <div className="text-xs text-gray-600">High: 2 releases</div>
-              </div>
-              <div className="text-center border border-gray-300 p-3 bg-white">
-                <div className="text-2xl mb-1">🌧️</div>
-                <div className="text-xs font-serif font-bold">Wednesday</div>
-                <div className="text-xs font-serif">Marketing Storms</div>
-                <div className="text-xs text-gray-600">Low: Reality</div>
-              </div>
-              <div className="text-center border border-gray-300 p-3 bg-white">
-                <div className="text-2xl mb-1">🌈</div>
-                <div className="text-xs font-serif font-bold">Thursday</div>
-                <div className="text-xs font-serif">Research Rainbow</div>
-                <div className="text-xs text-gray-600">High: 4 insights</div>
-              </div>
-              <div className="text-center border border-gray-300 p-3 bg-white">
-                <div className="text-2xl mb-1">🦕</div>
-                <div className="text-xs font-serif font-bold">Friday</div>
-                <div className="text-xs font-serif">Rex's Choice</div>
-                <div className="text-xs text-gray-600">Surprise!</div>
-              </div>
-            </div>
-            <p className="text-center text-xs font-serif italic text-gray-600 mt-3">
-              🦕 "These predictions are 73.6% accurate, which is better than most AI startups!" - Rex
-            </p>
           </div>
 
           {/* Rex's AI Stock Market Parody */}
