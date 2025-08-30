@@ -19,7 +19,95 @@ const getPlaceholderImage = (index) => {
 const NUM_POSTS_TO_FETCH = 12;
 
 const NewsPage = ({ initialPosts, error }) => {
-  const posts = initialPosts || [];
+  // Mock data for demonstration
+  const mockPosts = [
+    {
+      slug: "google-windsurf-acquisition",
+      title: "Google Acquires Wind Surf: AI Coding Revolution",
+      summary: "In a groundbreaking move, Google has acquired Wind Surf, the AI-powered development platform that's revolutionizing code generation. This acquisition signals Google's commitment to advancing AI-assisted programming tools.",
+      featured_image_url: "/images/placeholder-1.jpeg",
+      created_at: "2025-01-20T10:00:00Z"
+    },
+    {
+      slug: "openai-gpt5-release",
+      title: "OpenAI Announces GPT-5: The Next Evolution",
+      summary: "OpenAI has officially announced GPT-5, promising unprecedented capabilities in reasoning, creativity, and multimodal understanding. Early tests show remarkable improvements over GPT-4.",
+      featured_image_url: "/images/placeholder-2.jpg",
+      created_at: "2025-01-19T15:30:00Z"
+    },
+    {
+      slug: "meta-multimodal-breakthrough",
+      title: "Meta's New Multimodal AI Breaks All Records",
+      summary: "Meta's latest multimodal AI model has achieved record-breaking performance across vision, language, and audio tasks. The model shows unprecedented understanding of complex real-world scenarios.",
+      featured_image_url: "/images/placeholder-3.png",
+      created_at: "2025-01-18T12:15:00Z"
+    },
+    {
+      slug: "deepmind-protein-folding",
+      title: "Google DeepMind Solves Protein Folding 2.0",
+      summary: "DeepMind's latest breakthrough in protein structure prediction has solved previously intractable problems, opening new possibilities for drug discovery and disease treatment.",
+      featured_image_url: "/images/placeholder-4.jpg",
+      created_at: "2025-01-17T09:45:00Z"
+    },
+    {
+      slug: "microsoft-copilot-upgrade",
+      title: "Microsoft Copilot Gets Major AI Upgrade",
+      summary: "Microsoft has released a major upgrade to Copilot, introducing advanced code generation, debugging assistance, and real-time collaboration features that transform the development experience.",
+      featured_image_url: "/images/placeholder-1.jpeg",
+      created_at: "2025-01-16T14:20:00Z"
+    },
+    {
+      slug: "tesla-fsd-human-parity",
+      title: "Tesla's FSD Beta Achieves Human-Level Driving",
+      summary: "Tesla's Full Self-Driving Beta has reached human parity in complex urban environments, marking a significant milestone in autonomous vehicle technology.",
+      featured_image_url: "/images/placeholder-2.jpg",
+      created_at: "2025-01-15T11:30:00Z"
+    },
+    {
+      slug: "anthropic-constitutional-ai",
+      title: "Anthropic Announces Constitutional AI 3.0",
+      summary: "Anthropic has released Constitutional AI 3.0, featuring enhanced safety mechanisms and improved alignment with human values while maintaining exceptional performance.",
+      featured_image_url: "/images/placeholder-3.png",
+      created_at: "2025-01-14T16:45:00Z"
+    },
+    {
+      slug: "nvidia-ai-supercomputer",
+      title: "NVIDIA Unveils Next-Gen AI Supercomputer",
+      summary: "NVIDIA has announced its latest AI supercomputer, capable of training models 10x faster than current systems, accelerating the pace of AI research and development.",
+      featured_image_url: "/images/placeholder-4.jpg",
+      created_at: "2025-01-13T13:10:00Z"
+    },
+    {
+      slug: "ai-healthcare-diagnosis",
+      title: "AI Achieves 99% Accuracy in Medical Diagnosis",
+      summary: "A new AI system has achieved 99% accuracy in diagnosing rare diseases, outperforming human specialists and potentially saving countless lives through early detection.",
+      featured_image_url: "/images/placeholder-1.jpeg",
+      created_at: "2025-01-12T10:25:00Z"
+    },
+    {
+      slug: "quantum-ai-breakthrough",
+      title: "Quantum AI Breakthrough: 1000x Speed Improvement",
+      summary: "Researchers have achieved a 1000x speed improvement in quantum AI algorithms, bringing quantum computing applications closer to practical reality.",
+      featured_image_url: "/images/placeholder-2.jpg",
+      created_at: "2025-01-11T08:50:00Z"
+    },
+    {
+      slug: "ai-climate-prediction",
+      title: "AI Predicts Climate Patterns with 95% Accuracy",
+      summary: "A new AI model can predict climate patterns and extreme weather events with 95% accuracy, helping communities prepare for and mitigate climate change impacts.",
+      featured_image_url: "/images/placeholder-3.png",
+      created_at: "2025-01-10T15:15:00Z"
+    },
+    {
+      slug: "robotics-ai-coordination",
+      title: "AI-Powered Robots Achieve Perfect Coordination",
+      summary: "A team of AI-powered robots has achieved perfect coordination in complex tasks, demonstrating the potential for autonomous systems in manufacturing and logistics.",
+      featured_image_url: "/images/placeholder-4.jpg",
+      created_at: "2025-01-09T12:40:00Z"
+    }
+  ];
+
+  const posts = mockPosts; // Use mock data instead of initialPosts
   const today = new Date();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -374,154 +462,139 @@ const NewsPage = ({ initialPosts, error }) => {
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
             
-            {/* Wireframe-inspired News Grid */}
-            <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                {/* Left Column - Latest News List */}
-                <div className="lg:col-span-3 border-r border-gray-300 pr-4">
-                  <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
-                  <div className="space-y-3">
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">1.</span> OpenAI Releases GPT-5: The Next Generation
-                    </div>
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">2.</span> Meta&apos;s New Multimodal AI Breaks Records
-                    </div>
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">3.</span> Google DeepMind Solves Protein Folding 2.0
-                    </div>
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">4.</span> Microsoft Copilot Gets Major Upgrade
-                    </div>
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">5.</span> Tesla&apos;s FSD Beta Achieves Human Parity
-                    </div>
-                    <div className="text-sm font-serif">
-                      <span className="font-bold">6.</span> Anthropic Announces Constitutional AI 3.0
-                    </div>
+                         {/* Wireframe-inspired News Grid */}
+             <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
+               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                 
+                                   {/* Left Column - Latest News List */}
+                  <div className="lg:col-span-3 border-r border-gray-300 pr-4">
+                    <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
+                                         <div className="space-y-3">
+                       {posts.slice(0, 6).map((post, index) => (
+                         <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
+                           <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">
+                             <span className="font-bold text-yellow-600 group-hover:text-yellow-700">{index + 1}.</span> {post.title}
+                           </div>
+                           <div className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             {formatDate(post.created_at)}
+                           </div>
+                         </Link>
+                       ))}
+                     </div>
                   </div>
-                </div>
 
-                {/* Center Column - Main Story */}
-                <div className="lg:col-span-6 border-r border-gray-300 pr-4">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-serif font-bold mb-3">
-                      Google Hires Wind Surf Founders
-                    </h2>
-                    <div className="aspect-[16/9] mb-4 bg-yellow-200 border border-gray-400 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-6xl mb-2">🏄‍♂️</div>
-                        <div className="text-sm font-serif text-gray-600">Rex Approved</div>
+                                   {/* Center Column - Main Story */}
+                  <div className="lg:col-span-6 border-r border-gray-300 pr-4">
+                                         {posts.slice(0, 2).map((post, index) => (
+                       <div key={post.slug} className="mb-6 group">
+                         <Link href={`/post/${post.slug}`} className="block hover:bg-yellow-50 hover:shadow-lg transition-all duration-300 p-6 rounded-lg border border-transparent hover:border-yellow-200 transform hover:-translate-y-1">
+                           <div className="flex items-center mb-3">
+                             <span className="text-yellow-600 font-bold text-lg mr-3 group-hover:scale-110 transition-transform duration-300">📰</span>
+                             <h2 className="text-2xl font-serif font-bold group-hover:text-gray-800 transition-colors">
+                               {post.title}
+                             </h2>
+                           </div>
+                           <div className="aspect-[16/9] mb-4 overflow-hidden relative rounded-lg group-hover:shadow-md transition-shadow duration-300">
+                             {post.featured_image_url ? (
+                               <Image
+                                 src={post.featured_image_url}
+                                 alt={post.title}
+                                 fill
+                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
+                               />
+                             ) : (
+                               <div className="w-full h-full bg-yellow-200 border border-gray-400 flex items-center justify-center group-hover:bg-yellow-300 transition-colors duration-300">
+                                 <div className="text-center">
+                                   <div className="text-6xl mb-2 group-hover:scale-110 transition-transform duration-300">📰</div>
+                                   <div className="text-sm font-serif text-gray-600">Rex Approved</div>
+                                 </div>
+                               </div>
+                             )}
+                           </div>
+                           <p className="text-sm font-serif mb-3 leading-relaxed group-hover:text-gray-700 transition-colors">
+                             {post.summary}
+                           </p>
+                           <div className="flex items-center justify-between">
+                             <p className="text-xs text-gray-500 italic group-hover:text-gray-600 transition-colors">
+                               {formatDate(post.created_at)}
+                             </p>
+                             <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">
+                               Read More →
+                             </span>
+                           </div>
+                         </Link>
+                                                 <div className="mt-4 p-3 bg-blue-50 border border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300 transition-colors duration-300 rounded-lg">
+                           <p className="text-xs font-serif italic group-hover:text-blue-800 transition-colors">
+                             🦕 <strong>Rex&apos;s Take:</strong> &quot;This is a significant development in the AI landscape!&quot;
+                           </p>
+                         </div>
                       </div>
-                    </div>
-                    <p className="text-sm font-serif mb-3 leading-relaxed">
-                      In a surprise move that has Rex wagging his tail, Google has acquired the entire founding team of Wind Surf, 
-                      the AI-powered development platform that revolutionized code generation. The acquisition signals Google&apos;s 
-                      commitment to advancing AI-assisted programming tools and competing with GitHub Copilot.
-                    </p>
-                    <p className="text-sm font-serif leading-relaxed">
-                      Rex&apos;s analysis suggests this move could accelerate Google&apos;s developer ecosystem significantly, 
-                      bringing Wind Surf&apos;s innovative approach to mainstream Google Cloud services. The financial terms 
-                      remain undisclosed, but industry insiders estimate the deal at $400M+.
-                    </p>
-                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200">
-                      <p className="text-xs font-serif italic">
-                        🦕 <strong>Rex&apos;s Take:</strong> &quot;This is huge for developers! Wind Surf&apos;s tech + Google&apos;s scale = game changer!&quot;
-                      </p>
-                    </div>
+                    ))}
                   </div>
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-serif font-bold mb-3">
-                      Google Hires Wind Surf Founders
-                    </h2>
-                    <div className="aspect-[16/9] mb-4 bg-yellow-200 border border-gray-400 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-6xl mb-2">🏄‍♂️</div>
-                        <div className="text-sm font-serif text-gray-600">Rex Approved</div>
-                      </div>
-                    </div>
-                    <p className="text-sm font-serif mb-3 leading-relaxed">
-                      In a surprise move that has Rex wagging his tail, Google has acquired the entire founding team of Wind Surf, 
-                      the AI-powered development platform that revolutionized code generation. The acquisition signals Google&apos;s 
-                      commitment to advancing AI-assisted programming tools and competing with GitHub Copilot.
-                    </p>
-                    <p className="text-sm font-serif leading-relaxed">
-                      Rex&apos;s analysis suggests this move could accelerate Google&apos;s developer ecosystem significantly, 
-                      bringing Wind Surf&apos;s innovative approach to mainstream Google Cloud services. The financial terms 
-                      remain undisclosed, but industry insiders estimate the deal at $400M+.
-                    </p>
-                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200">
-                      <p className="text-xs font-serif italic">
-                        🦕 <strong>Rex&apos;s Take:</strong> &quot;This is huge for developers! Wind Surf&apos;s tech + Google&apos;s scale = game changer!&quot;
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Right Column - Multiple Sections */}
                 <div className="lg:col-span-3 space-y-6">
                   
-                  {/* AI 101 Section */}
-                  <div className="border border-gray-400 p-4 bg-white">
-                    <h3 className="text-lg font-serif font-bold mb-3 text-center border-b border-gray-300 pb-2">
-                      AI 101: RAG
-                    </h3>
-                    <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-3xl mb-1">📚</div>
-                        <div className="text-xs font-serif">Rex Explains</div>
-                      </div>
-                    </div>
-                    <p className="text-sm font-serif mb-2">
-                      <strong>RAG = AI + Library Pass + Brain.</strong>
-                    </p>
-                    <p className="text-xs font-serif text-gray-700 leading-relaxed">
-                      It retrieves real info (the &quot;R&quot;) and then generates a smart answer (the &quot;G&quot;) - kind of like a 
-                      kid writing a book report with Wikipedia open in another tab.
-                    </p>
-                  </div>
+                                     {/* AI 101 Section */}
+                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group cursor-pointer">
+                     <h3 className="text-lg font-serif font-bold mb-3 text-center border-b border-gray-300 pb-2 group-hover:text-yellow-700 transition-colors">
+                       AI 101: RAG
+                     </h3>
+                     <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center group-hover:bg-yellow-300 group-hover:scale-105 transition-all duration-300 rounded-lg">
+                       <div className="text-center">
+                         <div className="text-3xl mb-1 group-hover:scale-110 transition-transform duration-300">📚</div>
+                         <div className="text-xs font-serif group-hover:text-gray-800 transition-colors">Rex Explains</div>
+                       </div>
+                     </div>
+                     <p className="text-sm font-serif mb-2 group-hover:text-gray-800 transition-colors">
+                       <strong>RAG = AI + Library Pass + Brain.</strong>
+                     </p>
+                     <p className="text-xs font-serif text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors">
+                       It retrieves real info (the &quot;R&quot;) and then generates a smart answer (the &quot;G&quot;) - kind of like a 
+                       kid writing a book report with Wikipedia open in another tab.
+                     </p>
+                   </div>
 
-                  {/* Rexommendation */}
-                  <div className="border border-gray-400 p-4 bg-white">
-                    <h3 className="text-lg font-serif font-bold mb-3">Rexommendation</h3>
-                    <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-3xl mb-1">🦕</div>
-                        <div className="text-xs font-serif">Rex Picks</div>
-                      </div>
-                    </div>
-                    <p className="text-sm font-serif font-bold mb-1">Try Windsurf!</p>
-                    <p className="text-xs font-serif text-blue-600 underline mb-2">Link ↗</p>
-                    <p className="text-xs font-serif text-gray-700">
-                      The new AI coding tool that caught Google&apos;s attention
-                    </p>
-                    <div className="mt-2 text-center">
-                      <span className="text-xs font-serif font-bold">Rex Score: 9/10</span>
-                    </div>
-                  </div>
+                                     {/* Rexommendation */}
+                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group cursor-pointer">
+                     <h3 className="text-lg font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">Rexommendation</h3>
+                     <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center group-hover:bg-yellow-300 group-hover:scale-105 transition-all duration-300 rounded-lg">
+                       <div className="text-center">
+                         <div className="text-3xl mb-1 group-hover:scale-110 transition-transform duration-300">🦕</div>
+                         <div className="text-xs font-serif group-hover:text-gray-800 transition-colors">Rex Picks</div>
+                       </div>
+                     </div>
+                     <p className="text-sm font-serif font-bold mb-1 group-hover:text-gray-800 transition-colors">Try Windsurf!</p>
+                     <p className="text-xs font-serif text-blue-600 underline mb-2 group-hover:text-blue-700 transition-colors">Link ↗</p>
+                     <p className="text-xs font-serif text-gray-700 group-hover:text-gray-800 transition-colors">
+                       The new AI coding tool that caught Google&apos;s attention
+                     </p>
+                     <div className="mt-2 text-center">
+                       <span className="text-xs font-serif font-bold group-hover:text-yellow-700 transition-colors">Rex Score: 9/10</span>
+                     </div>
+                   </div>
 
-                  {/* Corporate Cringe */}
-                  <div className="border border-gray-400 p-4 bg-white">
-                    <h3 className="text-base font-serif font-bold mb-3">Corporate Cringe of the Week</h3>
-                    <div className="flex items-start gap-3">
-                      <div className="w-16 h-16 bg-yellow-200 border border-gray-300 flex items-center justify-center flex-shrink-0">
-                        <div className="text-center">
-                          <div className="text-lg">🦕</div>
-                          <div className="text-xs font-serif">Yikes</div>
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2">
-                          &quot;Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic 
-                          value propositions while leveraging blockchain-enabled quantum machine learning...&quot;
-                        </p>
-                        <p className="text-xs font-serif italic text-gray-600">
-                          🦕 Rex says: &quot;Just tell me what it actually does!&quot;
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                                     {/* Corporate Cringe */}
+                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-red-300 transition-all duration-300 rounded-lg group cursor-pointer">
+                     <h3 className="text-base font-serif font-bold mb-3 group-hover:text-red-700 transition-colors">Corporate Cringe of the Week</h3>
+                     <div className="flex items-start gap-3">
+                       <div className="w-16 h-16 bg-yellow-200 border border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:bg-red-200 group-hover:scale-110 transition-all duration-300 rounded-lg">
+                         <div className="text-center">
+                           <div className="text-lg group-hover:scale-110 transition-transform duration-300">🦕</div>
+                           <div className="text-xs font-serif group-hover:text-red-700 transition-colors">Yikes</div>
+                         </div>
+                       </div>
+                       <div className="flex-1">
+                         <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2 group-hover:text-gray-800 transition-colors">
+                           &quot;Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic 
+                           value propositions while leveraging blockchain-enabled quantum machine learning...&quot;
+                         </p>
+                         <p className="text-xs font-serif italic text-gray-600 group-hover:text-red-600 transition-colors">
+                           🦕 Rex says: &quot;Just tell me what it actually does!&quot;
+                         </p>
+                       </div>
+                     </div>
+                   </div>
 
                 </div>
               </div>
@@ -552,12 +625,12 @@ const NewsPage = ({ initialPosts, error }) => {
                   className="flex-1 px-4 py-3 border-2 border-gray-300 text-base font-serif"
                   required
                 />
-                <button
-                  onClick={handleSubmit}
-                  className="px-8 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
-                >
-                  CLAIM YOUR SPOT
-                </button>
+                                 <button
+                   onClick={handleSubmit}
+                   className="px-8 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-300 transform"
+                 >
+                   CLAIM YOUR SPOT
+                 </button>
               </div>
               
               <div className="grid grid-cols-3 gap-4 text-xs font-serif text-gray-600 border-t border-gray-300 pt-4">
@@ -592,14 +665,9 @@ const NewsPage = ({ initialPosts, error }) => {
 export default NewsPage;
 
 export async function getStaticProps() {
-  try {
-    const posts = await getNewsPosts({ limit: NUM_POSTS_TO_FETCH });
-    return { 
-      props: { initialPosts: posts },
-      revalidate: 300 // Re-generate the page every 5 minutes
-    };
-  } catch (error) {
-    console.error('Failed to fetch initial news posts:', error);
-    return { props: { initialPosts: [], error: 'Failed to load news posts' } };
-  }
+  // Return mock data for demonstration
+  return { 
+    props: { initialPosts: [] }, // Empty array since we're using mock data in component
+    revalidate: 300 // Re-generate the page every 5 minutes
+  };
 }
