@@ -315,11 +315,6 @@ const NewsPage = ({ initialPosts, error }) => {
     );
   }
 
-  // Separate posts for different sections
-  const mainFeature = posts[0];
-  const secondaryFeatures = posts.slice(1, 3);
-  const remainingPosts = posts.slice(3, NUM_POSTS_TO_FETCH);
-
   return (
     <>
       <SEO
