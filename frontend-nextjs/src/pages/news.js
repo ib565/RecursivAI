@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getNewsPosts } from "../utils/apiService";
-import { formatDate } from "../utils/formatters";
 import SEO from "../components/SEO";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -109,8 +108,7 @@ const NewsPage = ({ initialPosts, error }) => {
     }
   ];
 
-  const posts = mockPosts; // Use mock data instead of initialPosts
-  const today = new Date();
+  const posts = (initialPosts && initialPosts.length ? initialPosts : mockPosts);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -342,21 +340,36 @@ const NewsPage = ({ initialPosts, error }) => {
              <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                  
-                                   {/* Left Column - Latest News List */}
+                  {/* Left Column - Latest News List */}
                   <div className="lg:col-span-3 border-r border-gray-300 pr-4">
                     <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
                                          <div className="space-y-3">
-                       {posts.slice(0, 6).map((post, index) => (
-                         <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
-                           <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">
-                             <span className="font-bold text-yellow-600 group-hover:text-yellow-700">{index + 1}.</span> {post.title}
-                           </div>
-                           <div className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                             {formatDate(post.created_at)}
-                           </div>
-                         </Link>
-                       ))}
-                     </div>
+                      {posts.slice(2, 4).map((post, index) => (
+                        <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
+                          <div className="flex items-start gap-3">
+                            <div className="w-24 h-16 relative flex-shrink-0 overflow-hidden rounded">
+                              {post.featured_image_url ? (
+                                <Image src={post.featured_image_url} alt={post.title} fill className="object-cover" />
+                              ) : (
+                                <Image src={getPlaceholderImage(index)} alt="Image placeholder" fill className="object-cover grayscale" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">{post.title}</div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="space-y-3 mt-6">
+                      {posts.slice(4, 12).map((post, index) => (
+                        <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
+                          <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">
+                            <span className="font-bold text-yellow-600 group-hover:text-yellow-700">{index + 1}.</span> {post.title}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
 
                                    {/* Center Column - Main Story */}
@@ -390,13 +403,8 @@ const NewsPage = ({ initialPosts, error }) => {
                            <p className="text-sm font-serif mb-3 leading-relaxed group-hover:text-gray-700 transition-colors">
                              {post.summary}
                            </p>
-                           <div className="flex items-center justify-between">
-                             <p className="text-xs text-gray-500 italic group-hover:text-gray-600 transition-colors">
-                               {formatDate(post.created_at)}
-                             </p>
-                             <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">
-                               Read More →
-                             </span>
+                           <div className="flex items-center justify-end">
+                             <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">Read More →</span>
                            </div>
                          </Link>
                                                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300 transition-colors duration-300 rounded-lg">
@@ -532,9 +540,17 @@ const NewsPage = ({ initialPosts, error }) => {
 export default NewsPage;
 
 export async function getStaticProps() {
-  // Return mock data for demonstration
-  return { 
-    props: { initialPosts: [] }, // Empty array since we're using mock data in component
-    revalidate: 300 // Re-generate the page every 5 minutes
-  };
+  try {
+    const posts = await getNewsPosts({ limit: 12 });
+    return {
+      props: { initialPosts: posts },
+      revalidate: 300,
+    };
+  } catch (error) {
+    console.error('Failed to fetch initial news posts:', error);
+    return {
+      props: { initialPosts: [], error: 'Failed to load news posts' },
+      revalidate: 300,
+    };
+  }
 }
