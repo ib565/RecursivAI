@@ -19,7 +19,7 @@ const Header = () => {
           <div className="text-center flex-grow my-4">
             <nav className="mb-1 font-body">
               <Link href="/news" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">News</Link>
-              <Link href="/" className="text-xs font-bold uppercase tracking-wider text-black mx-3">Research</Link>
+              <Link href="/research" className="text-xs font-bold uppercase tracking-wider text-black mx-3">Research</Link>
               <Link href="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
               <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
             </nav>
