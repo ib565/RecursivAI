@@ -536,7 +536,7 @@ export default NewsPage;
 
 export async function getStaticProps() {
   try {
-    const posts = await getNewsPosts({ limit: 12 });
+    const posts = await getNewsPosts({ limit: NUM_POSTS_TO_FETCH });
     return {
       props: { initialPosts: posts },
       revalidate: 300,
