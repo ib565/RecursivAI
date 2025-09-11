@@ -187,6 +187,16 @@ const LandingPage = ({ initialPosts }) => {
                       <strong>Join 220+ professionals</strong> who wake up to Rex&apos;s carefully curated AI insights. From groundbreaking research to industry shake-ups, Rex delivers only what matters most to your inbox.
                     </p>
                   </div>
+
+                  {/* Quick News CTA for non-subscribers */}
+                  <div className="mb-6 flex justify-center">
+                    <Link
+                      href="/news"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
+                    >
+                      Go to News
+                    </Link>
+                  </div>
                   
                   {/* Newsletter Signup */}
                   <div className="border-2 border-gray-400 p-6 bg-white shadow-lg">
