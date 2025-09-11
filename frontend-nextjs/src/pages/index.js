@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllPosts } from "../utils/apiService";
+import { getAllPosts, getNewsPosts } from "../utils/apiService";
 import SEO from "../components/SEO";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { formatDate } from "../utils/formatters";
 import { useRouter } from "next/router";
 
-const LandingPage = ({ initialPosts }) => {
+const LandingPage = ({ initialPosts, initialNewsPosts }) => {
   const router = useRouter();
   const [posts, setPosts] = useState(initialPosts || []);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -81,46 +84,16 @@ const LandingPage = ({ initialPosts }) => {
 
   const today = new Date();
 
-  // Sample recent articles matching your news page structure
-  const featuredArticles = [
-    {
-      title: "AI-Designed Antibiotics Show Promise Against Resistant Bacteria",
-      summary: "MIT scientists use generative AI to create novel compounds, potentially ushering in a new era of antibiotic development.",
-      date: "August 20, 2025",
-      slug: "ai-antibiotics-resistant-bacteria"
-    },
-    {
-      title: "Google's Gemma 1.5 2B: A Tiny AI Model, Huge Potential",
-      summary: "The new open-source model can run on smartphones, offering efficiency and functionality for academic and indie developers alike.",
-      date: "August 20, 2025",
-      slug: "google-gemma-tiny-ai-model"
-    },
-    {
-      title: "Meta Releases DINOX: Image Analysis Model Commercially",
-      summary: "AI model trained on 1.2 billion images and can detect various tasks with little adaptation.",
-      date: "August 19, 2025",
-      slug: "meta-dinox-image-analysis"
-    },
-    // Add more articles as needed
-    {
-      title: "OpenAI's GPT-5: What to Expect from the Next Big Thing",
-      summary: "Speculations and insights on the features and capabilities of the upcoming GPT-5",
-      date: "August 18, 2025",
-      slug: "openai-gpt5-expectations"
-    },
-    {
-      title: "Anthropic's Claude 3: A Leap Towards Safer AI",
-      summary: "Exploring the advancements in safety and reliability in Anthropic's latest AI model release.",
-      date: "August 17, 2025",
-      slug: "anthropic-claude3-safety"  
-    },
-    {
-      title: "AI in Healthcare: Transforming Patient Care with Machine Learning",
-      summary: "How AI is revolutionizing diagnostics, treatment plans, and patient monitoring in modern healthcare.",
-      date: "August 16, 2025",
-      slug: "ai-healthcare-transformation"
-    }
+  // Placeholders for images if a news item lacks one
+  const placeholderImages = [
+    "/images/placeholder-1.jpeg",
+    "/images/placeholder-2.jpg",
+    "/images/placeholder-3.png",
+    "/images/placeholder-4.jpg",
   ];
+  const getPlaceholderImage = (index) => placeholderImages[index % placeholderImages.length];
+
+  const hotNewsPosts = Array.isArray(initialNewsPosts) ? initialNewsPosts.slice(0, 6) : [];
 
   // Rex testimonials
   const rexTestimonials = [
@@ -168,6 +141,8 @@ const LandingPage = ({ initialPosts }) => {
       <div className="w-full bg-[#FAF9F5]">
         <div className="newspaper-page min-h-screen w-full bg-[#FAF9F5] text-black max-auto">
           
+          <Header />
+
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
             
@@ -329,29 +304,39 @@ const LandingPage = ({ initialPosts }) => {
               <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">🔥 What&apos;s Hot in AI Today</h4>
             </div>
 
-            {/* Sample Articles Grid */}
+            {/* Hot News Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 mb-8">
-              {featuredArticles.map((post, index) => (
-                <div
+              {hotNewsPosts.map((post, index) => (
+                <Link
+                  href={`/post/${post.slug}`}
                   key={post.slug}
-                  className={`pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
+                  className={`group pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
                 >
-                  <div className="aspect-[16/9] mb-3 overflow-hidden relative bg-gradient-to-br from-blue-100 to-cyan-100 border border-gray-300">
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-4xl mb-2">{index === 0 ? '🧬' : index === 1 ? '📱' : '🖼️'}</div>
-                        <div className="text-sm font-serif text-gray-600">Curated by Rex</div>
-                      </div>
-                    </div>
+                  <div className="aspect-[16/9] mb-3 overflow-hidden relative bg-white border border-gray-300 rounded">
+                    {post.featured_image_url ? (
+                      <Image
+                        src={post.featured_image_url}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <Image
+                        src={getPlaceholderImage(index)}
+                        alt="Image placeholder"
+                        fill
+                        className="object-cover grayscale"
+                      />
+                    )}
                   </div>
-                  <h3 className="text-lg font-serif font-bold mb-2 leading-tight">
+                  <h3 className="text-lg font-serif font-bold mb-2 leading-tight group-hover:underline">
                     {post.title}
                   </h3>
                   <p className="text-sm mb-2 news-content font-serif">{post.summary}</p>
                   <p className="text-xs text-gray-500 italic font-serif">
-                    {post.date} • Analyzed by 🦕
+                    {post.created_at ? formatDate(post.created_at) : ''} • Analyzed by 🦕
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -460,6 +445,8 @@ const LandingPage = ({ initialPosts }) => {
               </p>
             </div>
           </main>
+
+          <Footer />
         </div>
       </div>
     </>
@@ -471,16 +458,16 @@ export default LandingPage;
 export async function getStaticProps() {
   try {
     const POSTS_PER_PAGE = 21;
-    const initialPosts = await getAllPosts({
-      limit: POSTS_PER_PAGE,
-      offset: 0,
-    });
+    const [initialPosts, initialNewsPosts] = await Promise.all([
+      getAllPosts({ limit: POSTS_PER_PAGE, offset: 0 }),
+      getNewsPosts({ limit: 6 })
+    ]);
     return { 
-      props: { initialPosts },
-      revalidate: 300 // Re-generate the page every 5 minutes
+      props: { initialPosts, initialNewsPosts },
+      revalidate: 300
     };
   } catch (error) {
-    console.error('Failed to fetch initial posts:', error);
-    return { props: { initialPosts: [] } };
+    console.error('Failed to fetch initial content:', error);
+    return { props: { initialPosts: [], initialNewsPosts: [] }, revalidate: 300 };
   }
 }
