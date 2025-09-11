@@ -6,83 +6,17 @@ import SEO from "../components/SEO";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { formatDate } from "../utils/formatters";
-import { useRouter } from "next/router";
 
 const LandingPage = ({ initialPosts, initialNewsPosts }) => {
-  const router = useRouter();
-  const [posts, setPosts] = useState(initialPosts || []);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const POSTS_PER_PAGE = 21;
-
-  const fetchPosts = async (isInitialLoad = true, currentOffset = offset) => {
-    try {
-      setLoadingMore(true);
-
-      // Fetch posts with the provided offset
-      const data = await getAllPosts({
-        limit: POSTS_PER_PAGE,
-        offset: isInitialLoad ? 0 : currentOffset,
-      });
-
-      if (data.length < POSTS_PER_PAGE) {
-        setHasMore(false);
-      }
-
-      if (isInitialLoad) {
-        setPosts(data);
-      } else {
-        setPosts((prevPosts) => [...prevPosts, ...data]);
-      }
-
-      setError(null);
-    } catch (err) {
-      console.error("Failed to fetch posts:", err);
-      setError(err);
-    } finally {
-      setLoadingMore(false);
-    }
-  };
-
-  // Set up initial pagination state based on initialPosts
-  useEffect(() => {
-    if (initialPosts && initialPosts.length > 0) {
-      setOffset(initialPosts.length);
-      if (initialPosts.length < POSTS_PER_PAGE) {
-        setHasMore(false);
-      }
-    }
-  }, [initialPosts]);
-
-  const handleLoadMore = () => {
-    if (!hasMore || loadingMore) return;
-    
-    const nextOffset = posts.length;
-    setOffset(nextOffset);
-    fetchPosts(false, nextOffset);
-  };
-
-  const handleCTAClick = (type) => {
-    if (type === 'about') {
-      router.push("/about");
-    } else if (type === 'curated') {
-      router.push("/curated");
-    } else if (type === 'news') {
-      router.push("/news");
-    }
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubscribed(true);
     setTimeout(() => setIsSubscribed(false), 3000);
   };
-
-  const today = new Date();
 
   // Placeholders for images if a news item lacks one
   const placeholderImages = [
