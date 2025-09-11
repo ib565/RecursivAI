@@ -8,7 +8,7 @@ const Header = () => {
     <header className="pt-4 pb-4 bg-[#FAF9F5] text-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
-          <h1 className="text-7xl font-serif font-black">
+          <h1 className="text-7xl font-display font-black">
             <Link href="/">
               RecursivAI
             </Link>
