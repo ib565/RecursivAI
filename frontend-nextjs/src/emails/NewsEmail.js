@@ -93,7 +93,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
 
                 <Section style={styles.card}>
                   <Heading as="h3" style={styles.h3}>Rexommendation</Heading>
-                  <Text style={styles.small}><b>Try Windsurf!</b> The new AI coding tool that caught Google's attention.</Text>
+                  <Text style={styles.small}><b>Try Windsurf!</b> The new AI coding tool that caught Google&#39;s attention.</Text>
                 </Section>
 
                 <Section style={styles.card}>
