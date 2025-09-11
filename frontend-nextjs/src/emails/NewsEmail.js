@@ -17,7 +17,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
   return (
     <Html>
       <Head />
-      <Preview>Rex's Daily AI Intelligence Report</Preview>
+      <Preview>Rex&apos;s Daily AI Intelligence Report</Preview>
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.header}>
@@ -79,7 +79,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                       style={styles.cta}
                       href={`https://recursiv.ai/post/${post.slug}`}
                     >Read More →</Button>
-                    <Text style={styles.rexTake}>🦕 Rex's take: This is a significant development.</Text>
+                    <Text style={styles.rexTake}>🦕 Rex&apos;s take: This is a significant development.</Text>
                   </Section>
                 ))}
               </Column>
@@ -88,7 +88,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                 <Section style={styles.card}>
                   <Heading as="h3" style={styles.h3}>AI 101: RAG</Heading>
                   <Text style={styles.small}><b>RAG = AI + Library Pass + Brain.</b></Text>
-                  <Text style={styles.small}>It retrieves real info (the "R") and then generates a smart answer (the "G").</Text>
+                  <Text style={styles.small}>It retrieves real info (the &quot;R&quot;) and then generates a smart answer (the &quot;G&quot;).</Text>
                 </Section>
 
                 <Section style={styles.card}>
@@ -99,8 +99,8 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                 <Section style={styles.card}>
                   <Heading as="h3" style={styles.h4}>Corporate Cringe of the Week</Heading>
                   <Text style={styles.small}>
-                    "Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic value
-                    propositions while leveraging blockchain-enabled quantum machine learning..."
+                    &quot;Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic value
+                    propositions while leveraging blockchain-enabled quantum machine learning...&quot;
                   </Text>
                   <Text style={styles.muted}><i>🦕 Rex says: Just tell me what it actually does!</i></Text>
                 </Section>
@@ -110,13 +110,13 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
 
           <Section style={styles.footerCard}>
             <Heading as="h3" style={styles.h3Center}>Free Lifetime Subscription</Heading>
-            <Text style={styles.center}>Join Rex's Daily AI Intelligence Report</Text>
+            <Text style={styles.center}>Join Rex&apos;s Daily AI Intelligence Report</Text>
             <Button
               href="https://recursiv.ai/#subscribe"
               style={styles.ctaDark}
             >Claim Your Spot</Button>
             <Text style={styles.mutedCenter}>✅ 100% Free · ✅ Daily 7AM · ✅ Unsubscribe Anytime</Text>
-            <Text style={styles.mutedCenter}><i>"Don't let AI evolution leave you behind!" - Rex 🦕</i></Text>
+            <Text style={styles.mutedCenter}><i>&quot;Don&apos;t let AI evolution leave you behind!&quot; - Rex 🦕</i></Text>
           </Section>
 
           <Section style={styles.footer}>

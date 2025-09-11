@@ -188,7 +188,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                     <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">Character Spotlight</h3>
                   </div>
                   <div className="text-center mb-4">
-                    <img src="/images/rex.png" alt="Rex the AI Curator" width={300} height={300} className="mx-auto mb-4" />
+                    <Image src="/images/rex.png" alt="Rex the AI Curator" width={300} height={300} className="mx-auto mb-4" />
                     <h3 className="text-2xl font-serif font-bold mb-2">Rex the AI Curator</h3>
                     <p className="text-sm font-serif italic text-gray-600 mb-4">
                       &quot;The most evolved dinosaur in tech&quot;
