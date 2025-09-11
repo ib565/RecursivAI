@@ -336,7 +336,7 @@ const NewsPage = ({ initialPosts, error }) => {
                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                  
                   {/* Left Column - Latest News List */}
-                  <div className="lg:col-span-3 border-r border-gray-300 pr-4">
+                  <div className="order-2 lg:order-none lg:col-span-3 lg:border-r lg:border-gray-300 lg:pr-4">
                     <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
                                          <div className="space-y-3">
                       {posts.slice(2, 4).map((post, index) => (
@@ -368,7 +368,7 @@ const NewsPage = ({ initialPosts, error }) => {
                   </div>
 
                                    {/* Center Column - Main Story */}
-                  <div className="lg:col-span-6 border-r border-gray-300 pr-4">
+                  <div className="order-1 lg:order-none lg:col-span-6 lg:border-r lg:border-gray-300 lg:pr-4">
                                          {posts.slice(0, 2).map((post, index) => (
                        <div key={post.slug} className="mb-6 group">
                          <Link href={`/post/${post.slug}`} className="block hover:bg-yellow-50 hover:shadow-lg transition-all duration-300 p-6 rounded-lg border border-transparent hover:border-yellow-200 transform hover:-translate-y-1">
@@ -412,7 +412,7 @@ const NewsPage = ({ initialPosts, error }) => {
                   </div>
 
                 {/* Right Column - Multiple Sections */}
-                <div className="lg:col-span-3 space-y-6">
+                <div className="order-3 lg:order-none lg:col-span-3 space-y-6">
                   
                                      {/* AI 101 Section */}
                    <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group cursor-pointer">

@@ -174,7 +174,7 @@ const LandingPage = ({ initialPosts }) => {
             {/* Hero Section - Newsletter-style */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
               {/* Main Feature */}
-              <div className="md:col-span-7 border-r border-gray-300 pr-6">
+              <div className="md:col-span-7 md:border-r border-gray-300 md:pr-6">
                 <div className="mb-6">
                   <h2 className="text-4xl font-serif font-bold mb-4 leading-tight">
                     🦕 Get Smarter About AI Every Day with Rex
