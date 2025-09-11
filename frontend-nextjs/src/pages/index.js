@@ -103,7 +103,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                       href="/news"
                       className="inline-flex items-center justify-center px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
                     >
-                      Go to News
+                      Check out the latest AI news!
                     </Link>
                   </div>
                   
@@ -126,7 +126,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                         onClick={handleSubmit}
                         className="px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
                       >
-                        Join Rex&apos;s Pack!
+                        Join Rex&apos;s Pack
                       </button>
                     </div>
                     {isSubscribed && (
