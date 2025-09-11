@@ -7,32 +7,16 @@ const Header = () => {
   return (
     <header className="pt-4 pb-4 bg-[#FAF9F5] text-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div className="text-s tracking-wider font-medium">
-            {today.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </div>
-          <div className="text-center flex-grow my-4">
-            <nav className="mb-1 font-body">
-              <Link href="/news" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">News</Link>
-              <Link href="/research" className="text-xs font-bold uppercase tracking-wider text-black mx-3">Research</Link>
-              <Link href="/curated" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">Curated</Link>
-              <Link href="/about" className="text-xs font-bold uppercase tracking-wider text-gray-600 hover:text-black mx-3">About</Link>
-            </nav>
-            <h1 className="text-7xl font-serif font-black">
-              <Link href="/">
-                RecursivAI
-              </Link>
-            </h1>
-            <p className="text-center text-base italic font-serif text-gray-700 mt-1 mb-4">
-              Who better to keep up with AI than AI itself?
-            </p>
-          </div>
-          <div className="text-s tracking-wider invisible">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-7xl font-serif font-black">
+            <Link href="/">
+              RecursivAI
+            </Link>
+          </h1>
+          <p className="text-center text-base italic font-serif text-gray-700 mt-1">
+            Who better to keep up with AI than AI itself?
+          </p>
+          <div className="text-s tracking-wider font-medium mt-2">
             {today.toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
