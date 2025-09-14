@@ -39,7 +39,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
               <Column style={styles.leftCol}>
                 <Heading as="h3" style={styles.h3}>Latest News</Heading>
                 {sidebarPosts.slice(0, 2).map((post, index) => (
-                  <Link key={post.slug} href={`https://recursiv.ai/post/${post.slug}`} style={styles.latestItem}>
+                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.latestItem}>
                     <Row>
                       <Column style={{ width: 96 }}>
                         <Img
@@ -57,7 +57,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                   </Link>
                 ))}
                 {sidebarPosts.slice(2).map((post, index) => (
-                  <Link key={post.slug} href={`https://recursiv.ai/post/${post.slug}`} style={styles.listItem}>
+                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.listItem}>
                     <Text style={styles.listTitle}>{index + 1}. {post.title}</Text>
                   </Link>
                 ))}
@@ -77,7 +77,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                     <Text style={styles.summary}>{post.summary}</Text>
                     <Button
                       style={styles.cta}
-                      href={`https://recursiv.ai/post/${post.slug}`}
+                      href={`https://recursivai.vercel.app/post/${post.slug}`}
                     >Read More →</Button>
                     <Text style={styles.rexTake}>🦕 Rex&apos;s take: This is a significant development.</Text>
                   </Section>
@@ -112,7 +112,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
             <Heading as="h3" style={styles.h3Center}>Free Lifetime Subscription</Heading>
             <Text style={styles.center}>Join Rex&apos;s Daily AI Intelligence Report</Text>
             <Button
-              href="https://recursiv.ai/#subscribe"
+              href="https://recursivai.vercel.app/#subscribe"
               style={styles.ctaDark}
             >Claim Your Spot</Button>
             <Text style={styles.mutedCenter}>✅ 100% Free · ✅ Daily 7AM · ✅ Unsubscribe Anytime</Text>
@@ -121,8 +121,8 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
 
           <Section style={styles.footer}>
             <Hr style={styles.hr} />
-            <Text style={styles.mutedCenter}>You received this because you subscribed at recursiv.ai</Text>
-            <Text style={styles.mutedCenter}><Link href="https://recursiv.ai" style={styles.link}>Home</Link> · <Link href="https://recursiv.ai/news" style={styles.link}>News</Link> · <Link href="https://recursiv.ai/unsubscribe" style={styles.link}>Unsubscribe</Link></Text>
+            <Text style={styles.mutedCenter}>You received this because you subscribed at recursivai</Text>
+            <Text style={styles.mutedCenter}><Link href="https://recursivai.vercel.app/" style={styles.link}>Home</Link> · <Link href="https://recursivai.vercel.app/news" style={styles.link}>News</Link> · <Link href="https://recursivai.vercel.app/unsubscribe" style={styles.link}>Unsubscribe</Link></Text>
           </Section>
         </Container>
       </Body>
