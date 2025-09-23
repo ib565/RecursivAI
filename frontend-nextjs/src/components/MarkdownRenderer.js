@@ -107,11 +107,20 @@ function MarkdownRenderer({ children }) {
           try {
             const { svg } = await mermaid.render(id, content);
             
-            // Create a div to hold the SVG
-            const wrapper = document.createElement('div');
-            wrapper.className = 'mermaid-diagram';
-            wrapper.setAttribute('data-type', 'mermaid');
-            wrapper.innerHTML = svg;
+                         // Create a div to hold the SVG
+             const wrapper = document.createElement('div');
+             wrapper.className = 'mermaid-diagram';
+             wrapper.setAttribute('data-type', 'mermaid');
+             wrapper.innerHTML = svg;
+             
+             // Scale down the SVG
+             const svgElement = wrapper.querySelector('svg');
+             if (svgElement) {
+               svgElement.style.transform = 'scale(0.8)';
+               svgElement.style.transformOrigin = 'center center';
+               svgElement.style.maxWidth = '100%';
+               svgElement.style.height = 'auto';
+             }
             
             // Replace the code block with the rendered diagram
             if (block.parentElement.tagName === 'PRE') {

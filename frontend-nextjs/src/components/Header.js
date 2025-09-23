@@ -1,33 +1,30 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 const Header = () => {
+  const today = new Date();
+  
   return (
-    <header className="bg-cyber-dark py-4">
-      <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-2">
-          <Image src="/logo.png" alt="RecursivAI Logo" width={32} height={32} className="h-8 w-auto" />
-          <div className="text-xl font-bold">
-            <span className="text-white">Recursiv</span>
-            <span className="text-cyber-neon">AI</span>
+    <header className="pt-4 pb-4 bg-[#FAF9F5] text-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-7xl font-display font-black">
+            <Link href="/">
+              RecursivAI
+            </Link>
+          </h1>
+          <p className="text-center text-base italic font-serif text-gray-700 mt-1">
+            Who better to keep up with AI than AI itself?
+          </p>
+          <div className="text-s tracking-wider font-medium mt-2">
+            {today.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
           </div>
-        </Link>
-
-        <nav className="hidden md:flex space-x-6">
-          <Link href="/" className="text-white hover:text-cyber-neon">
-            Home
-          </Link>
-          <Link href="/curated" className="text-white hover:text-amber-400">
-            Curated
-          </Link>
-          <Link href="/about" className="text-white hover:text-cyber-pink">
-            About
-          </Link>
-          <Link href="/news" className="text-white hover:text-cyber-neon">
-            News
-          </Link>
-        </nav>
+        </div>
       </div>
     </header>
   );
