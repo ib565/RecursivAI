@@ -125,9 +125,11 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                   <div className="mb-6 flex justify-center">
                     <Link
                       href="/news"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
+                      className="inline-flex items-center gap-3 px-7 py-3 rounded-full bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white font-serif font-bold shadow-lg transition-all duration-300 hover:from-indigo-600 hover:via-indigo-700 hover:to-purple-700 hover:shadow-2xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 group"
+                      aria-label="Skip to the full AI news briefing"
                     >
-                      Check out the latest AI news!
+                      <span className="text-sm sm:text-base">Skip to the full AI newspaper</span>
+                      <span className="text-xl transition-transform duration-300 group-hover:translate-x-1">→</span>
                     </Link>
                   </div>
                   
@@ -169,46 +171,6 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                     </p>
                   </div>
                 </div>
-
-                {/* How Rex Works - Comic Strip Style */}
-                <div className="border-t border-gray-300 pt-6 mb-8">
-                  <h3 className="text-2xl font-serif font-bold mb-2 text-center">📚 Rex&apos;s Daily Routine: Behind the Scenes</h3>
-                  <p className="text-center text-sm font-serif italic text-gray-600 mb-6">A day in the life of your AI curator</p>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="text-center border border-gray-300 p-4 bg-white">
-                      <div className="border-b border-gray-200 pb-3 mb-3">
-                        <div className="text-4xl mb-2">🌅</div>
-                        <div className="text-xs font-serif text-gray-500">5:00 AM</div>
-                      </div>
-                      <h4 className="text-base font-serif font-bold mb-2">Early Bird Gets the Papers</h4>
-                      <p className="text-xs font-serif text-gray-700">Rex starts scanning ArXiv, Google Scholar, and industry blogs while you sleep</p>
-                    </div>
-                    <div className="text-center border border-gray-300 p-4 bg-white">
-                      <div className="border-b border-gray-200 pb-3 mb-3">
-                        <div className="text-4xl mb-2">🧠</div>
-                        <div className="text-xs font-serif text-gray-500">6:00 AM</div>
-                      </div>
-                      <h4 className="text-base font-serif font-bold mb-2">Analysis & Ranking</h4>
-                      <p className="text-xs font-serif text-gray-700">Rex&apos;s AI brain processes everything and ranks by importance and impact</p>
-                    </div>
-                    <div className="text-center border border-gray-300 p-4 bg-white">
-                      <div className="border-b border-gray-200 pb-3 mb-3">
-                        <div className="text-4xl mb-2">✍️</div>
-                        <div className="text-xs font-serif text-gray-500">6:30 AM</div>
-                      </div>
-                      <h4 className="text-base font-serif font-bold mb-2">Translation Magic</h4>
-                      <p className="text-xs font-serif text-gray-700">Complex jargon becomes simple, digestible insights for busy humans</p>
-                    </div>
-                    <div className="text-center border border-gray-300 p-4 bg-white">
-                      <div className="border-b border-gray-200 pb-3 mb-3">
-                        <div className="text-4xl mb-2">📧</div>
-                        <div className="text-xs font-serif text-gray-500">7:00 AM</div>
-                      </div>
-                      <h4 className="text-base font-serif font-bold mb-2">Perfect Timing</h4>
-                      <p className="text-xs font-serif text-gray-700">Your curated AI digest arrives exactly when you need your morning intelligence</p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Rex Character Spotlight */}
@@ -239,27 +201,6 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                 </div>
                 
                 {/* Quick Stats Box */}
-                <div className="">
-                  <h4 className="text-lg font-serif font-bold mb-3 text-center border-b pb-2">Rex&apos;s Daily Stats</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm font-serif">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">1,247</div>
-                      <div className="text-gray-600">Papers Scanned</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">89</div>
-                      <div className="text-gray-600">News Sources</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">12</div>
-                      <div className="text-gray-600">Key Insights</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">220+</div>
-                      <div className="text-gray-600">Happy Readers</div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -304,42 +245,56 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
               ))}
             </div>
 
-            {/* Rex's AI Stock Market Parody */}
+            {/* Daily Routine & Stats */}
             <div className="border-t border-gray-300 pt-6 mb-8">
-              <h3 className="text-2xl font-serif font-bold mb-6 text-center">🎯 Rex&apos;s Hype-o-Meter</h3>
-              <p className="text-center font-serif text-gray-600 mb-6 italic">
-                Rex has a special talent for separating genuine breakthroughs from marketing fluff
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="border border-red-300 p-6 bg-red-50">
-                  <div className="text-center mb-4">
-                    <span className="text-4xl">⚠️</span>
-                    <h4 className="text-xl font-serif font-bold text-red-700">Hype Alert</h4>
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1 border border-gray-200 bg-white p-4">
+                  <h3 className="text-base font-serif font-semibold mb-3 flex items-center gap-2">
+                    <span>📚</span>
+                    <span>Rex&apos;s Daily Routine</span>
+                  </h3>
+                  <div className="flex flex-wrap gap-2 text-xs font-serif text-gray-700">
+                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
+                      <span>🌅</span>
+                      <span>5:00 • Scans top AI feeds</span>
+                    </div>
+                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
+                      <span>🧠</span>
+                      <span>6:00 • Ranks breakthroughs</span>
+                    </div>
+                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
+                      <span>✍️</span>
+                      <span>6:30 • Writes human-first TL;DRs</span>
+                    </div>
+                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
+                      <span>📧</span>
+                      <span>7:00 • Hits your inbox</span>
+                    </div>
                   </div>
-                  <ul className="space-y-2 text-sm font-serif">
-                    <li>• &quot;AGI is here!&quot; announcements (weekly 🙄)</li>
-                    <li>• Another &quot;ChatGPT killer&quot; with 0.1% improvement</li>
-                    <li>• AI will replace all jobs by next Tuesday</li>
-                    <li>• Breakthrough that&apos;s just a minor parameter tweak</li>
-                  </ul>
-                  <p className="text-xs font-serif italic mt-3 text-center text-red-600">
-                    Rex rolls his eyes at these daily 🦕👀
-                  </p>
                 </div>
-                <div className="border border-green-300 p-6 bg-green-50">
-                  <div className="text-center mb-4">
-                    <span className="text-4xl">✅</span>
-                    <h4 className="text-xl font-serif font-bold text-green-700">Real Deal</h4>
+                <div className="flex-1 border border-gray-200 bg-white p-4">
+                  <h4 className="text-base font-serif font-semibold mb-3 flex items-center justify-center gap-2">
+                    <span>📊</span>
+                    <span>Rex&apos;s Quick Stats</span>
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-serif text-gray-700">
+                    <div className="text-center">
+                      <div className="text-xl font-bold">1,247</div>
+                      <div>Papers</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold">89</div>
+                      <div>Sources</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold">12</div>
+                      <div>Insights</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold">220+</div>
+                      <div>Readers</div>
+                    </div>
                   </div>
-                  <ul className="space-y-2 text-sm font-serif">
-                    <li>• Peer-reviewed research with reproducible results</li>
-                    <li>• Major model architecture innovations</li>
-                    <li>• Practical applications solving real problems</li>
-                    <li>• Strategic industry moves that matter</li>
-                  </ul>
-                  <p className="text-xs font-serif italic mt-3 text-center text-green-600">
-                    This gets Rex&apos;s prehistoric heart pumping! 🦕❤️
-                  </p>
                 </div>
               </div>
             </div>
