@@ -39,21 +39,15 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
               <Column style={styles.leftCol} width="200" align="left" valign="top">
                 <Heading as="h3" style={styles.h3}>Latest News</Heading>
                 {sidebarPosts.slice(0, 2).map((post, index) => (
-                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.latestItem}>
-                    <Row>
-                      <Column style={{ width: 96 }}>
-                        <Img
-                          src={post.featured_image_url || getPlaceholderImage(index)}
-                          alt={post.title}
-                          width="96"
-                          height="64"
-                          style={styles.thumb}
-                        />
-                      </Column>
-                      <Column>
-                        <Text style={styles.latestTitle}>{post.title}</Text>
-                      </Column>
-                    </Row>
+                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.featuredLatest}>
+                    <Img
+                      src={post.featured_image_url || getPlaceholderImage(index)}
+                      alt={post.title}
+                      width="172"
+                      height="114"
+                      style={styles.featuredImage}
+                    />
+                    <Text style={styles.latestTitle}>{post.title}</Text>
                   </Link>
                 ))}
                 {sidebarPosts.slice(2).map((post, index) => (
@@ -147,8 +141,10 @@ const styles = {
   leftCol: { paddingRight: 14, borderRight: "1px solid #eee", verticalAlign: "top" },
   centerCol: { padding: "0 16px", borderRight: "1px solid #eee", verticalAlign: "top" },
   rightCol: { paddingLeft: 16, verticalAlign: "top" },
+  featuredLatest: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 12 },
   latestItem: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 8 },
   latestTitle: { fontSize: 12, lineHeight: "16px" },
+  featuredImage: { width: "100%", height: "auto", borderRadius: 4, display: "block", marginBottom: 8 },
   listItem: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 6 },
   listTitle: { fontSize: 12 },
   thumb: { borderRadius: 4, objectFit: "cover" },
