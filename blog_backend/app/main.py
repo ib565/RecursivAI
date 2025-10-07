@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from .database import create_db_and_tables
 from .api.posts_api import router as posts_router
+from .api.newsletter_api import router as newsletter_router
 from .auth import verify_admin
 import logging
 import os
@@ -31,6 +32,7 @@ app = FastAPI(
 )
 
 app.include_router(posts_router)
+app.include_router(newsletter_router)
 
 
 @app.get("/admin/docs", response_class=HTMLResponse)

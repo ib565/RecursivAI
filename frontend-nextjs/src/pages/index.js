@@ -11,11 +11,35 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
   const [error, setError] = useState(null);
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [subscribeError, setSubscribeError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubscribed(true);
-    setTimeout(() => setIsSubscribed(false), 3000);
+    setSubscribeError('');
+    if (!email || !email.includes('@')) {
+      setSubscribeError('Please enter a valid email.');
+      return;
+    }
+    try {
+      setSubmitting(true);
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Subscription failed');
+      }
+      setIsSubscribed(true);
+      setEmail('');
+      setTimeout(() => setIsSubscribed(false), 5000);
+    } catch (err) {
+      setSubscribeError(err.message || 'Subscription failed');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Placeholders for images if a news item lacks one
@@ -108,7 +132,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                   </div>
                   
                   {/* Newsletter Signup */}
-                  <div className="border-2 border-gray-400 p-6 bg-white shadow-lg">
+                  <div id="subscribe" className="border-2 border-gray-400 p-6 bg-white shadow-lg">
                     <div className="flex items-center mb-3">
                       <span className="text-3xl mr-3">🦕</span>
                       <h3 className="text-xl font-serif font-bold">Subscribe to Rex&apos;s Daily AI Digest</h3>
@@ -124,11 +148,17 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                       />
                       <button
                         onClick={handleSubmit}
-                        className="px-6 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
+                        disabled={submitting}
+                        className={`px-6 py-3 bg-black text-white font-serif font-bold transition-colors ${submitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
                       >
-                        Join Rex&apos;s Pack
+                      {submitting ? 'Subscribing…' : "Join Rex's Pack"}
                       </button>
                     </div>
+                    {subscribeError && (
+                      <div className="p-3 bg-red-100 text-red-800 font-serif border border-red-300 mb-2">
+                        {subscribeError}
+                      </div>
+                    )}
                     {isSubscribed && (
                       <div className="p-3 bg-green-100 text-green-800 font-serif border border-green-300">
                         🦕 ✓ Roar-some! Rex is excited to share AI insights with you! Check your email.

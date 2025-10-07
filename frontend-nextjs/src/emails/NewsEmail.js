@@ -19,7 +19,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
       <Head />
       <Preview>Rex&apos;s Daily AI Intelligence Report</Preview>
       <Body style={styles.body}>
-        <Container style={styles.container}>
+        <Container style={styles.container} width="780">
           <Section style={styles.header}>
             <Row>
               <Column>
@@ -35,25 +35,19 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
           </Section>
 
           <Section>
-            <Row>
-              <Column style={styles.leftCol}>
+            <Row style={styles.mainRow}>
+              <Column style={styles.leftCol} width="200" align="left" valign="top">
                 <Heading as="h3" style={styles.h3}>Latest News</Heading>
                 {sidebarPosts.slice(0, 2).map((post, index) => (
-                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.latestItem}>
-                    <Row>
-                      <Column style={{ width: 96 }}>
-                        <Img
-                          src={post.featured_image_url || getPlaceholderImage(index)}
-                          alt={post.title}
-                          width="96"
-                          height="64"
-                          style={styles.thumb}
-                        />
-                      </Column>
-                      <Column>
-                        <Text style={styles.latestTitle}>{post.title}</Text>
-                      </Column>
-                    </Row>
+                  <Link key={post.slug} href={`https://recursivai.vercel.app/post/${post.slug}`} style={styles.featuredLatest}>
+                    <Img
+                      src={post.featured_image_url || getPlaceholderImage(index)}
+                      alt={post.title}
+                      width="172"
+                      height="114"
+                      style={styles.featuredImage}
+                    />
+                    <Text style={styles.latestTitle}>{post.title}</Text>
                   </Link>
                 ))}
                 {sidebarPosts.slice(2).map((post, index) => (
@@ -63,7 +57,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                 ))}
               </Column>
 
-              <Column style={styles.centerCol}>
+              <Column style={styles.centerCol} width="360" align="left" valign="top">
                 {mainPosts.map((post, index) => (
                   <Section key={post.slug} style={styles.mainCard}>
                     <Heading as="h2" style={styles.h2}>{post.title}</Heading>
@@ -84,7 +78,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                 ))}
               </Column>
 
-              <Column style={styles.rightCol}>
+              <Column style={styles.rightCol} width="220" align="left" valign="top">
                 <Section style={styles.card}>
                   <Heading as="h3" style={styles.h3}>AI 101: RAG</Heading>
                   <Text style={styles.small}><b>RAG = AI + Library Pass + Brain.</b></Text>
@@ -133,6 +127,7 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
 const styles = {
   body: { backgroundColor: "#FAF9F5", color: "#111", fontFamily: 'Georgia, "Times New Roman", serif' },
   container: { width: "100%", maxWidth: 800, margin: "0 auto", backgroundColor: "#fff", padding: 16 },
+  mainRow: { width: "100%", maxWidth: 780, margin: "0 auto", tableLayout: "fixed" },
   header: { paddingBottom: 8 },
   logo: { fontSize: 18, fontWeight: 700 },
   date: { fontSize: 12, color: "#666" },
@@ -143,11 +138,13 @@ const styles = {
   h3Center: { fontSize: 18, textAlign: "center", marginBottom: 8 },
   h4: { fontSize: 14, marginBottom: 8 },
   subtle: { fontSize: 12, color: "#666" },
-  leftCol: { paddingRight: 12, borderRight: "1px solid #eee", width: "25%" },
-  centerCol: { padding: "0 12px", borderRight: "1px solid #eee", width: "50%" },
-  rightCol: { paddingLeft: 12, width: "25%" },
+  leftCol: { paddingRight: 14, borderRight: "1px solid #eee", verticalAlign: "top" },
+  centerCol: { padding: "0 16px", borderRight: "1px solid #eee", verticalAlign: "top" },
+  rightCol: { paddingLeft: 16, verticalAlign: "top" },
+  featuredLatest: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 12 },
   latestItem: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 8 },
   latestTitle: { fontSize: 12, lineHeight: "16px" },
+  featuredImage: { width: "100%", height: "auto", borderRadius: 4, display: "block", marginBottom: 8 },
   listItem: { display: "block", textDecoration: "none", color: "inherit", marginBottom: 6 },
   listTitle: { fontSize: 12 },
   thumb: { borderRadius: 4, objectFit: "cover" },
