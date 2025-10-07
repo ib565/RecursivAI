@@ -11,30 +11,27 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Valid email is required' });
     }
 
-    const apiKey = process.env.BEEHIIV_API_KEY;
-    const publicationId = process.env.BEEHIIV_PUBLICATION_ID;
+    const apiKey = process.env.BUTTONDOWN_API_KEY;
 
-    if (!apiKey || !publicationId) {
-      return res.status(500).json({ error: 'Beehiiv configuration missing' });
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Buttondown configuration missing' });
     }
 
-    const endpoint = `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions`;
+    const baseUrl = process.env.BUTTONDOWN_BASE_URL?.replace(/\/$/, '') || 'https://api.buttondown.com/v1';
+    const endpoint = `${baseUrl}/subscribers`;
 
     const payload = {
-      email,
-      reactivate_existing: true,
-      send_welcome_email: true,
+      email_address: email,
+      type: 'regular',
       utm_source: 'website',
-      user_agent: req.headers['user-agent'] || undefined
+      ip_address: req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || undefined
     };
 
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // Beehiiv typically uses Bearer token auth; include X-Api-Key for broader compatibility
-        'Authorization': `Bearer ${apiKey}`,
-        'X-Api-Key': apiKey
+        'Authorization': `Token ${apiKey}`
       },
       body: JSON.stringify(payload)
     });
@@ -42,10 +39,11 @@ export default async function handler(req, res) {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: data?.message || 'Subscription failed' });
+      const errorMessage = data?.error || data?.detail || 'Subscription failed';
+      return res.status(response.status).json({ error: errorMessage });
     }
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, subscriber: data });
   } catch (error) {
     console.error('subscribe error', error);
     return res.status(500).json({ error: 'Internal Server Error' });

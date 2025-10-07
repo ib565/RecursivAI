@@ -9,11 +9,10 @@ import requests
 logger = logging.getLogger(__name__)
 
 NEWSLETTER_HTML_URL = os.getenv("NEWSLETTER_HTML_URL")
-BEEHIIV_API_KEY = os.getenv("BEEHIIV_API_KEY")
-BEEHIIV_PUBLICATION_ID = os.getenv("BEEHIIV_PUBLICATION_ID")
-BEEHIIV_BASE_URL = os.getenv("BEEHIIV_BASE_URL", "https://api.beehiiv.com/v2").rstrip(
-    "/"
-)
+BUTTONDOWN_API_KEY = os.getenv("BUTTONDOWN_API_KEY")
+BUTTONDOWN_BASE_URL = os.getenv(
+    "BUTTONDOWN_BASE_URL", "https://api.buttondown.com/v1"
+).rstrip("/")
 
 
 def _resolve_newsletter_html_url() -> str:
@@ -43,47 +42,89 @@ def _default_newsletter_title(now: Optional[datetime] = None) -> str:
     return f"RecursivAI's Daily AI Intelligence — {now.strftime('%b %d, %Y')}"
 
 
-def post_newsletter_to_beehiiv(
+def post_newsletter_to_buttondown(
     *,
     html_content: Optional[str] = None,
     title: Optional[str] = None,
     subtitle: Optional[str] = None,
     send: bool = False,
+    recipients: Optional[list[str]] = None,
+    subscriber_ids: Optional[list[str]] = None,
     timeout_seconds: int = 30,
 ) -> Optional[Dict[str, Any]]:
-    """Create a Beehiiv post using rendered newsletter HTML and optionally send it."""
-    if not BEEHIIV_API_KEY or not BEEHIIV_PUBLICATION_ID:
-        logger.error(
-            "Missing BEEHIIV_API_KEY or BEEHIIV_PUBLICATION_ID; cannot post to Beehiiv"
-        )
+    """Create a Buttondown email using rendered newsletter HTML and optionally send it."""
+
+    if not BUTTONDOWN_API_KEY:
+        logger.error("Missing BUTTONDOWN_API_KEY; cannot create Buttondown email")
         return None
 
     html = html_content if html_content is not None else fetch_newsletter_html()
     if not html:
-        logger.error("Newsletter HTML content unavailable; aborting Beehiiv post")
+        logger.error("Newsletter HTML content unavailable; aborting Buttondown email")
         return None
 
     payload: Dict[str, Any] = {
-        "title": title or _default_newsletter_title(),
-        "subtitle": subtitle or "",
-        "content": html,
-        "status": "confirmed" if send else "draft",
+        "subject": title or _default_newsletter_title(),
+        "body": html,
     }
+    if subtitle:
+        payload["description"] = subtitle
 
     headers = {
-        "Authorization": f"Bearer {BEEHIIV_API_KEY}",
+        "Authorization": f"Token {BUTTONDOWN_API_KEY}",
         "Content-Type": "application/json",
     }
 
-    url = f"{BEEHIIV_BASE_URL}/publications/{BEEHIIV_PUBLICATION_ID}/posts"
+    create_url = f"{BUTTONDOWN_BASE_URL}/emails"
     try:
         resp = requests.post(
-            url, headers=headers, json=payload, timeout=timeout_seconds
+            create_url, headers=headers, json=payload, timeout=timeout_seconds
         )
         if resp.status_code >= 400:
-            logger.error("Beehiiv API error %s: %s", resp.status_code, resp.text[:500])
+            logger.error(
+                "Buttondown email creation error %s: %s",
+                resp.status_code,
+                resp.text[:500],
+            )
         resp.raise_for_status()
-        return resp.json()
+        email_data = resp.json()
     except requests.exceptions.RequestException as e:
-        logger.error("Error creating Beehiiv post: %s", e)
+        logger.error("Error creating Buttondown email: %s", e)
         return None
+
+    result: Dict[str, Any] = {"email": email_data}
+
+    if send:
+        email_id = email_data.get("id")
+        if not email_id:
+            logger.error("Missing email id from Buttondown response; cannot send draft")
+            return result
+
+        send_payload: Dict[str, Any] = {}
+        if recipients:
+            send_payload["recipients"] = recipients
+        if subscriber_ids:
+            send_payload["subscribers"] = subscriber_ids
+
+        send_url = f"{BUTTONDOWN_BASE_URL}/emails/{email_id}/send-draft"
+        try:
+            resp = requests.post(
+                send_url,
+                headers=headers,
+                json=send_payload if send_payload else {},
+                timeout=timeout_seconds,
+            )
+            if resp.status_code >= 400:
+                logger.error(
+                    "Buttondown send-draft error %s: %s",
+                    resp.status_code,
+                    resp.text[:500],
+                )
+            resp.raise_for_status()
+            # Endpoint returns an empty body on success; capture if present
+            result["send_response"] = resp.json() if resp.content else {}
+        except requests.exceptions.RequestException as e:
+            logger.error("Error sending Buttondown draft: %s", e)
+            result["send_error"] = str(e)
+
+    return result
