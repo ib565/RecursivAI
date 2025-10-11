@@ -17,7 +17,9 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 async def _process_single_article(article: dict) -> ProcessedArticle:
     """Helper function to process a single article into a newspaper-style summary with headline, subheading, and content."""
     system_prompt = newspaper_headline_prompt
-    logger.info(f"Generating summary, headline, and subheading for: {article['title'][:50]}...")
+    logger.info(
+        f"Generating summary, headline, and subheading for: {article['title'][:50]}..."
+    )
 
     article_text = f"Article:\n"
     article_text += f"Title: {article['title']}\n"
@@ -40,11 +42,14 @@ async def _process_single_article(article: dict) -> ProcessedArticle:
         logger.info(
             f"Headline for {article['title'][:50]}...: {result.headline} - {result.subheading}"
         )
+        if result.rex_take:
+            logger.info(f"Rex take for {article['title'][:50]}...: {result.rex_take}")
         return ProcessedArticle(
             original_article=article,
             headline=result.headline,
             subheading=result.subheading,
             content=result.content,
+            rex_take=result.rex_take,
         )
 
     except Exception as e:
@@ -55,6 +60,7 @@ async def _process_single_article(article: dict) -> ProcessedArticle:
             headline=article["title"],
             subheading="Unavailable due to an error.",
             content="Unavailable due to an error.",
+            rex_take=None,
         )
 
 

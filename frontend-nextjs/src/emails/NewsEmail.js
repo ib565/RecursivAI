@@ -10,9 +10,10 @@ const placeholderImages = [
 
 const getPlaceholderImage = (index) => placeholderImages[index % placeholderImages.length];
 
-export default function NewsEmail({ posts = [], generatedAt = new Date().toISOString() }) {
+export default function NewsEmail({ posts = [], ai101 = null, generatedAt = new Date().toISOString() }) {
   const mainPosts = posts.slice(0, 2);
   const sidebarPosts = posts.slice(2, 12);
+  const spotlightPost = posts[4] || null;
 
   return (
     <Html>
@@ -73,31 +74,67 @@ export default function NewsEmail({ posts = [], generatedAt = new Date().toISOSt
                       style={styles.cta}
                       href={`https://recursivai.vercel.app/post/${post.slug}`}
                     >Read More →</Button>
-                    <Text style={styles.rexTake}>🦕 Rex&apos;s take: This is a significant development.</Text>
+                    {post.ai_metadata?.rex_take ? (
+                      <Text style={styles.rexTake}>🦕 Rex&apos;s take: {post.ai_metadata.rex_take}</Text>
+                    ) : (
+                      <Text style={styles.rexTake}>🦕 Rex&apos;s take: Staying sharp on the latest AI move.</Text>
+                    )}
                   </Section>
                 ))}
               </Column>
 
               <Column style={styles.rightCol} width="220" align="left" valign="top">
                 <Section style={styles.card}>
-                  <Heading as="h3" style={styles.h3}>AI 101: RAG</Heading>
-                  <Text style={styles.small}><b>RAG = AI + Library Pass + Brain.</b></Text>
-                  <Text style={styles.small}>It retrieves real info (the &quot;R&quot;) and then generates a smart answer (the &quot;G&quot;).</Text>
-                </Section>
-
-                <Section style={styles.card}>
-                  <Heading as="h3" style={styles.h3}>Rexommendation</Heading>
-                  <Text style={styles.small}><b>Try Windsurf!</b> The new AI coding tool that caught Google&#39;s attention.</Text>
-                </Section>
-
-                <Section style={styles.card}>
-                  <Heading as="h3" style={styles.h4}>Corporate Cringe of the Week</Heading>
+                  <Heading as="h3" style={styles.h3}>{ai101?.title || "AI 101"}</Heading>
+                  {ai101?.featured_image_url && (
+                    <Img
+                      src={ai101.featured_image_url}
+                      alt={ai101.title}
+                      width="200"
+                      height="200"
+                      style={styles.aiImage}
+                    />
+                  )}
+                  {ai101?.summary ? (
+                    <Text style={styles.small}><b>{ai101.summary}</b></Text>
+                  ) : (
+                    <Text style={styles.small}><b>Catch the latest AI 101 explainer.</b></Text>
+                  )}
                   <Text style={styles.small}>
-                    &quot;Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic value
-                    propositions while leveraging blockchain-enabled quantum machine learning...&quot;
+                    {ai101?.content?.body?.slice(0, 200) || "Rex keeps the fundamentals fresh with quick explainers."}
+                    {ai101?.content?.body && ai101.content.body.length > 200 ? "…" : ""}
                   </Text>
-                  <Text style={styles.muted}><i>🦕 Rex says: Just tell me what it actually does!</i></Text>
+                  {ai101 ? (
+                    <Button
+                      style={styles.ctaSecondary}
+                      href={`https://recursivai.vercel.app/post/${ai101.slug}`}
+                    >Read AI 101 →</Button>
+                  ) : null}
                 </Section>
+
+                {spotlightPost && (
+                  <Section style={styles.card}>
+                    <Heading as="h3" style={styles.h3}>News Spotlight</Heading>
+                    <Img
+                      src={spotlightPost.featured_image_url || getPlaceholderImage(4)}
+                      alt={spotlightPost.title}
+                      width="200"
+                      height="112"
+                      style={styles.featuredImage}
+                    />
+                    <Text style={styles.small}><b>{spotlightPost.title}</b></Text>
+                    {spotlightPost.summary && (
+                      <Text style={styles.small}>{spotlightPost.summary}</Text>
+                    )}
+                    {spotlightPost.ai_metadata?.rex_take && (
+                      <Text style={styles.muted}><i>🦕 Rex says: {spotlightPost.ai_metadata.rex_take}</i></Text>
+                    )}
+                    <Button
+                      style={styles.ctaSecondary}
+                      href={`https://recursivai.vercel.app/post/${spotlightPost.slug}`}
+                    >Read Spotlight →</Button>
+                  </Section>
+                )}
               </Column>
             </Row>
           </Section>
@@ -159,9 +196,11 @@ const styles = {
   mutedCenter: { textAlign: "center", fontSize: 12, color: "#666", marginTop: 8 },
   footerCard: { border: "2px double #000", padding: 16, textAlign: "center", marginTop: 16 },
   cta: { backgroundColor: "#facc15", color: "#111", padding: "10px 14px", borderRadius: 6, textDecoration: "none", display: "inline-block", fontWeight: 700 },
+  ctaSecondary: { backgroundColor: "#fff", color: "#111", padding: "8px 12px", borderRadius: 6, textDecoration: "none", display: "inline-block", fontWeight: 600, border: "1px solid #ddd", marginTop: 8 },
   ctaDark: { backgroundColor: "#000", color: "#fff", padding: "12px 18px", borderRadius: 6, textDecoration: "none", display: "inline-block", fontWeight: 700 },
   footer: { marginTop: 16 },
-  link: { color: "#2563eb", textDecoration: "underline" }
+  link: { color: "#2563eb", textDecoration: "underline" },
+  aiImage: { width: "100%", height: "auto", borderRadius: 6, marginBottom: 8 },
 };
 
 

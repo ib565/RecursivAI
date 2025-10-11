@@ -291,7 +291,7 @@ async def _call_gemini_api(client, all_articles_text, system_prompt):
     """Make the actual API call to Gemini with retry logic for transient failures."""
     logger.debug("LLM_FILTER: Calling Gemini API")
     response = await client.aio.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-pro",
         contents=[all_articles_text],
         config=types.GenerateContentConfig(
             system_instruction=system_prompt,

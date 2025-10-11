@@ -137,3 +137,17 @@ export const getNewsPosts = (params = {}) => {
 
   return fetchFromAPI(endpoint);
 };
+
+export const getAi101Posts = (params = {}) => {
+  const queryParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryParams.append(key, value);
+    }
+  });
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString ? `/posts/ai101?${queryString}` : "/posts/ai101";
+
+  return fetchFromAPI(endpoint);
+};
