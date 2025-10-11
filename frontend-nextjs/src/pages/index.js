@@ -53,22 +53,47 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
 
   const hotNewsPosts = Array.isArray(initialNewsPosts) ? initialNewsPosts.slice(0, 6) : [];
 
+  const valueProps = [
+    {
+      icon: "⏱️",
+      title: "3-minute brief",
+      description: "Digest breakthroughs, launches, and policy moves fast enough to share before stand-up."
+    },
+    {
+      icon: "🧭",
+      title: "Actionable framing",
+      description: "Each item explains why it matters for engineering, product, and leadership decisions."
+    },
+    {
+      icon: "🤖",
+      title: "Autonomous newsroom",
+      description: "RecursivAI hunts, scores, and writes—Rex keeps the tone sharp and human."
+    }
+  ];
+
+  const rexEditorialPillars = [
+    "Signal over spectacle",
+    "Context before commentary",
+    "Always cite the source",
+    "One fun Rex aside per issue"
+  ];
+
   // Rex testimonials
   const rexTestimonials = [
     {
-      quote: "I used to spend hours reading research papers. Now Rex delivers the key insights in minutes!",
+      quote: "Every morning I get the three AI shifts that matter, plus the context for what to do next.",
       author: "Dr. Sarah Chen",
       role: "AI Research Lead, TechCorp",
       rex: "🦕"
     },
     {
-      quote: "RecursivAI keeps our team ahead of the curve. It's like having an AI research assistant.",
+      quote: "RecursivAI replaced an hour of internal briefing prep. The signal-to-noise ratio is unbeatable.",
       author: "Marcus Rodriguez",
       role: "CTO, StartupAI",
       rex: "🦕"
     },
     {
-      quote: "The daily summaries are perfect for busy executives who need to stay informed on AI.",
+      quote: "It's the briefing I forward to leadership. No hype, just implications for the roadmap.",
       author: "Jennifer Park",
       role: "VP Strategy, Fortune 500",
       rex: "🦕"
@@ -105,46 +130,67 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
             
             {/* Hero Section - Newsletter-style */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
               {/* Main Feature */}
-              <div className="md:col-span-7 md:border-r border-gray-300 md:pr-6">
-                <div className="mb-6">
-                  <h2 className="text-4xl font-serif font-bold mb-4 leading-tight">
-                    🦕 Get Smarter About AI Every Day with Rex
-                  </h2>
-                  <p className="text-lg mb-4 news-content dropcap font-serif">
-                    Meet Rex, your friendly neighborhood AI curator! This tech-savvy dinosaur has evolved beyond extinction to become the ultimate AI news hunter. Rex scans thousands of research papers, industry reports, and breakthrough announcements daily, so you don&apos;t have to.
+              <div className="lg:col-span-7 lg:border-r border-gray-300 lg:pr-10">
+                <div className="mb-10">
+                  <span className="inline-flex items-center gap-2 border border-black px-3 py-1 text-xs uppercase tracking-[0.2em] font-sans font-semibold mb-4">
+                    RecursivAI Daily Intelligence
+                  </span>
+                  <h1 className="text-4xl sm:text-5xl font-serif font-bold mb-4 leading-tight">
+                    The fastest way to brief your team on what <span className="bg-yellow-200 px-1">actually</span> changed in AI today.
+                  </h1>
+                  <p className="text-lg mb-5 font-serif text-gray-800">
+                    RecursivAI&apos;s autonomous newsroom pulls signal from the noise. Rex keeps it sharp—no hype, no doomscrolling, just the shifts in AI that impact product, engineering, and strategy.
                   </p>
-                  <div className="mb-6">
-                    <p className="text-base font-serif mb-4">
-                      <strong>Join 220+ professionals</strong> who wake up to Rex&apos;s carefully curated AI insights. From groundbreaking research to industry shake-ups, Rex delivers only what matters most to your inbox.
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+                    {valueProps.map((item) => (
+                      <div key={item.title} className="border border-gray-300 bg-white p-4 flex flex-col gap-2 hover:shadow-sm transition-shadow duration-200">
+                        <span className="text-2xl" aria-hidden="true">{item.icon}</span>
+                        <h3 className="text-sm font-semibold uppercase tracking-wide font-sans text-gray-900">{item.title}</h3>
+                        <p className="text-sm font-serif text-gray-700 leading-relaxed">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3, 4].map((avatar) => (
+                        <div key={avatar} className="w-10 h-10 rounded-full border-2 border-[#FAF9F5] bg-gray-300" />
+                      ))}
+                    </div>
+                    <p className="text-sm text-gray-700 font-serif">
+                      Trusted by <strong>220+ product leaders, engineers, and investors</strong> who need the facts before stand-up.
                     </p>
                   </div>
 
                   {/* Quick News CTA for non-subscribers */}
-                  <div className="mb-6 flex justify-center">
+                  <div className="mb-8">
                     <Link
                       href="/news"
-                      className="inline-flex items-center gap-3 px-7 py-3 rounded-full bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white font-serif font-bold shadow-lg transition-all duration-300 hover:from-indigo-600 hover:via-indigo-700 hover:to-purple-700 hover:shadow-2xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 group"
+                      className="inline-flex items-center gap-3 px-7 py-3 rounded-full border border-[#2F2D2A] text-[#2F2D2A] font-serif font-bold shadow-[4px_4px_0px_#2F2D2A] transition-all duration-300 hover:bg-[#2F2D2A] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F5B400] group"
                       aria-label="Skip to the full AI news briefing"
                     >
-                      <span className="text-sm sm:text-base">Skip to the full AI newspaper</span>
-                      <span className="text-xl transition-transform duration-300 group-hover:translate-x-1">→</span>
+                      <span className="text-sm sm:text-base">Skip straight to today&apos;s brief</span>
+                      <span className="text-xl transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">→</span>
                     </Link>
                   </div>
-                  
+
                   {/* Newsletter Signup */}
                   <div id="subscribe" className="border-2 border-gray-400 p-6 bg-white shadow-lg">
                     <div className="flex items-center mb-3">
-                      <span className="text-3xl mr-3">🦕</span>
-                      <h3 className="text-xl font-serif font-bold">Subscribe to Rex&apos;s Daily AI Digest</h3>
+                      <span className="text-3xl mr-3" role="img" aria-label="Rex">🦕</span>
+                      <h2 className="text-xl font-serif font-bold">Get Rex&apos;s daily AI intelligence briefing</h2>
                     </div>
+                    <p className="text-sm text-gray-700 font-serif mb-4">
+                      Delivered before 7 AM ET. Three stories, one Rex aside, links to primary sources.
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-3 mb-3">
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email address"
+                        placeholder="you@company.com"
                         className="flex-1 px-4 py-3 border-2 border-gray-300 text-base font-serif"
                         required
                       />
@@ -153,7 +199,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                         disabled={submitting}
                         className={`px-6 py-3 bg-black text-white font-serif font-bold transition-colors ${submitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
                       >
-                      {submitting ? 'Subscribing…' : "Join Rex's Pack"}
+                        {submitting ? 'Subscribing…' : 'Join the briefing'}
                       </button>
                     </div>
                     {subscribeError && (
@@ -163,61 +209,74 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                     )}
                     {isSubscribed && (
                       <div className="p-3 bg-green-100 text-green-800 font-serif border border-green-300">
-                        🦕 ✓ Roar-some! Rex is excited to share AI insights with you! Check your email.
+                        🦕 ✓ Rex is on it. Check your inbox in the next few minutes.
                       </div>
                     )}
-                    <p className="text-sm text-gray-600 font-serif">
-                      Free forever • Daily at 7 AM • Unsubscribe anytime • No spam, Rex promises! 🦕
+                    <p className="text-xs text-gray-600 font-serif">
+                      Free forever • Daily before stand-up • Unsubscribe anytime
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Rex Character Spotlight */}
-              <div className="md:col-span-5">
-                <div className=" mb-6">
-                  <div className="text-center mb-4">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">Character Spotlight</h3>
-                  </div>
-                  <div className="text-center mb-4">
-                    <Image src="/images/rex.png" alt="Rex the AI Curator" width={300} height={300} className="mx-auto mb-4" />
-                    <h3 className="text-2xl font-serif font-bold mb-2">Rex the AI Curator</h3>
-                    <p className="text-sm font-serif italic text-gray-600 mb-4">
-                      &quot;The most evolved dinosaur in tech&quot;
+              <div className="lg:col-span-5">
+                <div className="border border-gray-300 bg-white p-6 flex flex-col gap-6">
+                  <div className="text-center">
+                    <span className="inline-block text-xs font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Meet Rex</span>
+                    <Image src="/images/rex.png" alt="Rex the AI Curator" width={260} height={260} className="mx-auto" />
+                    <h3 className="text-2xl font-serif font-bold mt-3">Editor-in-Chief, RecursivAI</h3>
+                    <p className="text-sm font-serif italic text-gray-600">
+                      "I&apos;ll keep one eye on the models and one eye on the market."
                     </p>
                   </div>
-                  <div className="text-left space-y-3 text-sm font-serif">
-                    <p><strong>Species:</strong> Technosaurus Rex</p>
-                    <p><strong>Habitat:</strong> The vast digital research landscape</p>
-                    <p><strong>Diet:</strong> Fresh AI papers, breaking news, and industry insights</p>
-                    <p><strong>Special Skills:</strong> Speed-reading 10,000 articles per minute, detecting AI hype vs. reality</p>
-                    <p><strong>Mission:</strong> Making AI accessible to humans, one newsletter at a time</p>
+                  <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm font-serif text-gray-700">
+                    <div>
+                      <strong>Mission</strong>
+                      <p>Surface the 3 moves in AI leaders must see today.</p>
+                    </div>
+                    <div>
+                      <strong>Workflow</strong>
+                      <p>Autonomous research, human-caliber synthesis, daily delivery.</p>
+                    </div>
+                    <div>
+                      <strong>Guardrails</strong>
+                      <p>Source-first, jargon-light, no speculation without evidence.</p>
+                    </div>
+                    <div>
+                      <strong>Signature</strong>
+                      <p>One Rex riff per issue to keep it memorable.</p>
+                    </div>
                   </div>
-                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200">
-                    <p className="text-sm font-serif italic text-center">
-                      💡 <strong>Fun Fact:</strong> Rex processes information 1000x faster than humans but still takes coffee breaks! ☕
-                    </p>
+                  <div className="border border-black p-4 bg-[#FFF6D8]">
+                    <h4 className="text-xs uppercase tracking-[0.2em] font-semibold text-gray-800 mb-2">Rex&apos;s Editorial Pillars</h4>
+                    <ul className="space-y-1 text-sm font-serif">
+                      {rexEditorialPillars.map((pillar) => (
+                        <li key={pillar} className="flex items-start gap-2">
+                          <span className="text-yellow-600" aria-hidden="true">▣</span>
+                          <span>{pillar}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-                
-                {/* Quick Stats Box */}
               </div>
             </div>
 
             {/* Section Divider */}
             <div className="border-t-2 border-double border-gray-400 mb-6 pt-1">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">🔥 What&apos;s Hot in AI Today</h4>
+              <h2 className="text-lg font-serif font-bold uppercase tracking-wider text-gray-700">Today&apos;s front page</h2>
             </div>
 
             {/* Hot News Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {hotNewsPosts.map((post, index) => (
                 <Link
                   href={`/post/${post.slug}`}
                   key={post.slug}
-                  className={`group pb-4 md:px-3 ${index % 3 !== 0 ? 'md:border-l md:border-gray-300' : ''}`}
+                  className="group border border-gray-300 bg-white p-5 flex flex-col gap-3 hover:border-yellow-300 hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="aspect-[16/9] mb-3 overflow-hidden relative bg-white border border-gray-300 rounded">
+                  <div className="aspect-[16/10] overflow-hidden relative bg-white border border-gray-200">
                     {post.featured_image_url ? (
                       <Image
                         src={post.featured_image_url}
@@ -234,13 +293,19 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                       />
                     )}
                   </div>
-                  <h3 className="text-lg font-serif font-bold mb-2 leading-tight group-hover:underline">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm mb-2 news-content font-serif">{post.summary}</p>
-                  <p className="text-xs text-gray-500 italic font-serif">
-                    {post.created_at ? formatDate(post.created_at) : ''} • Analyzed by 🦕
-                  </p>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-lg font-serif font-bold leading-tight group-hover:text-gray-800 transition-colors">
+                      {post.title}
+                    </h3>
+                    {post.summary && (
+                      <p className="text-sm text-gray-700 font-serif leading-relaxed line-clamp-3">
+                        {post.summary}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 italic font-serif">
+                      {post.created_at ? formatDate(post.created_at) : ''} • Rex verified
+                    </p>
+                  </div>
                 </Link>
               ))}
             </div>

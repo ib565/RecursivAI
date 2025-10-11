@@ -328,9 +328,6 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                               {post.summary}
                             </p>
                           )}
-                          <div className="flex items-center justify-end">
-                            <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">Read More →</span>
-                          </div>
                         </Link>
                         {post.ai_metadata?.rex_take && (
                           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300 transition-colors duration-300 rounded-lg">
