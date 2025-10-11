@@ -34,6 +34,16 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
     return ai101Posts[0];
   }, [ai101Posts]);
 
+  const spotlightPost = useMemo(() => {
+    if (!posts || posts.length <= 4) return null;
+    return posts[4];
+  }, [posts]);
+
+  const sidebarTailPosts = useMemo(() => {
+    if (!posts || posts.length <= 5) return [];
+    return posts.slice(5, 12);
+  }, [posts]);
+
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -282,7 +292,7 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                       ))}
                     </div>
                     <div className="space-y-3 mt-6">
-                      {posts.slice(4, 12).map((post, index) => (
+                      {sidebarTailPosts.map((post, index) => (
                         <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
                           <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">
                             <span className="font-bold text-yellow-600 group-hover:text-yellow-700">{index + 1}.</span> {post.title}
@@ -365,7 +375,7 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                         )}
                       </div>
                       {latestAi101.summary && (
-                        <p className="text-sm font-serif text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">
+                        <p className="text-sm font-serif text-gray-800 group-hover:text-gray-900 transition-colors">
                           {latestAi101.summary}
                         </p>
                       )}
@@ -376,19 +386,28 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                     </div>
                   )}
 
-                  {posts.length >= 5 && (
+                  <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group">
+                    <h3 className="text-lg font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">Rexommendation</h3>
+                    <p className="text-sm font-serif font-bold mb-1 group-hover:text-gray-800 transition-colors">Try Windsurf!</p>
+                    <p className="text-xs font-serif text-gray-700 group-hover:text-gray-800 transition-colors">
+                      The new AI coding tool that caught Rex&apos;s attention.
+                    </p>
+                    <p className="text-xs font-serif text-gray-500 mt-2">More recommendations coming soon.</p>
+                  </div>
+
+                  {spotlightPost && (
                     <Link
-                      href={`/post/${posts[4].slug}`}
+                      href={`/post/${spotlightPost.slug}`}
                       className="block border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group"
                     >
                       <h3 className="text-base font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">
                         News Spotlight
                       </h3>
                       <div className="aspect-video mb-3 overflow-hidden relative rounded-lg border border-gray-300 bg-yellow-100">
-                        {posts[4].featured_image_url ? (
+                        {spotlightPost.featured_image_url ? (
                           <Image
-                            src={posts[4].featured_image_url}
-                            alt={posts[4].title}
+                            src={spotlightPost.featured_image_url}
+                            alt={spotlightPost.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -399,16 +418,16 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                         )}
                       </div>
                       <p className="text-sm font-serif font-bold mb-2 group-hover:text-gray-800 transition-colors">
-                        {posts[4].title}
+                        {spotlightPost.title}
                       </p>
-                      {posts[4].summary && (
+                      {spotlightPost.summary && (
                         <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2 group-hover:text-gray-800 transition-colors">
-                          {posts[4].summary}
+                          {spotlightPost.summary}
                         </p>
                       )}
-                      {posts[4].ai_metadata?.rex_take && (
+                      {spotlightPost.ai_metadata?.rex_take && (
                         <p className="text-xs font-serif italic text-blue-700 group-hover:text-blue-800 transition-colors">
-                          🦕 Rex&apos;s Take: {posts[4].ai_metadata.rex_take}
+                          🦕 Rex&apos;s Take: {spotlightPost.ai_metadata.rex_take}
                         </p>
                       )}
                     </Link>
