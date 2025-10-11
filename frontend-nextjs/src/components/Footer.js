@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="text-2xl mb-2">🦕</div>
           <p className="font-serif">Rex approves this message</p>
         </div>
-        <p className="text-center">© {currentYear} RecursivAI Times. All Rights Reserved. Rex ™ is a registered mascot.</p>
+        <p className="text-center">© {currentYear} RecursivAI. All Rights Reserved. Rex ™ is a registered mascot.</p>
       </div>
     </footer>
   );

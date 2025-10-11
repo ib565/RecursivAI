@@ -39,18 +39,48 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
     return posts[4];
   }, [posts]);
 
-  const sidebarTailPosts = useMemo(() => {
-    if (!posts || posts.length <= 5) return [];
-    return posts.slice(5, 12);
+  const featuredLatestPost = useMemo(() => {
+    if (!posts || posts.length <= 2) return null;
+    return posts[2];
+  }, [posts]);
+
+  const latestNewsPosts = useMemo(() => {
+    if (!posts || posts.length <= 3) return [];
+    return posts.slice(3, 12);
   }, [posts]);
 
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [subscribeError, setSubscribeError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubscribed(true);
-    setTimeout(() => setIsSubscribed(false), 3000);
+    setSubscribeError('');
+    if (!email || !email.includes('@')) {
+      setSubscribeError('Please enter a valid email.');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'Subscription failed');
+      }
+      setIsSubscribed(true);
+      setEmail('');
+      setTimeout(() => setIsSubscribed(false), 5000);
+    } catch (err) {
+      setSubscribeError(err.message || 'Subscription failed');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (error) {
@@ -273,33 +303,56 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                   {/* Left Column - Latest News List */}
                   <div className="order-2 lg:order-none lg:col-span-3 lg:border-r lg:border-gray-300 lg:pr-4">
                     <h3 className="text-lg font-serif font-bold mb-4 border-b border-gray-300 pb-2">Latest News:</h3>
-                                         <div className="space-y-3">
-                      {posts.slice(2, 4).map((post, index) => (
-                        <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
-                          <div className="flex items-start gap-3">
-                            <div className="w-24 h-16 relative flex-shrink-0 overflow-hidden rounded">
-                              {post.featured_image_url ? (
-                                <Image src={post.featured_image_url} alt={post.title} fill className="object-cover" />
-                              ) : (
-                                <Image src={getPlaceholderImage(index)} alt="Image placeholder" fill className="object-cover grayscale" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">{post.title}</div>
-                            </div>
-                          </div>
+                    <div className="space-y-2">
+                      {latestNewsPosts.map((post) => (
+                        <Link
+                          key={post.slug}
+                          href={`/post/${post.slug}`}
+                          className="group relative flex gap-2 pl-5 text-sm font-serif leading-snug text-gray-700 hover:text-gray-900 transition-colors"
+                        >
+                          <span className="absolute left-0 top-1.5 h-1.5 w-1.5 rounded-full bg-yellow-600"></span>
+                          <span>{post.title}</span>
                         </Link>
                       ))}
                     </div>
-                    <div className="space-y-3 mt-6">
-                      {sidebarTailPosts.map((post, index) => (
-                        <Link key={post.slug} href={`/post/${post.slug}`} className="group block hover:bg-yellow-50 hover:shadow-md transition-all duration-300 p-3 rounded-lg border border-transparent hover:border-yellow-200">
-                          <div className="text-sm font-serif group-hover:text-gray-800 transition-colors">
-                            <span className="font-bold text-yellow-600 group-hover:text-yellow-700">{index + 1}.</span> {post.title}
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+
+                    {featuredLatestPost && (
+                      <Link
+                        href={`/post/${featuredLatestPost.slug}`}
+                        className="mt-6 block border border-gray-300 bg-white p-4 rounded-lg hover:shadow-lg hover:border-yellow-300 transition-all duration-300 group"
+                      >
+                        <div className="aspect-video mb-3 overflow-hidden relative rounded-md border border-gray-200">
+                          {featuredLatestPost.featured_image_url ? (
+                            <Image
+                              src={featuredLatestPost.featured_image_url}
+                              alt={featuredLatestPost.title}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          ) : (
+                            <Image
+                              src={getPlaceholderImage(2)}
+                              alt="News highlight"
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <h4 className="text-base font-serif font-bold mb-2 group-hover:text-gray-800 transition-colors">
+                          {featuredLatestPost.title}
+                        </h4>
+                        {featuredLatestPost.summary && (
+                          <p className="text-xs font-serif text-gray-600 leading-relaxed line-clamp-4">
+                            {featuredLatestPost.summary}
+                          </p>
+                        )}
+                    {featuredLatestPost.ai_metadata?.rex_take && (
+                      <p className="mt-3 text-xs font-serif italic text-blue-700">
+                        🦕 Rex&apos;s Take: {featuredLatestPost.ai_metadata.rex_take}
+                      </p>
+                    )}
+                      </Link>
+                    )}
                   </div>
 
                   {/* Center Column - Main Story */}
@@ -400,9 +453,6 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                       href={`/post/${spotlightPost.slug}`}
                       className="block border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group"
                     >
-                      <h3 className="text-base font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">
-                        News Spotlight
-                      </h3>
                       <div className="aspect-video mb-3 overflow-hidden relative rounded-lg border border-gray-300 bg-yellow-100">
                         {spotlightPost.featured_image_url ? (
                           <Image
@@ -452,7 +502,7 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
                 <input
                   type="email"
                   value={email}
@@ -461,13 +511,27 @@ const NewsPage = ({ initialPosts, ai101Posts, error }) => {
                   className="flex-1 px-4 py-3 border-2 border-gray-300 text-base font-serif"
                   required
                 />
-                                 <button
-                   onClick={handleSubmit}
-                   className="px-8 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 hover:scale-105 hover:shadow-lg transition-all duration-300 transform"
-                 >
-                   CLAIM YOUR SPOT
-                 </button>
-              </div>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className={`px-8 py-3 bg-black text-white font-serif font-bold transition-all duration-300 ${
+                    submitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800 hover:scale-105 hover:shadow-lg transform'
+                  }`}
+                >
+                  {submitting ? 'Subscribing…' : 'CLAIM YOUR SPOT'}
+                </button>
+              </form>
+
+              {subscribeError && (
+                <div className="max-w-md mx-auto mb-3 w-full p-3 bg-red-100 text-red-800 font-serif border border-red-300">
+                  {subscribeError}
+                </div>
+              )}
+              {isSubscribed && (
+                <div className="max-w-md mx-auto mb-3 w-full p-3 bg-green-100 text-green-800 font-serif border border-green-300">
+                  🦕 ✓ Rex is on it. Check your inbox in the next few minutes.
+                </div>
+              )}
               
               <div className="grid grid-cols-3 gap-4 text-xs font-serif text-gray-600 border-t border-gray-300 pt-4">
                 <div>✅ 100% Free Forever</div>

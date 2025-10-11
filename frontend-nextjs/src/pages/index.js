@@ -134,35 +134,22 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
               {/* Main Feature */}
               <div className="lg:col-span-7 lg:border-r border-gray-300 lg:pr-10">
                 <div className="mb-10">
-                  <span className="inline-flex items-center gap-2 border border-black px-3 py-1 text-xs uppercase tracking-[0.2em] font-sans font-semibold mb-4">
-                    RecursivAI Daily Intelligence
-                  </span>
                   <h1 className="text-4xl sm:text-5xl font-serif font-bold mb-4 leading-tight">
-                    The fastest way to brief your team on what <span className="bg-yellow-200 px-1">actually</span> changed in AI today.
+                    The fastest way to brief your team on what <span className="bg-yellow-200 px-1">actually</span> happened in AI today.
                   </h1>
                   <p className="text-lg mb-5 font-serif text-gray-800">
                     RecursivAI&apos;s autonomous newsroom pulls signal from the noise. Rex keeps it sharp—no hype, no doomscrolling, just the shifts in AI that impact product, engineering, and strategy.
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                     {valueProps.map((item) => (
-                      <div key={item.title} className="border border-gray-300 bg-white p-4 flex flex-col gap-2 hover:shadow-sm transition-shadow duration-200">
-                        <span className="text-2xl" aria-hidden="true">{item.icon}</span>
+                      <div key={item.title} className="border border-gray-300 bg-white p-4 flex flex-col gap-1.5 hover:shadow-sm transition-shadow duration-200">
                         <h3 className="text-sm font-semibold uppercase tracking-wide font-sans text-gray-900">{item.title}</h3>
                         <p className="text-sm font-serif text-gray-700 leading-relaxed">{item.description}</p>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4].map((avatar) => (
-                        <div key={avatar} className="w-10 h-10 rounded-full border-2 border-[#FAF9F5] bg-gray-300" />
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-700 font-serif">
-                      Trusted by <strong>220+ product leaders, engineers, and investors</strong> who need the facts before stand-up.
-                    </p>
-                  </div>
+ 
 
                   {/* Quick News CTA for non-subscribers */}
                   <div className="mb-8">
@@ -223,8 +210,8 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
               <div className="lg:col-span-5">
                 <div className="border border-gray-300 bg-white p-6 flex flex-col gap-6">
                   <div className="text-center">
-                    <span className="inline-block text-xs font-bold uppercase tracking-[0.3em] text-gray-500 mb-2">Meet Rex</span>
                     <Image src="/images/rex.png" alt="Rex the AI Curator" width={260} height={260} className="mx-auto" />
+                    <h3 className="text-2xl font-serif font-bold mt-3">Rex</h3>
                     <h3 className="text-2xl font-serif font-bold mt-3">Editor-in-Chief, RecursivAI</h3>
                     <p className="text-sm font-serif italic text-gray-600">
                       &ldquo;I&apos;ll keep one eye on the models and one eye on the market.&rdquo;
@@ -265,7 +252,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
 
             {/* Section Divider */}
             <div className="border-t-2 border-double border-gray-400 mb-6 pt-1">
-              <h2 className="text-lg font-serif font-bold uppercase tracking-wider text-gray-700">Today&apos;s front page</h2>
+              <h2 className="text-lg font-serif font-bold uppercase tracking-wider text-gray-700">What&apos;s hot in AI today</h2>
             </div>
 
             {/* Hot News Grid */}
@@ -310,59 +297,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
               ))}
             </div>
 
-            {/* Daily Routine & Stats */}
-            <div className="border-t border-gray-300 pt-6 mb-8">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1 border border-gray-200 bg-white p-4">
-                  <h3 className="text-base font-serif font-semibold mb-3 flex items-center gap-2">
-                    <span>📚</span>
-                    <span>Rex&apos;s Daily Routine</span>
-                  </h3>
-                  <div className="flex flex-wrap gap-2 text-xs font-serif text-gray-700">
-                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
-                      <span>🌅</span>
-                      <span>5:00 • Scans top AI feeds</span>
-                    </div>
-                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
-                      <span>🧠</span>
-                      <span>6:00 • Ranks breakthroughs</span>
-                    </div>
-                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
-                      <span>✍️</span>
-                      <span>6:30 • Writes human-first TL;DRs</span>
-                    </div>
-                    <div className="flex items-center gap-2 border border-gray-200 bg-[#FAF9F5] px-3 py-1.5 rounded-full">
-                      <span>📧</span>
-                      <span>7:00 • Hits your inbox</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-1 border border-gray-200 bg-white p-4">
-                  <h4 className="text-base font-serif font-semibold mb-3 flex items-center justify-center gap-2">
-                    <span>📊</span>
-                    <span>Rex&apos;s Quick Stats</span>
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-serif text-gray-700">
-                    <div className="text-center">
-                      <div className="text-xl font-bold">1,247</div>
-                      <div>Papers</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold">89</div>
-                      <div>Sources</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold">12</div>
-                      <div>Insights</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold">220+</div>
-                      <div>Readers</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Removed Daily Routine & Stats section */}
 
             {/* Reader Testimonials - Newspaper Style */}
             <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
