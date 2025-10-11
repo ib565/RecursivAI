@@ -227,7 +227,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                     <Image src="/images/rex.png" alt="Rex the AI Curator" width={260} height={260} className="mx-auto" />
                     <h3 className="text-2xl font-serif font-bold mt-3">Editor-in-Chief, RecursivAI</h3>
                     <p className="text-sm font-serif italic text-gray-600">
-                      "I&apos;ll keep one eye on the models and one eye on the market."
+                      &ldquo;I&apos;ll keep one eye on the models and one eye on the market.&rdquo;
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm font-serif text-gray-700">
