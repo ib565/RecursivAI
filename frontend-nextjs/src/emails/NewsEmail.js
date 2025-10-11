@@ -12,8 +12,11 @@ const getPlaceholderImage = (index) => placeholderImages[index % placeholderImag
 
 export default function NewsEmail({ posts = [], ai101 = null, generatedAt = new Date().toISOString() }) {
   const mainPosts = posts.slice(0, 2);
-  const sidebarPosts = posts.slice(2, 12);
   const spotlightPost = posts[4] || null;
+  const sidebarPosts = posts
+    .filter((post) => !spotlightPost || post.slug !== spotlightPost.slug)
+    .filter((post) => !mainPosts.find((main) => main.slug === post.slug))
+    .slice(0, 10);
 
   return (
     <Html>
@@ -100,16 +103,18 @@ export default function NewsEmail({ posts = [], ai101 = null, generatedAt = new 
                   ) : (
                     <Text style={styles.small}><b>Catch the latest AI 101 explainer.</b></Text>
                   )}
-                  <Text style={styles.small}>
-                    {ai101?.content?.body?.slice(0, 200) || "Rex keeps the fundamentals fresh with quick explainers."}
-                    {ai101?.content?.body && ai101.content.body.length > 200 ? "…" : ""}
-                  </Text>
                   {ai101 ? (
                     <Button
                       style={styles.ctaSecondary}
                       href={`https://recursivai.vercel.app/post/${ai101.slug}`}
                     >Read AI 101 →</Button>
                   ) : null}
+                </Section>
+
+                <Section style={styles.card}>
+                  <Heading as="h3" style={styles.h3}>Rexommendation</Heading>
+                  <Text style={styles.small}><b>Try Windsurf!</b> The new AI coding tool that caught Rex&apos;s attention.</Text>
+                  <Text style={styles.muted}>More recommendations coming soon.</Text>
                 </Section>
 
                 {spotlightPost && (
