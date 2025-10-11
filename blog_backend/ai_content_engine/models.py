@@ -36,6 +36,10 @@ class ArticleSummaryResponse(BaseModel):
     headline: str = Field(description="The main headline in newspaper style")
     subheading: str = Field(description="A brief subheading that provides context")
     content: str = Field(description="A complete summary of the article")
+    rex_take: str | None = Field(
+        default=None,
+        description="Rex's one-line takeaway highlighting why the story matters",
+    )
 
 
 class ProcessedArticle(BaseModel):
@@ -43,3 +47,4 @@ class ProcessedArticle(BaseModel):
     headline: str
     subheading: str
     content: str
+    rex_take: str | None = None
