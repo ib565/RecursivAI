@@ -148,6 +148,8 @@ def generate_image_prompt(headline_article: ProcessedArticle) -> Optional[str]:
     article_text = f"Article:\n"
     article_text += f"Headline: {headline_article.headline}\n"
     article_text += f"Subheading: {headline_article.subheading}\n"
+    if headline_article.rex_take:
+        article_text += f"RexTake: {headline_article.rex_take}\n"
 
     try:
         response = client.models.generate_content(

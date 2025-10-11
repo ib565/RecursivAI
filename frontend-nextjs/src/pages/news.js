@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getNewsPosts } from "../utils/apiService";
+import { getNewsPosts, getAi101Posts } from "../utils/apiService";
 import SEO from "../components/SEO";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -19,96 +19,21 @@ const getPlaceholderImage = (index) => {
 
 const NUM_POSTS_TO_FETCH = 12;
 
-const NewsPage = ({ initialPosts, error }) => {
-  // Mock data for demonstration
-  const mockPosts = [
-    {
-      slug: "google-windsurf-acquisition",
-      title: "Google Acquires Wind Surf: AI Coding Revolution",
-      summary: "In a groundbreaking move, Google has acquired Wind Surf, the AI-powered development platform that's revolutionizing code generation. This acquisition signals Google's commitment to advancing AI-assisted programming tools.",
-      featured_image_url: "/images/placeholder-1.jpeg",
-      created_at: "2025-01-20T10:00:00Z"
-    },
-    {
-      slug: "openai-gpt5-release",
-      title: "OpenAI Announces GPT-5: The Next Evolution",
-      summary: "OpenAI has officially announced GPT-5, promising unprecedented capabilities in reasoning, creativity, and multimodal understanding. Early tests show remarkable improvements over GPT-4.",
-      featured_image_url: "/images/placeholder-2.jpg",
-      created_at: "2025-01-19T15:30:00Z"
-    },
-    {
-      slug: "meta-multimodal-breakthrough",
-      title: "Meta's New Multimodal AI Breaks All Records",
-      summary: "Meta's latest multimodal AI model has achieved record-breaking performance across vision, language, and audio tasks. The model shows unprecedented understanding of complex real-world scenarios.",
-      featured_image_url: "/images/placeholder-3.png",
-      created_at: "2025-01-18T12:15:00Z"
-    },
-    {
-      slug: "deepmind-protein-folding",
-      title: "Google DeepMind Solves Protein Folding 2.0",
-      summary: "DeepMind's latest breakthrough in protein structure prediction has solved previously intractable problems, opening new possibilities for drug discovery and disease treatment.",
-      featured_image_url: "/images/placeholder-4.jpg",
-      created_at: "2025-01-17T09:45:00Z"
-    },
-    {
-      slug: "microsoft-copilot-upgrade",
-      title: "Microsoft Copilot Gets Major AI Upgrade",
-      summary: "Microsoft has released a major upgrade to Copilot, introducing advanced code generation, debugging assistance, and real-time collaboration features that transform the development experience.",
-      featured_image_url: "/images/placeholder-1.jpeg",
-      created_at: "2025-01-16T14:20:00Z"
-    },
-    {
-      slug: "tesla-fsd-human-parity",
-      title: "Tesla's FSD Beta Achieves Human-Level Driving",
-      summary: "Tesla's Full Self-Driving Beta has reached human parity in complex urban environments, marking a significant milestone in autonomous vehicle technology.",
-      featured_image_url: "/images/placeholder-2.jpg",
-      created_at: "2025-01-15T11:30:00Z"
-    },
-    {
-      slug: "anthropic-constitutional-ai",
-      title: "Anthropic Announces Constitutional AI 3.0",
-      summary: "Anthropic has released Constitutional AI 3.0, featuring enhanced safety mechanisms and improved alignment with human values while maintaining exceptional performance.",
-      featured_image_url: "/images/placeholder-3.png",
-      created_at: "2025-01-14T16:45:00Z"
-    },
-    {
-      slug: "nvidia-ai-supercomputer",
-      title: "NVIDIA Unveils Next-Gen AI Supercomputer",
-      summary: "NVIDIA has announced its latest AI supercomputer, capable of training models 10x faster than current systems, accelerating the pace of AI research and development.",
-      featured_image_url: "/images/placeholder-4.jpg",
-      created_at: "2025-01-13T13:10:00Z"
-    },
-    {
-      slug: "ai-healthcare-diagnosis",
-      title: "AI Achieves 99% Accuracy in Medical Diagnosis",
-      summary: "A new AI system has achieved 99% accuracy in diagnosing rare diseases, outperforming human specialists and potentially saving countless lives through early detection.",
-      featured_image_url: "/images/placeholder-1.jpeg",
-      created_at: "2025-01-12T10:25:00Z"
-    },
-    {
-      slug: "quantum-ai-breakthrough",
-      title: "Quantum AI Breakthrough: 1000x Speed Improvement",
-      summary: "Researchers have achieved a 1000x speed improvement in quantum AI algorithms, bringing quantum computing applications closer to practical reality.",
-      featured_image_url: "/images/placeholder-2.jpg",
-      created_at: "2025-01-11T08:50:00Z"
-    },
-    {
-      slug: "ai-climate-prediction",
-      title: "AI Predicts Climate Patterns with 95% Accuracy",
-      summary: "A new AI model can predict climate patterns and extreme weather events with 95% accuracy, helping communities prepare for and mitigate climate change impacts.",
-      featured_image_url: "/images/placeholder-3.png",
-      created_at: "2025-01-10T15:15:00Z"
-    },
-    {
-      slug: "robotics-ai-coordination",
-      title: "AI-Powered Robots Achieve Perfect Coordination",
-      summary: "A team of AI-powered robots has achieved perfect coordination in complex tasks, demonstrating the potential for autonomous systems in manufacturing and logistics.",
-      featured_image_url: "/images/placeholder-4.jpg",
-      created_at: "2025-01-09T12:40:00Z"
+const NewsPage = ({ initialPosts, ai101Posts, error }) => {
+  const posts = useMemo(() => {
+    if (!initialPosts || !initialPosts.length) {
+      return [];
     }
-  ];
+    return initialPosts;
+  }, [initialPosts]);
 
-  const posts = (initialPosts && initialPosts.length ? initialPosts : mockPosts);
+  const latestAi101 = useMemo(() => {
+    if (!ai101Posts || !ai101Posts.length) {
+      return null;
+    }
+    return ai101Posts[0];
+  }, [ai101Posts]);
+
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -367,114 +292,130 @@ const NewsPage = ({ initialPosts, error }) => {
                     </div>
                   </div>
 
-                                   {/* Center Column - Main Story */}
+                  {/* Center Column - Main Story */}
                   <div className="order-1 lg:order-none lg:col-span-6 lg:border-r lg:border-gray-300 lg:pr-4">
-                                         {posts.slice(0, 2).map((post, index) => (
-                       <div key={post.slug} className="mb-6 group">
-                         <Link href={`/post/${post.slug}`} className="block hover:bg-yellow-50 hover:shadow-lg transition-all duration-300 p-6 rounded-lg border border-transparent hover:border-yellow-200 transform hover:-translate-y-1">
-                           <div className="flex items-center mb-3">
-                             <span className="text-yellow-600 font-bold text-lg mr-3 group-hover:scale-110 transition-transform duration-300">📰</span>
-                             <h2 className="text-2xl font-serif font-bold group-hover:text-gray-800 transition-colors">
-                               {post.title}
-                             </h2>
-                           </div>
-                           <div className="aspect-[16/9] mb-4 overflow-hidden relative rounded-lg group-hover:shadow-md transition-shadow duration-300">
-                             {post.featured_image_url ? (
-                               <Image
-                                 src={post.featured_image_url}
-                                 alt={post.title}
-                                 fill
-                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                               />
-                             ) : (
-                               <div className="w-full h-full bg-yellow-200 border border-gray-400 flex items-center justify-center group-hover:bg-yellow-300 transition-colors duration-300">
-                                 <div className="text-center">
-                                   <div className="text-6xl mb-2 group-hover:scale-110 transition-transform duration-300">📰</div>
-                                   <div className="text-sm font-serif text-gray-600">Rex Approved</div>
-                                 </div>
-                               </div>
-                             )}
-                           </div>
-                           <p className="text-sm font-serif mb-3 leading-relaxed group-hover:text-gray-700 transition-colors">
-                             {post.summary}
-                           </p>
-                           <div className="flex items-center justify-end">
-                             <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">Read More →</span>
-                           </div>
-                         </Link>
-                                                 <div className="mt-4 p-3 bg-blue-50 border border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300 transition-colors duration-300 rounded-lg">
-                           <p className="text-xs font-serif italic group-hover:text-blue-800 transition-colors">
-                             🦕 <strong>Rex&apos;s Take:</strong> &quot;This is a significant development in the AI landscape!&quot;
-                           </p>
-                         </div>
+                    {posts.slice(0, 2).map((post, index) => (
+                      <div key={post.slug} className="mb-6 group">
+                        <Link
+                          href={`/post/${post.slug}`}
+                          className="block hover:bg-yellow-50 hover:shadow-lg transition-all duration-300 p-6 rounded-lg border border-transparent hover:border-yellow-200 transform hover:-translate-y-1"
+                        >
+                          <div className="flex items-center mb-3">
+                            <span className="text-yellow-600 font-bold text-lg mr-3 group-hover:scale-110 transition-transform duration-300">📰</span>
+                            <h2 className="text-2xl font-serif font-bold group-hover:text-gray-800 transition-colors">
+                              {post.title}
+                            </h2>
+                          </div>
+                          <div className="aspect-[16/9] mb-4 overflow-hidden relative rounded-lg group-hover:shadow-md transition-shadow duration-300">
+                            {post.featured_image_url ? (
+                          <Image
+                            src={post.featured_image_url}
+                            alt={post.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                            ) : (
+                              <Image
+                                src={getPlaceholderImage(index)}
+                                alt="News placeholder"
+                                fill
+                                className="object-cover opacity-90"
+                              />
+                            )}
+                          </div>
+                          {post.summary && (
+                            <p className="text-sm font-serif mb-3 leading-relaxed group-hover:text-gray-700 transition-colors">
+                              {post.summary}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-end">
+                            <span className="text-yellow-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-bold">Read More →</span>
+                          </div>
+                        </Link>
+                        {post.ai_metadata?.rex_take && (
+                          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 group-hover:bg-blue-100 group-hover:border-blue-300 transition-colors duration-300 rounded-lg">
+                            <p className="text-xs font-serif italic group-hover:text-blue-800 transition-colors">
+                              🦕 <strong>Rex&apos;s Take:</strong> {post.ai_metadata.rex_take}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
 
-                {/* Right Column - Multiple Sections */}
+                {/* Right Column - Highlights */}
                 <div className="order-3 lg:order-none lg:col-span-3 space-y-6">
-                  
-                                     {/* AI 101 Section */}
-                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group cursor-pointer">
-                     <h3 className="text-lg font-serif font-bold mb-3 text-center border-b border-gray-300 pb-2 group-hover:text-yellow-700 transition-colors">
-                       AI 101: RAG
-                     </h3>
-                     <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center group-hover:bg-yellow-300 group-hover:scale-105 transition-all duration-300 rounded-lg">
-                       <div className="text-center">
-                         <div className="text-3xl mb-1 group-hover:scale-110 transition-transform duration-300">📚</div>
-                         <div className="text-xs font-serif group-hover:text-gray-800 transition-colors">Rex Explains</div>
-                       </div>
-                     </div>
-                     <p className="text-sm font-serif mb-2 group-hover:text-gray-800 transition-colors">
-                       <strong>RAG = AI + Library Pass + Brain.</strong>
-                     </p>
-                     <p className="text-xs font-serif text-gray-700 leading-relaxed group-hover:text-gray-800 transition-colors">
-                       It retrieves real info (the &quot;R&quot;) and then generates a smart answer (the &quot;G&quot;) - kind of like a 
-                       kid writing a book report with Wikipedia open in another tab.
-                     </p>
-                   </div>
+                  {latestAi101 ? (
+                    <Link
+                      href={`/post/${latestAi101.slug}`}
+                      className="block border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group"
+                    >
+                      <h3 className="text-lg font-serif font-bold mb-3 text-center border-b border-gray-300 pb-2 group-hover:text-yellow-700 transition-colors">
+                        {latestAi101.title}
+                      </h3>
+                      <div className="aspect-square mb-3 overflow-hidden relative rounded-lg border border-gray-300 bg-yellow-100">
+                        {latestAi101.featured_image_url ? (
+                          <Image
+                            src={latestAi101.featured_image_url}
+                            alt={latestAi101.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-yellow-200">
+                            <span className="text-4xl">📚</span>
+                          </div>
+                        )}
+                      </div>
+                      {latestAi101.summary && (
+                        <p className="text-sm font-serif text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">
+                          {latestAi101.summary}
+                        </p>
+                      )}
+                    </Link>
+                  ) : (
+                    <div className="border border-dashed border-gray-300 p-4 bg-white rounded-lg text-center text-sm font-serif text-gray-500">
+                      AI 101 explainer coming soon.
+                    </div>
+                  )}
 
-                                     {/* Rexommendation */}
-                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group cursor-pointer">
-                     <h3 className="text-lg font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">Rexommendation</h3>
-                     <div className="aspect-square mb-3 bg-yellow-200 border border-gray-300 flex items-center justify-center group-hover:bg-yellow-300 group-hover:scale-105 transition-all duration-300 rounded-lg">
-                       <div className="text-center">
-                         <div className="text-3xl mb-1 group-hover:scale-110 transition-transform duration-300">🦕</div>
-                         <div className="text-xs font-serif group-hover:text-gray-800 transition-colors">Rex Picks</div>
-                       </div>
-                     </div>
-                     <p className="text-sm font-serif font-bold mb-1 group-hover:text-gray-800 transition-colors">Try Windsurf!</p>
-                     <p className="text-xs font-serif text-blue-600 underline mb-2 group-hover:text-blue-700 transition-colors">Link ↗</p>
-                     <p className="text-xs font-serif text-gray-700 group-hover:text-gray-800 transition-colors">
-                       The new AI coding tool that caught Google&apos;s attention
-                     </p>
-                     <div className="mt-2 text-center">
-                       <span className="text-xs font-serif font-bold group-hover:text-yellow-700 transition-colors">Rex Score: 9/10</span>
-                     </div>
-                   </div>
-
-                                     {/* Corporate Cringe */}
-                   <div className="border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-red-300 transition-all duration-300 rounded-lg group cursor-pointer">
-                     <h3 className="text-base font-serif font-bold mb-3 group-hover:text-red-700 transition-colors">Corporate Cringe of the Week</h3>
-                     <div className="flex items-start gap-3">
-                       <div className="w-16 h-16 bg-yellow-200 border border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:bg-red-200 group-hover:scale-110 transition-all duration-300 rounded-lg">
-                         <div className="text-center">
-                           <div className="text-lg group-hover:scale-110 transition-transform duration-300">🦕</div>
-                           <div className="text-xs font-serif group-hover:text-red-700 transition-colors">Yikes</div>
-                         </div>
-                       </div>
-                       <div className="flex-1">
-                         <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2 group-hover:text-gray-800 transition-colors">
-                           &quot;Our revolutionary AI breakthrough will disrupt every industry and create unlimited synergistic 
-                           value propositions while leveraging blockchain-enabled quantum machine learning...&quot;
-                         </p>
-                         <p className="text-xs font-serif italic text-gray-600 group-hover:text-red-600 transition-colors">
-                           🦕 Rex says: &quot;Just tell me what it actually does!&quot;
-                         </p>
-                       </div>
-                     </div>
-                   </div>
-
+                  {posts.length >= 5 && (
+                    <Link
+                      href={`/post/${posts[4].slug}`}
+                      className="block border border-gray-400 p-4 bg-white hover:shadow-lg hover:border-yellow-300 transition-all duration-300 rounded-lg group"
+                    >
+                      <h3 className="text-base font-serif font-bold mb-3 group-hover:text-yellow-700 transition-colors">
+                        News Spotlight
+                      </h3>
+                      <div className="aspect-video mb-3 overflow-hidden relative rounded-lg border border-gray-300 bg-yellow-100">
+                        {posts[4].featured_image_url ? (
+                          <Image
+                            src={posts[4].featured_image_url}
+                            alt={posts[4].title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-yellow-200">
+                            <span className="text-4xl">📰</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm font-serif font-bold mb-2 group-hover:text-gray-800 transition-colors">
+                        {posts[4].title}
+                      </p>
+                      {posts[4].summary && (
+                        <p className="text-xs font-serif text-gray-700 leading-relaxed mb-2 group-hover:text-gray-800 transition-colors">
+                          {posts[4].summary}
+                        </p>
+                      )}
+                      {posts[4].ai_metadata?.rex_take && (
+                        <p className="text-xs font-serif italic text-blue-700 group-hover:text-blue-800 transition-colors">
+                          🦕 Rex&apos;s Take: {posts[4].ai_metadata.rex_take}
+                        </p>
+                      )}
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -536,15 +477,19 @@ export default NewsPage;
 
 export async function getStaticProps() {
   try {
-    const posts = await getNewsPosts({ limit: NUM_POSTS_TO_FETCH });
+    const [posts, ai101Posts] = await Promise.all([
+      getNewsPosts({ limit: NUM_POSTS_TO_FETCH }),
+      getAi101Posts({ limit: 1 }),
+    ]);
+
     return {
-      props: { initialPosts: posts },
+      props: { initialPosts: posts, ai101Posts },
       revalidate: 300,
     };
   } catch (error) {
     console.error('Failed to fetch initial news posts:', error);
     return {
-      props: { initialPosts: [], error: 'Failed to load news posts' },
+      props: { initialPosts: [], ai101Posts: [], error: 'Failed to load news posts' },
       revalidate: 300,
     };
   }

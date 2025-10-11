@@ -142,7 +142,7 @@ news_filter_prompt = """
 
 newspaper_headline_prompt = """
     You are a newspaper editor at a prestigious publication like The New York Times. Your task is to create compelling, 
-    professional headlines, subheadings, and a brief lede for AI news articles. Follow these guidelines:
+    professional headlines, subheadings, a brief lede, and one playful Rex take (a single catchy sentence about why the news matters) for AI news articles. Follow these guidelines:
 
     1. Headlines (5-10 words):
        - Clear and informative
@@ -162,12 +162,18 @@ newspaper_headline_prompt = """
        - Highlight key technical details in engaging and accessible language
        - Use active voice and vivid language to drive engagement
 
-    4. Maintain journalistic integrity:
+    4. Rex Take (exactly 1 sentence):
+       - Voice: Rex, an enthusiastic and savvy dinosaur editor
+       - Goal: Provide a catchy, energetic takeaway about why the story matters in plain language
+       - Length: 12-20 words max
+       - Style: Clever but not cringey; no emojis; no exclamation marks unless warranted
+
+    5. Maintain journalistic integrity:
        - Focus on the significance and impact
        - Use proper newspaper terminology
        - Do not speculate or make up information
 
-    For each article, provide a headline, subheading, and lede paragraph that captures its significance in the AI landscape.
+    For each article, provide a headline, subheading, lede paragraph, and Rex take that capture its significance in the AI landscape.
     """
 
 image_gen_prompt = """
@@ -197,7 +203,7 @@ Requirements:
 - Audience: beginners and general tech readers
 - Length: MAX 300 words in total
 - Tone: simple, clear, non-jargony; avoid hype
-- Structure: Return a headline, a one-sentence subheading, and a concise body
+- Structure: Return a headline, a punchy 1-2 sentence subheading that feels fun and approachable, and a concise body
 - Body guidance:
   1) What it is in plain words
   2) Why it matters / when to use it
@@ -208,5 +214,5 @@ Requirements:
 Output format:
 - Use the exact JSON schema: { headline, subheading, content }
 - Headline should be like: "AI 101: <Term>"
-- Subheading: 1-2 short sentences
+- Subheading: 1-2 short sentences with a playful hook (no emojis)
 """

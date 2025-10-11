@@ -25,12 +25,15 @@ from urllib.parse import quote
 import asyncio
 from ai_content_engine.agents.image_gen_agent import (
     generate_featured_images_with_rate_limiting,
+    generate_image_prompt,
+    generate_image_from_prompt,
 )
-from .utils.image_uploader import upload_images_batch
+from .utils.image_uploader import upload_images_batch, upload_base64_image
 from ai_content_engine.agents.ai101_agent import (
     select_ai101_term,
     generate_ai101_explainer,
 )
+from ai_content_engine.models import ProcessedArticle
 
 load_dotenv()
 
@@ -88,6 +91,7 @@ def create_news_post(
     blog_summary = headline_article.subheading
     blog_post = headline_article.content
     original_article = headline_article.original_article
+    rex_take = getattr(headline_article, "rex_take", None)
 
     # Step 2: Format and prepare data
     slug = generate_slug(blog_title)
@@ -104,6 +108,8 @@ def create_news_post(
         "original_article_source": original_article.get("source"),
         "original_article_title": original_article.get("title"),
     }
+    if rex_take:
+        ai_metadata["rex_take"] = rex_take
 
     post_data = {
         "title": blog_title,
@@ -172,6 +178,29 @@ def create_ai101_post(term: str | None = None) -> Optional[Dict[str, Any]]:
         blog_summary = result.subheading
         blog_post = result.content
 
+        # Generate featured image using existing image pipeline
+        featured_image_url: str | None = None
+        try:
+            processed_article = ProcessedArticle(
+                original_article={"title": blog_title, "description": blog_summary},
+                headline=blog_title,
+                subheading=blog_summary or "",
+                content=blog_post,
+                rex_take=result.rex_take,
+            )
+
+            image_prompt = generate_image_prompt(processed_article)
+            if image_prompt:
+                image_base64 = generate_image_from_prompt(image_prompt)
+                if image_base64:
+                    filename = f"ai101_{generate_slug(blog_title)[:40]}.png"
+                    featured_image_url = upload_base64_image(image_base64, filename)
+        except Exception as image_error:
+            logger.error(
+                f"AI101 image generation failed for term '{selected_term}': {image_error}",
+                exc_info=True,
+            )
+
         # Prepare data
         slug = generate_slug(blog_title)
         content_json = {"body": blog_post, "images": [], "codeSnippets": []}
@@ -180,6 +209,8 @@ def create_ai101_post(term: str | None = None) -> Optional[Dict[str, Any]]:
             "term": selected_term,
             "aliases": selected_aliases,
         }
+        if result.rex_take:
+            ai_metadata["rex_take"] = result.rex_take
 
         post_data = {
             "title": blog_title,
@@ -189,6 +220,9 @@ def create_ai101_post(term: str | None = None) -> Optional[Dict[str, Any]]:
             "ai_metadata": ai_metadata,
             "status": "published",
         }
+
+        if featured_image_url:
+            post_data["featured_image_url"] = featured_image_url
 
         return _submit_post(post_data)
     except Exception as e:
