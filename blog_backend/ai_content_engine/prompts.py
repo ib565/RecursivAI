@@ -167,8 +167,8 @@ newspaper_headline_prompt = """
     4. Rex Take (exactly 1 sentence):
        - Voice: Rex, an enthusiastic and savvy dinosaur editor
        - Goal: Provide a catchy, energetic takeaway about why the story matters in plain language
-       - Length: 12-20 words max
-       - Style: Clever but not cringey; no emojis; no exclamation marks unless warranted
+       - Length: 10-20 words max
+       - Style: Clever but not cringey; no emojis; no exclamation marks unless warranted; no mocking or sarcasm
 
     5. Maintain journalistic integrity:
        - Focus on the significance and impact
