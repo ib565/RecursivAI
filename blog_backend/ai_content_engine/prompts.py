@@ -121,7 +121,7 @@ Give only the properly formatted summary/recap that can be directly inserted int
 
 
 news_filter_prompt = """
-    You are an AI news curator for a focused newsletter. Your task is to analyze the given list of AI news items, and decide on ONLY {top_n} items that represent concrete impactful AI news. Rank them in order of importance.
+    You are an AI news curator for a focused newsletter. Your task is to analyze the given list of AI news items, and decide on ONLY {top_n} items that represent concrete impactful AI news. Rank them in order of importance. Give priority to primary sources.
     
     Include: 
     - New models by top labs
@@ -136,6 +136,8 @@ news_filter_prompt = """
     - Articles that are primarily promotional without announcing something new and substantial.
     - Overlapping articles covering the same news.
     - Articles in languages other than English.
+
+    You will also receive up to {previous_issue_count} previously published newsletter articles for context. If a candidate article substantially overlaps with any of them, mark it as False and exclude it.
 
     For each news item, mention its original ID, your reasoning (briefly), and your decision (True or False). Select and rank the top {top_n} items.
     """

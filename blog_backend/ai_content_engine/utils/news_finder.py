@@ -320,10 +320,14 @@ async def _call_gemini_api(client, all_articles_text, system_prompt):
     return response
 
 
-async def filter_top_articles_llm(all_articles, top_n=12):
+async def filter_top_articles_llm(all_articles, previous_issue_articles=None, top_n=12):
     start_time = time.time()
     logger.info(
         f"LLM_FILTER: Starting LLM curation | Input articles: {len(all_articles)} | Target: {top_n}"
+    )
+    previous_issue_articles = previous_issue_articles or []
+    logger.info(
+        f"LLM_FILTER: Providing {len(previous_issue_articles)} previous news items for duplication context"
     )
 
     # Log source distribution of input articles
@@ -346,11 +350,34 @@ async def filter_top_articles_llm(all_articles, top_n=12):
 
         # Step 2: Prepare prompt
         logger.debug("LLM_FILTER: Preparing system prompt")
-        system_prompt = news_filter_prompt.format(top_n=top_n)
+        system_prompt = news_filter_prompt.format(
+            top_n=top_n, previous_issue_count=len(previous_issue_articles)
+        )
 
         # Step 3: Build article text
         logger.debug("LLM_FILTER: Building article text for LLM")
         all_articles_text = ""
+        if previous_issue_articles:
+            all_articles_text += (
+                "Previously selected newsletter items (already covered):\n"
+            )
+            for i, item in enumerate(previous_issue_articles):
+                title = item.get("title") or item.get("headline") or "Unknown title"
+                ai_metadata = item.get("ai_metadata") if isinstance(item, dict) else {}
+                if not isinstance(ai_metadata, dict):
+                    ai_metadata = {}
+                source = (
+                    ai_metadata.get("original_article_source")
+                    or item.get("source")
+                    or "Unknown source"
+                )
+                all_articles_text += (
+                    f"  Previous item {i+1}:\n"
+                    f"    Title: {title}\n"
+                    f"    Source: {source}\n"
+                )
+            all_articles_text += "\n"
+
         for i, item in enumerate(all_articles):
             all_articles_text += f"News item {i+1}:\n"
             all_articles_text += f"   Title: {item['title']}\n"
@@ -784,6 +811,41 @@ def check_article_processed(article_url: str) -> bool:
         return False
 
 
+def fetch_recent_news_posts(limit: int = 12) -> list[dict]:
+    """Fetch the most recent published news posts for duplication context."""
+    if limit <= 0:
+        return []
+
+    try:
+        params = {"limit": limit, "offset": 0}
+        url = f"{API_BASE_URL}/posts/news"
+        logger.debug(
+            f"CONTEXT_FETCH: Requesting last {limit} news posts for duplication context"
+        )
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        posts = response.json()
+
+        if not isinstance(posts, list):
+            logger.warning(
+                "CONTEXT_FETCH: Unexpected response type when fetching previous news posts"
+            )
+            return []
+
+        logger.info(
+            f"CONTEXT_FETCH: Retrieved {len(posts)} previously published news posts"
+        )
+        return posts
+    except requests.exceptions.RequestException as e:
+        logger.error(f"CONTEXT_FETCH: Failed to fetch previous news posts | Error: {e}")
+    except Exception as e:
+        logger.error(
+            f"CONTEXT_FETCH: Unexpected error while fetching previous news posts | Error: {e}"
+        )
+
+    return []
+
+
 def filter_unprocessed_articles(
     articles: list[dict], force_regenerate: bool = False
 ) -> list[dict]:
@@ -841,6 +903,24 @@ async def get_top_articles(
     # Step 1: Fetch all articles
     all_articles = await asyncio.to_thread(fetch_all_articles, days_ago)
 
+    # Step 1b: Fetch previous newsletter articles to avoid duplicates
+    previous_news_articles = await asyncio.to_thread(fetch_recent_news_posts, top_n)
+
+    previous_issue_count = len(previous_news_articles)
+    previous_titles = [
+        (
+            article.get("title")
+            or article.get("headline")
+            or article.get("ai_metadata", {}).get("original_article_title")
+        )
+        for article in previous_news_articles
+    ]
+    logger.info(
+        "NEWS_PIPELINE: Previous issue context | count=%d | titles=%s",
+        previous_issue_count,
+        [title for title in previous_titles if title],
+    )
+
     # Step 2: Validate articles (check URL accessibility and format)
     validated_articles = await asyncio.to_thread(validate_articles, all_articles)
 
@@ -853,7 +933,11 @@ async def get_top_articles(
     )
 
     # Step 5: Filter top articles using LLM (only on unprocessed articles)
-    top_articles = await filter_top_articles_llm(unprocessed_articles, top_n=top_n)
+    top_articles = await filter_top_articles_llm(
+        unprocessed_articles,
+        previous_issue_articles=previous_news_articles,
+        top_n=top_n,
+    )
 
     # Step 6: Scrape article content
     scraped_content = await scrape_article_content_async(top_articles)
