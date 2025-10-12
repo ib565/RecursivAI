@@ -2,8 +2,8 @@ name: Call Generate News API
 
 on:
   schedule:
-    # Run at 08:00 AM UTC (1:30 PM IST) every Monday and Friday
-    - cron: "0 8 * * 1,5"
+    # Run at 08:00 AM UTC (1:30 PM IST) everyday
+    - cron: "0 8 * * *"
   workflow_dispatch: # Allow manual triggering
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
           curl -X POST \
             -H "Content-Type: application/json" \
             -H "X-API-Key: $API_KEY" \
-            -d '{"days_ago": 4}' \
+            -d '{"days_ago": 2}' \
             "https://recursivai.onrender.com/posts/generate_news"
 
   send-newsletter:
