@@ -131,7 +131,7 @@ const styles = {
   logo: { fontSize: 18, fontWeight: 700, marginBottom: 4 },
   date: { fontSize: 12, color: "#666", marginBottom: 8 },
   hr: { borderColor: "#ddd" },
-  brand: { fontSize: 32, margin: "8px 0", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em" },
+  brand: { fontSize: 32, margin: "8px 0", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.16em" },
   tagline: { fontSize: 12, color: "#444", fontStyle: "italic" },
   h1: { fontSize: 28, margin: "12px 0" },
   h2: { fontSize: 22, margin: "8px 0" },
