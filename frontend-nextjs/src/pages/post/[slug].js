@@ -97,8 +97,12 @@ export default function PostPage({ post, error }) {
   }
 
   // Now we can safely check post type after confirming post exists
-  const isNewsPost = post.ai_metadata?.post_type === "news";
-  const theme = getTheme(isNewsPost);
+  const rawPostType = post.ai_metadata?.post_type;
+  const postType = typeof rawPostType === 'string' ? rawPostType.toLowerCase() : null;
+  const isNewsPost = postType === "news";
+  const isAi101Post = postType === "ai101";
+  const usesNewsTheme = isNewsPost || isAi101Post;
+  const theme = getTheme(usesNewsTheme);
 
   return (
     <>
@@ -126,7 +130,7 @@ export default function PostPage({ post, error }) {
             </div>
 
             {/* Featured Image for News Posts */}
-            {isNewsPost && post.featured_image_url && (
+            {usesNewsTheme && post.featured_image_url && (
               <div className="mb-8 flex justify-center">
                 <div className="relative w-full max-w-2xl">
                   <Image
@@ -180,7 +184,7 @@ export default function PostPage({ post, error }) {
             {/* Post content */}
             <div 
               className={theme.contentClass}
-              style={isNewsPost ? GEORGIA_FONT : {}}
+              style={usesNewsTheme ? GEORGIA_FONT : {}}
             >
               {post.content && post.content.body ? (
                 <MarkdownRenderer>
@@ -188,8 +192,8 @@ export default function PostPage({ post, error }) {
                 </MarkdownRenderer>
               ) : (
                 <p 
-                  className={isNewsPost ? "text-gray-700 text-lg" : "text-gray-400"}
-                  style={isNewsPost ? GEORGIA_FONT : {}}
+                  className={usesNewsTheme ? "text-gray-700 text-lg" : "text-gray-400"}
+                  style={usesNewsTheme ? GEORGIA_FONT : {}}
                 >
                   No content available for this post.
                 </p>
