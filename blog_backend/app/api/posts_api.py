@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, Response
 from sqlmodel import Session, select
 from ..models.post import Post
 from ..models.post_update import PostUpdate
@@ -205,6 +205,11 @@ def update_papers(
 def healthcheck() -> Dict[str, str]:
     """Healthcheck endpoint."""
     return {"status": "ok", "timestamp": str(datetime.now())}
+
+@router.head("/healthcheck")
+def healthcheck_head() -> Response:
+    """HEAD version of the healthcheck endpoint."""
+    return Response(status_code=200)
 
 
 @router.get("/top_papers", response_model=List[Dict[str, Any]])

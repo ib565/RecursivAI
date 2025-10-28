@@ -1,0 +1,56 @@
+name: Generate Content (News + AI101) and Send Newsletter
+
+on:
+  schedule:
+    # Run at 12:00 UTC daily -> ~8:00 AM ET (DST) / 7:00 AM ET (standard),
+    # and 5:30 PM IST
+    - cron: "0 12 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  generate-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Generate News API
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: $API_KEY" \
+            -d '{"days_ago": 2}' \
+            "https://recursivai.onrender.com/posts/generate_news"
+
+  generate-ai101:
+    needs: generate-news
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait 20 minutes before generating AI101
+        run: sleep 1200  # 20 minutes
+
+      - name: Call Generate AI101 API
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: $API_KEY" \
+            "https://recursivai.onrender.com/posts/generate_ai101"
+
+  send-newsletter:
+    needs: generate-ai101
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Wait 10 minutes before sending newsletter
+        run: sleep 600  # 10 minutes
+
+      - name: Trigger newsletter send (Buttondown)
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: $API_KEY" \
+            -d '{"send": true}' \
+            "https://recursivai.onrender.com/newsletter/buttondown"
