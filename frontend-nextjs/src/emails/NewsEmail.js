@@ -16,13 +16,22 @@ export default function NewsEmail({ posts = [], ai101 = null, generatedAt = new 
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <style>{`
+          @media only screen and (max-width: 480px) {
+            .brand-heading {
+              font-size: 24px !important;
+              letter-spacing: 0.08em !important;
+            }
+          }
+        `}</style>
+      </Head>
       <Preview>Rex&apos;s Daily AI Intelligence Report</Preview>
       <Body style={styles.body}>
         <Container style={styles.container} width="620">
           <Section style={styles.header}>
             <Text style={styles.date}>{new Date(generatedAt).toDateString()}</Text>
-            <Heading as="h1" style={styles.brand}>RecursivAI</Heading>
+            <Heading as="h1" style={styles.brand} className="brand-heading">RecursivAI</Heading>
             <Text style={styles.tagline}>Who better to keep up with AI than AI itself?</Text>
             <Button
               style={styles.ctaPrimary}
