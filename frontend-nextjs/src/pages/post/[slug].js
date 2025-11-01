@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { formatDate } from "../../utils/formatters";
-import { getPostBySlug } from "../../utils/apiService";
+import { getPostBySlug, getNewsPosts, getAi101Posts } from "../../utils/apiService";
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import SEO from "../../components/SEO";
 
@@ -211,7 +211,36 @@ export default function PostPage({ post, error }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getStaticPaths() {
+  try {
+    // Pre-generate paths for 12 news posts + 1 AI101 post (the ones on news/home pages)
+    const [newsPosts, ai101Posts] = await Promise.all([
+      getNewsPosts({ limit: 12 }),
+      getAi101Posts({ limit: 1 })
+    ]);
+
+    // Combine all posts and extract slugs
+    const allPosts = [...(newsPosts || []), ...(ai101Posts || [])];
+    const paths = allPosts.map((post) => ({
+      params: { slug: post.slug }
+    }));
+
+    return {
+      paths,
+      fallback: 'blocking' // Generate other posts on-demand (first request will wake backend)
+    };
+  } catch (error) {
+    console.error('Failed to fetch posts for static paths:', error);
+    // If fetch fails (e.g., backend is down), return empty paths
+    // Posts will still be generated on-demand via fallback
+    return {
+      paths: [],
+      fallback: 'blocking'
+    };
+  }
+}
+
+export async function getStaticProps(context) {
   const { slug } = context.params;
   
   try {
@@ -233,7 +262,9 @@ export async function getServerSideProps(context) {
     return { 
       props: { 
         post: sanitizedPost
-      } 
+      },
+      // Revalidate on-demand only (via API call after news generation)
+      revalidate: false
     };
   } catch (error) {
     console.error(`Failed to fetch post with slug ${slug}:`, error);
@@ -241,7 +272,8 @@ export async function getServerSideProps(context) {
       props: { 
         post: null, 
         error: 'Post not found' 
-      } 
+      },
+      revalidate: false
     };
   }
 }

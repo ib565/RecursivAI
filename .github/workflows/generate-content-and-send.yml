@@ -54,3 +54,13 @@ jobs:
             -H "X-API-Key: $API_KEY" \
             -d '{"send": true}' \
             "https://recursivai.onrender.com/newsletter/buttondown"
+
+  revalidate-frontend:
+    needs: send-newsletter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Revalidate frontend pages
+        env:
+          REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET }}
+        run: |
+          curl -X GET "https://recursivai.vercel.app/api/revalidate?secret=$REVALIDATION_SECRET" || echo "Revalidation failed (may retry on next deployment)"

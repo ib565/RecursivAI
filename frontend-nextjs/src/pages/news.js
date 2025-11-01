@@ -563,14 +563,15 @@ export async function getStaticProps() {
     ]);
 
     return {
-      props: { initialPosts: posts, ai101Posts },
-      revalidate: 300,
+      props: { initialPosts: posts || [], ai101Posts: ai101Posts || [] },
+      // Revalidate on-demand only (via API call after news generation)
     };
   } catch (error) {
     console.error('Failed to fetch initial news posts:', error);
+    // Return empty arrays instead of error prop so Next.js can serve cached/old content
+    // This allows pages to show old content when backend is sleeping instead of error page
     return {
-      props: { initialPosts: [], ai101Posts: [], error: 'Failed to load news posts' },
-      revalidate: 300,
+      props: { initialPosts: [], ai101Posts: [] },
     };
   }
 }

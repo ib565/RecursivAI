@@ -382,11 +382,12 @@ export async function getStaticProps() {
       getNewsPosts({ limit: 6 })
     ]);
     return { 
-      props: { initialPosts, initialNewsPosts },
-      revalidate: 300
+      props: { initialPosts: initialPosts || [], initialNewsPosts: initialNewsPosts || [] },
+      // Revalidate on-demand only (via API call after news generation)
     };
   } catch (error) {
     console.error('Failed to fetch initial content:', error);
-    return { props: { initialPosts: [], initialNewsPosts: [] }, revalidate: 300 };
+    // Return empty arrays so Next.js can serve cached/old content when backend is sleeping
+    return { props: { initialPosts: [], initialNewsPosts: [] } };
   }
 }

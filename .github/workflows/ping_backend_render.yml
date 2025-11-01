@@ -1,9 +1,13 @@
 name: Keep Render App Awake
 
+# DISABLED: Allow backend to spin down to save free tier hours
+# on:
+#   schedule:
+#     - cron: '*/7 * * * *'  # Run every 10 minutes
+#   workflow_dispatch:         # Allow manual triggering
+
 on:
-  schedule:
-    - cron: '*/7 * * * *'  # Run every 10 minutes
-  workflow_dispatch:         # Allow manual triggering
+  workflow_dispatch:         # Allow manual triggering only (disabled schedule)
 
 jobs:
   ping:

@@ -245,11 +245,12 @@ export async function getStaticProps() {
       offset: 0,
     });
     return { 
-      props: { initialPosts: posts },
-      revalidate: 300 // Re-generate the page every 5 minutes
+      props: { initialPosts: posts || [] },
+      // Revalidate on-demand only (via API call after news generation)
     };
   } catch (error) {
     console.error('Failed to fetch initial curated posts:', error);
-    return { props: { initialPosts: [], error: 'Failed to load curated posts' } };
+    // Return empty array so Next.js can serve cached/old content when backend is sleeping
+    return { props: { initialPosts: [] } };
   }
 }
