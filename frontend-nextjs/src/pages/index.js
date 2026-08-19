@@ -25,17 +25,17 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
     {
       icon: "⏱️",
       title: "3-minute brief",
-      description: "Digest breakthroughs, launches, and policy moves fast enough to share before stand-up."
+      description: "Each edition digested the day's breakthroughs, launches, and policy moves into something readable before stand-up."
     },
     {
       icon: "🧭",
       title: "Actionable framing",
-      description: "Each item explains why it matters for engineering, product, and leadership decisions."
+      description: "Every item explained why it mattered for engineering, product, and leadership decisions."
     },
     {
       icon: "🤖",
       title: "Autonomous newsroom",
-      description: "RecursivAI hunts, scores, and writes—Rex keeps the tone sharp and human."
+      description: "RecursivAI hunted, scored, and wrote — Rex kept the tone sharp and human."
     }
   ];
 
@@ -46,25 +46,22 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
     "One fun Rex aside per issue"
   ];
 
-  // Rex testimonials
-  const rexTestimonials = [
+  // What each stage of the pipeline actually did, per article.
+  const pipelineStages = [
     {
-      quote: "Every morning I get the three AI shifts that matter, plus the context for what to do next.",
-      author: "Dr. Sarah Chen",
-      role: "AI Research Lead, TechCorp",
-      rex: "🦕"
+      icon: "🔍",
+      title: "Discovery",
+      detail: "Polled RSS feeds and paper sources, deduplicated against everything already published, and scored what was left for significance."
     },
     {
-      quote: "RecursivAI replaced an hour of internal briefing prep. The signal-to-noise ratio is unbeatable.",
-      author: "Marcus Rodriguez",
-      role: "CTO, StartupAI",
-      rex: "🦕"
+      icon: "✍️",
+      title: "Drafting",
+      detail: "A writer agent turned the selected source material into a piece in Rex's voice, with a separate agent generating the headline and summary."
     },
     {
-      quote: "It's the briefing I forward to leadership. No hype, just implications for the roadmap.",
-      author: "Jennifer Park",
-      role: "VP Strategy, Fortune 500",
-      rex: "🦕"
+      icon: "🚚",
+      title: "Delivery",
+      detail: "Generated a featured image, wrote the post to Postgres, revalidated the static site, and sent the digest — all without a human step."
     }
   ];
 
@@ -182,7 +179,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                   <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm font-serif text-gray-700">
                     <div>
                       <strong>Mission</strong>
-                      <p>Surface the 3 moves in AI leaders must see today.</p>
+                      <p>Surface the few moves in AI that leaders actually needed to see.</p>
                     </div>
                     <div>
                       <strong>Workflow</strong>
@@ -261,22 +258,21 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
 
             {/* Removed Daily Routine & Stats section */}
 
-            {/* Reader Testimonials - Newspaper Style */}
+            {/* Pipeline breakdown - Newspaper Style */}
             <div className="border-t-2 border-double border-gray-400 pt-6 mb-8">
-              <h3 className="text-2xl font-serif font-bold mb-6 text-center">📰 What Rex&apos;s Readers Are Saying</h3>
+              <h3 className="text-2xl font-serif font-bold mb-6 text-center">📰 Inside an Edition</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {rexTestimonials.map((testimonial, index) => (
-                  <div key={index} className="border border-gray-400 p-4 bg-white">
+                {pipelineStages.map((stage) => (
+                  <div key={stage.title} className="border border-gray-400 p-4 bg-white">
                     <div className="text-center mb-3">
-                      <span className="text-3xl">{testimonial.rex}</span>
+                      <span className="text-3xl">{stage.icon}</span>
                     </div>
-                    <blockquote className="text-sm font-serif italic mb-3 text-center">
-                      &quot;{testimonial.quote}&quot;
-                    </blockquote>
-                    <div className="text-center">
-                      <div className="font-serif font-bold text-sm">{testimonial.author}</div>
-                      <div className="text-xs text-gray-600 font-serif">{testimonial.role}</div>
-                    </div>
+                    <h4 className="font-serif font-bold text-sm text-center mb-2 uppercase tracking-wide">
+                      {stage.title}
+                    </h4>
+                    <p className="text-sm font-serif text-gray-700 leading-relaxed text-center">
+                      {stage.detail}
+                    </p>
                   </div>
                 ))}
               </div>
