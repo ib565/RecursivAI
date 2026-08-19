@@ -9,38 +9,6 @@ import { formatDate } from "../utils/formatters";
 
 const LandingPage = ({ initialPosts, initialNewsPosts }) => {
   const [error, setError] = useState(null);
-  const [email, setEmail] = useState('');
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [subscribeError, setSubscribeError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubscribeError('');
-    if (!email || !email.includes('@')) {
-      setSubscribeError('Please enter a valid email.');
-      return;
-    }
-    try {
-      setSubmitting(true);
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data?.error || 'Subscription failed');
-      }
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 5000);
-    } catch (err) {
-      setSubscribeError(err.message || 'Subscription failed');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   // Placeholders for images if a news item lacks one
   const placeholderImages = [
@@ -126,19 +94,33 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
           
           <Header />
 
+          {/* Archive notice */}
+          <div className="w-full bg-[#2F2D2A] text-[#FAF9F5]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <span className="text-xs font-sans font-bold uppercase tracking-[0.2em] border border-[#F5B400] text-[#F5B400] px-2 py-1 self-start">
+                Archive
+              </span>
+              <p className="text-sm font-serif leading-relaxed">
+                RecursivAI ran as a fully autonomous newsroom from June to November 2025, publishing{' '}
+                <strong>1,041 articles</strong> without human authorship. It is no longer generating new
+                content, and the archive below is preserved as-is.
+              </p>
+            </div>
+          </div>
+
           {/* Main Content */}
           <main className="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t-4 border-double border-black bg-[#FAF9F5]">
-            
+
             {/* Hero Section - Newsletter-style */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
               {/* Main Feature */}
               <div className="lg:col-span-7 lg:border-r border-gray-300 lg:pr-10">
                 <div className="mb-10">
                   <h1 className="text-4xl sm:text-5xl font-serif font-bold mb-4 leading-tight">
-                    The fastest way to brief your team on what <span className="bg-yellow-200 px-1">actually</span> happened in AI today.
+                    An AI newsroom that ran itself for <span className="bg-yellow-200 px-1">six months</span>.
                   </h1>
                   <p className="text-lg mb-5 font-serif text-gray-800">
-                    RecursivAI&apos;s autonomous newsroom pulls signal from the noise. Rex keeps it sharp—no hype, no doomscrolling, just the shifts in AI that impact product, engineering, and strategy.
+                    RecursivAI hunted, scored, wrote, illustrated, and shipped its own daily AI briefing—no human in the loop. Rex was the editor-in-chief. Every article below was produced end to end by the pipeline.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                     {valueProps.map((item) => (
@@ -156,51 +138,31 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
                     <Link
                       href="/news"
                       className="inline-flex items-center gap-3 px-7 py-3 rounded-full border border-[#2F2D2A] text-[#2F2D2A] font-serif font-bold shadow-[4px_4px_0px_#2F2D2A] transition-all duration-300 hover:bg-[#2F2D2A] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F5B400] group"
-                      aria-label="Skip to the full AI news briefing"
+                      aria-label="Browse the full news archive"
                     >
-                      <span className="text-sm sm:text-base">Skip straight to today&apos;s brief</span>
+                      <span className="text-sm sm:text-base">Browse the archive</span>
                       <span className="text-xl transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">→</span>
                     </Link>
                   </div>
 
-                  {/* Newsletter Signup */}
-                  <div id="subscribe" className="border-2 border-gray-400 p-6 bg-white shadow-lg">
+                  {/* How it worked */}
+                  <div id="how-it-worked" className="border-2 border-gray-400 p-6 bg-white shadow-lg">
                     <div className="flex items-center mb-3">
                       <span className="text-3xl mr-3" role="img" aria-label="Rex">🦕</span>
-                      <h2 className="text-xl font-serif font-bold">Get Rex&apos;s daily AI intelligence briefing</h2>
+                      <h2 className="text-xl font-serif font-bold">How the newsroom worked</h2>
                     </div>
                     <p className="text-sm text-gray-700 font-serif mb-4">
-                      Delivered before 7 AM ET. Three stories, one Rex aside, links to primary sources.
+                      A scheduled pipeline woke up every morning and ran the whole publication cycle unattended:
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 mb-3">
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@company.com"
-                        className="flex-1 px-4 py-3 border-2 border-gray-300 text-base font-serif"
-                        required
-                      />
-                      <button
-                        onClick={handleSubmit}
-                        disabled={submitting}
-                        className={`px-6 py-3 bg-black text-white font-serif font-bold transition-colors ${submitting ? 'opacity-70 cursor-not-allowed' : 'hover:bg-gray-800'}`}
-                      >
-                        {submitting ? 'Subscribing…' : 'Join the briefing'}
-                      </button>
-                    </div>
-                    {subscribeError && (
-                      <div className="p-3 bg-red-100 text-red-800 font-serif border border-red-300 mb-2">
-                        {subscribeError}
-                      </div>
-                    )}
-                    {isSubscribed && (
-                      <div className="p-3 bg-green-100 text-green-800 font-serif border border-green-300">
-                        🦕 ✓ Rex is on it. Check your inbox in the next few minutes.
-                      </div>
-                    )}
-                    <p className="text-xs text-gray-600 font-serif">
-                      Free forever • Daily before stand-up • Unsubscribe anytime
+                    <ol className="text-sm font-serif text-gray-800 space-y-2 mb-4 list-decimal list-inside">
+                      <li><strong>Discover</strong> — scan RSS feeds and paper sources for the day&apos;s AI stories</li>
+                      <li><strong>Score</strong> — rank candidates by significance and drop the noise</li>
+                      <li><strong>Write</strong> — draft each piece in Rex&apos;s voice, citing primary sources</li>
+                      <li><strong>Illustrate</strong> — generate a featured image per article</li>
+                      <li><strong>Publish</strong> — commit to the database and revalidate the site</li>
+                    </ol>
+                    <p className="text-xs text-gray-600 font-serif border-t border-gray-200 pt-3">
+                      Next.js · FastAPI · Postgres · GitHub Actions · LLM agents per stage
                     </p>
                   </div>
                 </div>
@@ -252,7 +214,7 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
 
             {/* Section Divider */}
             <div className="border-t-2 border-double border-gray-400 mb-6 pt-1">
-              <h2 className="text-lg font-serif font-bold uppercase tracking-wider text-gray-700">What&apos;s hot in AI today</h2>
+              <h2 className="text-lg font-serif font-bold uppercase tracking-wider text-gray-700">From the archive</h2>
             </div>
 
             {/* Hot News Grid */}
@@ -320,47 +282,34 @@ const LandingPage = ({ initialPosts, initialNewsPosts }) => {
               </div>
             </div>
 
-            {/* Final CTA - Newspaper Ad Style */}
+            {/* Final panel - Newspaper Ad Style */}
             <div className="border-4 border-double border-black p-8 bg-white text-center mb-8">
               <div className="border-b-2 border-gray-300 pb-4 mb-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Limited Time Offer</h3>
-                <h2 className="text-3xl font-serif font-black mb-2">FREE LIFETIME SUBSCRIPTION</h2>
-                <p className="text-lg font-serif">To Rex&apos;s Daily AI Intelligence Report</p>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">The final edition</h3>
+                <h2 className="text-3xl font-serif font-black mb-2">JUNE — NOVEMBER 2025</h2>
+                <p className="text-lg font-serif">Rex filed his last story on 24 November 2025.</p>
               </div>
-              
+
               <div className="flex justify-center items-center mb-6">
                 <div className="text-6xl mr-4">🦕</div>
-                <div className="text-left">
-                  <h3 className="text-xl font-serif font-bold">Join Rex&apos;s Growing Pack!</h3>
-                  <p className="font-serif">220+ AI professionals can&apos;t be wrong</p>
+                <div className="text-left max-w-md">
+                  <h3 className="text-xl font-serif font-bold">Why it stopped</h3>
+                  <p className="font-serif text-sm text-gray-700">
+                    The newsroom ran on a free LLM tier that no longer offers enough daily
+                    capacity to complete a publication cycle. Rather than ship degraded
+                    articles, the presses were stopped and the archive preserved.
+                  </p>
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="flex-1 px-4 py-3 border-2 border-gray-300 text-base font-serif"
-                  required
-                />
-                <button
-                  onClick={handleSubmit}
-                  className="px-8 py-3 bg-black text-white font-serif font-bold hover:bg-gray-800 transition-colors"
-                >
-                  CLAIM YOUR SPOT
-                </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm font-serif text-gray-700 border-t border-gray-300 pt-4">
+                <div><strong className="block text-2xl font-black text-black">1,041</strong>articles published</div>
+                <div><strong className="block text-2xl font-black text-black">6</strong>months autonomous</div>
+                <div><strong className="block text-2xl font-black text-black">0</strong>written by a human</div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-4 text-xs font-serif text-gray-600 border-t border-gray-300 pt-4">
-                <div>✅ 100% Free Forever</div>
-                <div>✅ Daily 7AM Delivery</div>
-                <div>✅ Unsubscribe Anytime</div>
-              </div>
-              
-              <p className="text-sm font-serif italic mt-4 text-gray-700">
-                &quot;Don&apos;t let AI evolution leave you behind like it did my fellow dinosaurs!&quot; - Rex 🦕
+
+              <p className="text-sm font-serif italic mt-6 text-gray-700">
+                &quot;I outlasted my fellow dinosaurs by a good six months.&quot; - Rex 🦕
               </p>
             </div>
           </main>

@@ -1,10 +1,22 @@
 name: Generate Content (News + AI101) and Send Newsletter
 
 on:
-  schedule:
-    # Run at 12:00 UTC daily -> ~8:00 AM ET (DST) / 7:00 AM ET (standard),
-    # and 5:30 PM IST
-    - cron: "0 12 * * *"
+  # Daily schedule disabled 2026-08-19.
+  #
+  # The Gemini free tier this pipeline was built on no longer provides enough
+  # quota to generate content. The LLM steps began failing intermittently in
+  # Oct 2025 and completely by Dec 2025; because those failures are caught and
+  # written to the database as placeholder text rather than raised, every run
+  # still reported success while producing unusable posts. The site is now an
+  # archive of the 1,041 posts generated between Jun and Nov 2025.
+  #
+  # To re-enable: restore the `schedule` block below and confirm the models in
+  # ai_content_engine have enough daily quota to complete a full run.
+  #
+  # schedule:
+  #   # Run at 12:00 UTC daily -> ~8:00 AM ET (DST) / 7:00 AM ET (standard),
+  #   # and 5:30 PM IST
+  #   - cron: "0 12 * * *"
   workflow_dispatch: # Allow manual triggering
 
 jobs:
